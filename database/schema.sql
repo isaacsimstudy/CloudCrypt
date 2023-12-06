@@ -45,3 +45,11 @@ CREATE TABLE customer_details
     user_profile     uuid        NOT NULL REFERENCES user_profile(uuid) ON UPDATE CASCADE,
     sub_tier         varchar(75) NOT NULL CHECK ( sub_tier IN ('free', 'premium'))
 );
+
+CREATE TABLE key
+(
+    uuid            uuid        NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+    FOREIGN KEY (uuid) REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    keyname         varchar(255) NOT NULL UNIQUE,
+    password_hash   VARCHAR(72) NOT NULL CHECK (length(password_hash) <= 72)
+)

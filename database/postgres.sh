@@ -40,17 +40,12 @@ sleep 60
 
 # Copy the schema.sql file to the container
 "$oci" cp "$(find "$(pwd)/../database" -name "schema.sql"    -type f -exec realpath {} \;)" pg:/home/postgres
+"$oci" cp "$(find "$(pwd)/../database" -name "database.sql"    -type f -exec realpath {} \;)" pg:/home/postgres
+
 
 # Enter the container and create the schema.
-for attempt in {1..5}; do
-    if "$oci" exec pg psql -U postgres -f /home/postgres/schema.sql; then
-      echo "SQL command executed successfully"
-      break
-    else
-      "$oci" ps -a
-      sleep 30
-    fi
-done
+"$oci" exec pg psql -U postgres -f /home/postgres/schema.sql
+"$oci" exec pg psql -U postgres -f /home/postgres/database.sql
 
 # Unset variables from the environment.
 unset oci

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Horizontal Navigation Bar</title>
+    <style>
+        /* Basic styles for the navigation */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        nav {
+            background-color: #333;
+            color: white;
+            overflow: hidden; /* Ensures the content doesn't overflow */
+            display: flex; /* Use flexbox for layout */
+            align-items: center; /* Align items vertically in the center */
+            justify-content: space-between; /* Spacing between items */
+            padding: 10px; /* Add padding for top and bottom spacing */
+        }
+        /* Updated styles for the navigation */
+        .nav-links {
+            text-decoration: none;
+            color: white;
+            margin-right: 55px; /* Increase margin for spacing between links */
+        }
+        .nav-links:first-child {
+            pointer-events: none;
+            font-size: 2em;
+            border-right: 1px solid white;
+            padding-right: 10px;
+            margin-right: 10px; /* Adjusted margin for CloudCrypt */
+            margin-left: 20px; /* Add margin to the left of CloudCrypt */
+        }
+        .logout-btn {
+            background-color: #555;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 10px 20px;
+            margin-left: auto; /* Pushes the logout button to the right */
+        }
+
+
+
+        .logout-btn:hover {
+            background-color: #777;
+        }
+
+        /* Specific style for CloudCrypt */
+        .nav-links:first-child {
+            pointer-events: none; /* Disables pointer events */
+            font-size: 2em; /* Increase font size */
+            border-right: 1px solid white; /* Add separator line */
+            padding-right: 20px; /* Add spacing after CloudCrypt */
+            margin-right: 20px; /* Add spacing after CloudCrypt */
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-links">CloudCrypt</div>
+    <div class="nav-links">Home</div>
+    <div class="nav-links">About</div>
+    <div class="nav-links">Services</div>
+    <div class="nav-links">Contact</div>
+    <button class="logout-btn">Logout</button>
+</nav>
+
+<!-- Rest of your HTML content -->
+
+</body>
+</html>

@@ -52,3 +52,31 @@ CREATE TABLE key
     name         varchar(255) NOT NULL UNIQUE,
     password_hash   VARCHAR(72) NOT NULL CHECK (length(password_hash) <= 72)
 );
+
+CREATE TABLE file_info
+(
+    log_id         uuid       NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+    file_id        uuid       NOT NULL REFERENCES Cloud(file_id) ON UPDATE CASCADE,
+    user_account   uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    original_size  bigint     NOT NULL,
+    file_type      varchar(255) NOT NULL,
+    original_hash  varchar(255) NOT NULL,
+    time_uploaded  Timestamptz NOT NULL,
+    last_modified  Timestamptz NOT NULL DEFAULT NOW(),
+    file_owner     uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    encryption_type varchar(255) NOT NULL CHECK ( encryption_type IN ('GCM', 'CCM')),
+    tags            varchar(255) NOT NULL
+);
+
+CREATE TABLE Cloud
+(
+    file_id        uuid       NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+    user_account   uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    file_name      varchar(255) NOT NULL UNIQUE,
+    encrypted_file bytea      NOT NULL,
+    key_id         uuid       NOT NULL REFERENCES key(uuid) ON UPDATE CASCADE,
+    file_info      uuid       NOT NULL REFERENCES file_info(log_id) ON UPDATE CASCADE,
+    status         varchar(255) NOT NULL CHECK ( status IN ('active', 'deleted')),
+    checksum       varchar(255) NOT NULL UNIQUE
+);
+

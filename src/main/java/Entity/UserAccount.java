@@ -50,4 +50,5 @@ public class UserAccount {
     @Column(name = "time_last_login", nullable = false)
     private OffsetDateTime timeLastLogin;
 
+
 }

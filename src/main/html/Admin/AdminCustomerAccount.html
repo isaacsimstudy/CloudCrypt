@@ -146,7 +146,7 @@
     <td></td>
     <td></td>
     <td></td>
-    <td><button id="SelectButton" class="defaultButton">Select</button> <button id="UpdateButton" class="defaultButton">Update</button> <button id="LogsButton" class="defaultButton">Logs</button></td>
+    <td><button id="SelectButton" class="defaultButton">Select</button> <button id="UpdateButton" class="defaultButton">Update</button> <button id="LogsButton" class="defaultButton" class="nav-links" onclick="AdminCustomerLogs()">Logs</button></td>
   </tr>
   </tbody>
 </table>
@@ -179,6 +179,9 @@
 <script>
   function AdminCreateCustomerAcc(){
     window.location.href = 'AdminCreateCustomerAcc.html';
+  }
+  function AdminCustomerLogs(){
+    window.location.href ='AdminCustomerLogs.html'
   }
   function AdminHome() {
     window.location.href = 'AdminHomePage.html';

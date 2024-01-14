@@ -9,6 +9,13 @@
             font-family: Arial, sans-serif;
             margin: 0;
         }
+
+        header {
+            font-family: Arial, sans-serif;
+            text-align: left;
+            margin: 20px 20px;
+        }
+
         nav {
             font-size: 20px;
             background-color: #333;
@@ -40,9 +47,6 @@
             padding: 10px 20px;
             margin-left: auto; /* Pushes the logout button to the right */
         }
-
-
-
         .logout-btn:hover {
             background-color: #777;
         }
@@ -56,7 +60,42 @@
             margin-right: 20px; /* Add spacing after CloudCrypt */
         }
 
+        form {
+            max-width: 30%;
+            margin: 20px auto;
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+        }
 
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        .defaultButton {
+            background-color: #777;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .defaultButton:hover {
+            background-color: #555;
+        }
+        .alternateButton {
+            background-color: #555;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +110,48 @@
     <button class="logout-btn">Logout</button>
 </nav>
 <!-- Rest of your HTML content -->
+
+<form action="/submit" method="post">
+    <header>
+        <h1>Create Admin Account</h1>
+    </header>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="username">Username:</label>
+    <input type="username" id="username" name="username" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
+           title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
+
+    <button id="SubmitButton" type="submit" class="defaultButton">Submit</button>
+</form>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
+
+<script>
+    $(function () {
+        // Attach a click event handler to the button
+        $('#SubmitButton').on('click', function () {
+            // Toggle the classes when the button is clicked
+            $(this).toggleClass('defaultButton alternateButton');
+
+            // Change the text content based on the current class
+            var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
+            $(this).text(newText);
+        });
+    });
+</script>
+
 
 <script>
     function AdminHome() {

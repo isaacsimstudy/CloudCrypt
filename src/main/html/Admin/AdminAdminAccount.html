@@ -58,29 +58,29 @@
       margin-right: 20px; /* Add spacing after CloudCrypt */
     }
 
-    #AdminCustomerAccTable {
+    #AdminAdminAccTable {
       border-collapse: collapse;
       width: 90%;
       margin: 20px 20px;
     }
 
-    #AdminCustomerAccTable th, td {
+    #AdminAdminAccTable th, td {
       border: 1px solid #ddd;
       padding: 8px;
       text-align: left;
     }
 
-    #AdminCustomerAccTable th {
+    #AdminAdminAccTable th {
       background-color: #f2f2f2;
     }
 
-    #AdminCreateCustomerTable {
+    #AdminCreateAdminTable {
       border-collapse: collapse;
       width: 90%;
       margin: 20px 20px;
     }
 
-    #AdminCreateCustomerTable td {
+    #AdminCreateAdminTable td {
       border: 1px solid #ddd;
       padding: 8px;
       text-align: center;
@@ -119,28 +119,28 @@
 </nav>
 <!-- Rest of your HTML content -->
 
-<table id="AdminCreateCustomerTable">
+<table id="AdminCreateAdminTable">
   <tr>
     <td>
       <header>
-        <h1>Customer Accounts</h1>
+        <h1>Admin Accounts</h1>
       </header>
     </td>
-      <td>
-        <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="AdminCreateCustomerAcc()">Create</button> <button id ="SuspendButton" class="defaultButton">Suspend</button>
-  </td>
+    <td>
+      <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="AdminCreateAdminAcc()">Create</button> <button id ="SuspendButton" class="defaultButton">Suspend</button>
+    </td>
   </tr>
 </table>
 
-<table id="AdminCustomerAccTable">
+<table id="AdminAdminAccTable">
   <tr>
     <th>S/N</th>
     <th>Name</th>
-    <th>Tier</th>
+    <th>Type</th>
     <th>Status</th>
     <th>Action</th>
   </tr>
-  <tbody id="AdminCustomerAccTableBody">
+  <tbody id="AdminAdminAccTableBody">
   <tr>
     <td></td>
     <td></td>
@@ -155,14 +155,14 @@
 
 <script>
   function UpdateAdminCustomerAccTable(user) {
-    var tableBody = $('#AdminCustomerAccTableBody');
+    var tableBody = $('#AdminAdminAccTableBody');
     var newRow = '<tr><td>'+user.id+'</td><td>'+user.name+'</td><td>'+user.tier+'</td><td>'+user.status+'</td></tr>';
     tableBody.append(newRow);
   }
 </script>
 
 <script>
-    $(function () {
+  $(function () {
     // Attach a click event handler to the button
     $('#SelectButton').on('click', function () {
       // Toggle the classes when the button is clicked
@@ -177,8 +177,8 @@
 
 
 <script>
-  function AdminCreateCustomerAcc(){
-    window.location.href = 'AdminCreateCustomerAcc.html';
+  function AdminCreateAdminAcc(){
+    window.location.href = 'AdminCreateAdminAcc.html';
   }
   function AdminHome() {
     window.location.href = 'AdminHomePage.html';

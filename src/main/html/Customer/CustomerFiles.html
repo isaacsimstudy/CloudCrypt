@@ -70,6 +70,24 @@
     <button class="logout-btn">Logout</button>
 </nav>
 
+<h1>My Files</h1>
+
+<label for="searchInput">Search: </label>
+<input type="text" id="searchInput"/><span> </span><button onclick="SearchFiles()">Search</button>
+<br/><br/>
+
+<button onclick="CreateFile()">Create</button>
+<br/>
+<table border="1" style="background-color:white;">
+    <tr>
+        <th width="300px">Name</th>
+        <th width="100px">Type</th>
+        <th width="100px">Size</th>
+        <th width="100px">Action</th>
+    </tr>
+</table>
+
+
 <script>
     function Home() {
         window.location.href = 'CustomerHomePage.html';

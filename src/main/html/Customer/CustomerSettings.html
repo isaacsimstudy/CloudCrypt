@@ -55,6 +55,16 @@
             padding-right: 20px; /* Add spacing after CloudCrypt */
             margin-right: 20px; /* Add spacing after CloudCrypt */
         }
+
+        menu{
+            font-size: 20px;
+            color: black;
+            overflow: hidden; /* Ensures the content doesn't overflow */
+            display: flex; /* Use flexbox for layout */
+            align-items: normal; /* Align items vertically in the center */
+            justify-content: space-between; /* Spacing between items */
+            padding: 10px; /* Add padding for top and bottom spacing */
+        }
     </style>
 </head>
 <body>
@@ -70,6 +80,11 @@
     <button class="logout-btn">Logout</button>
 </nav>
 
+<h1>Settings</h1>
+
+<div class="menu" onclick="MyAccount()">My Account</div>
+<br/>
+<div class="menu" onclick="DeleteAccount()">Delete Account</div>
 <script>
     function Home() {
         window.location.href = 'CustomerHomePage.html';
@@ -88,6 +103,12 @@
     }
     function Integration() {
         window.location.href = 'CustomerIntegration.html';
+    }
+    function MyAccount() {
+        window.location.href = 'CustomerViewAccount.html';
+    }
+    function DeleteAccount() {
+        window.location.href = 'CustomerDeleteAccount.html';
     }
 </script>
 </body>

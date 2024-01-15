@@ -102,7 +102,7 @@
     <div class="nav-links" onclick="Settings()">Settings</div>
     <button class="logout-btn">Logout</button>
 </nav>
-<form action="/submit" method="post">
+<form id="userProfileForm" action="/submit" method="post">
     <header>
         <h1>Create User Profile</h1>
     </header>
@@ -111,11 +111,8 @@
 
     <label for="privilege">Privilege:</label>
     <input type="text" id="privilege" name="privilege" required>
-    <button id="CreateButton" type="submit" class="defaultButton">Create</button>
+    <button type="button" onclick="confirmCreateUserProfile()" class="defaultButton">Create</button>
 </form>
-
-
-
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
@@ -135,7 +132,14 @@
     function UserStats() {
         window.location.href = 'OwnerUserStats.html';
     }
+
+    function confirmCreateUserProfile() {
+        var confirmation = confirm("Are you sure you want to create the user profile?");
+        if (confirmation) {
+            alert("User Profile Successfully Created");
+            window.location.href = 'OwnerUserProfile.html';
+        }
+    }
 </script>
 </body>
 </html>
-

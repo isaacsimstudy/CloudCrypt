@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Update User Profile</title>
+    <title>Update Account Information</title>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -102,48 +102,104 @@
     <div class="nav-links" onclick="Settings()">Settings</div>
     <button class="logout-btn">Logout</button>
 </nav>
-<form id="updateForm" action="#" method="post">
+<form action="/submit" method="post" onsubmit="return validateDOB()">
     <header>
-        <h1>Update User Profile</h1>
+        <h1>Update Account Information</h1>
     </header>
-    <label for="title">Title:</label>
-    <input type="text" id="title" name="title" required>
+    <label for="fName">First Name:</label>
+    <input type="text" id="fName" name="fName" required>
 
-    <label for="privilege">Privilege:</label>
-    <input type="text" id="privilege" name="privilege" required>
-    <button type="button" onclick="confirmUpdateUserProfile()" class="defaultButton">Update</button>
+    <label for="lName">Last Name:</label>
+    <input type="text" id="lName" name="lName" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="address">Address:</label>
+    <input type="text" id="address" name="address" required>
+
+    <label for="dob">Date Of Birth:</label>
+    <input type="date" id="dob" min="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" required>
+
+
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
+           title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
+
+    <button id="Update" type="submit" class="defaultButton">Update</button>
 </form>
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    function confirmUpdateUserProfile() {
-        var confirmation = confirm("Are you sure you want to update this user profile?");
+    function validateDOB() {
+        var dobInput = document.getElementById('dob');
+        var selectedDate = new Date(dobInput.value);
+        var currentDate = new Date();
+
+        // Calculate age by subtracting birth year from the current year
+        var age = currentDate.getFullYear() - selectedDate.getFullYear();
+
+        // If the birthday hasn't occurred yet this year, decrement the age
+        if (currentDate.getMonth() < selectedDate.getMonth() || (currentDate.getMonth() === selectedDate.getMonth() && currentDate.getDate() < selectedDate.getDate())) {
+            age--;
+        }
+
+        // Check if the user is at least 18 years old
+        if (age < 18) {
+            alert("You must be at least 18 years old.");
+            return false;
+        }
+
+        // Show the confirmation dialog
+        var confirmation = confirm("Are you sure you want to update your account information?");
+
         if (confirmation) {
-            alert("User Profile Successfully Updated");
-            window.location.href = 'OwnerUserProfile.html';
+            // If "Yes" is clicked, redirect to admin account page and show success message
+            redirectToAccountInformation();
+            return false; // Prevent form submission
+        } else {
+            // If "No" is clicked, return to the current page
+            return false; // Prevent form submission
         }
     }
 
+
+    function redirectToAccountInformation() {
+        // Show success message
+
+
+        alert("Account Information Successfully Updated!");
+        // Redirect to user profile page
+        window.location.href = 'OwnerUpdateAccountInformation.html';
+
+    }
+</script>
+
+<script>
     function Home() {
         window.location.href = 'OwnerHomePage.html';
     }
-
     function Settings() {
         window.location.href = 'OwnerSettings.html';
     }
-
     function AdminAcc() {
         window.location.href = 'OwnerAdminAccount.html';
     }
-
     function UserProfile() {
         window.location.href = 'OwnerUserProfile.html';
     }
-
     function UserStats() {
         window.location.href = 'OwnerUserStats.html';
     }
+
 </script>
 </body>
 </html>
+

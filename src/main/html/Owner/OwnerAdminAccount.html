@@ -132,7 +132,7 @@
             </header>
         </td>
         <td>
-            <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="OwnerCreateAdminAcc()">Create</button> <button id ="SuspendButton" class="defaultButton">Suspend</button>
+            <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="OwnerCreateAdminAcc()">Create</button> <button id ="SuspendButton" class="defaultButton" onclick="confirmSuspend()">Suspend</button>
         </td>
     </tr>
 </table>
@@ -180,6 +180,19 @@
 </script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
+    function confirmSuspend() {
+        var selectButton = $('#SelectButton');
+
+        var confirmation = confirm("Are you sure you want to suspend this admin account?");
+        if (confirmation) {
+            alert("Admin Account Successfully Suspended");
+            // Reset the state of the "Select" button
+            selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
+            $('#SuspendButton').prop('disabled', true);
+            // Perform any additional actions upon suspension if needed
+            // Return to the page
+        }
+    }
     $(function () {
         // Disable the "Suspend" button by default
         $('#SuspendButton').prop('disabled', true);

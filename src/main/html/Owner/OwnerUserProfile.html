@@ -40,9 +40,6 @@
             padding: 10px 20px;
             margin-left: auto; /* Pushes the logout button to the right */
         }
-
-
-
         .logout-btn:hover {
             background-color: #777;
         }
@@ -89,22 +86,15 @@
             text-align: left;
             margin: 20px 20px;
         }
-        .defaultButton {
+        .defaultButton, .alternateButton {
             background-color: #777;
             border: none;
             color: white;
             padding: 5px 10px;
             cursor: pointer;
         }
-        .defaultButton:hover {
+        .defaultButton:hover, .alternateButton:hover {
             background-color: #555;
-        }
-        .alternateButton {
-            background-color: #555;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            cursor: pointer;
         }
         #SuspendButton:disabled {
             background-color: #999; /* Change to the desired color for disabled state */
@@ -132,7 +122,8 @@
             </header>
         </td>
         <td>
-            <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="OwnerCreateProfile()">Create</button> <button id ="SuspendButton" class="defaultButton">Suspend</button>
+            <button id="CreateButton" class="defaultButton" class="nav-links" onclick="OwnerCreateProfile()">Create</button>
+            <button id="SuspendButton" class="defaultButton" onclick="confirmSuspend()">Suspend</button>
         </td>
     </tr>
 </table>
@@ -175,30 +166,49 @@
             $('#SuspendButton').prop('disabled', isDefaultButton);
         });
     });
-</script>
-<script>
+
+    function confirmSuspend() {
+        var selectButton = $('#SelectButton');
+
+        var confirmation = confirm("Are you sure you want to suspend this user profile?");
+        if (confirmation) {
+            alert("User Profile Successfully Suspended");
+            // Reset the state of the "Select" button
+            selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
+            $('#SuspendButton').prop('disabled', true);
+            // Perform any additional actions upon suspension if needed
+            // Return to the page
+        }
+    }
+
+
     function Home() {
         window.location.href = 'OwnerHomePage.html';
     }
+
     function Settings() {
         window.location.href = 'OwnerSettings.html';
     }
+
     function AdminAcc() {
         window.location.href = 'OwnerAdminAccount.html';
     }
+
     function UserProfile() {
         window.location.href = 'OwnerUserProfile.html';
     }
+
     function UserStats() {
         window.location.href = 'OwnerUserStats.html';
     }
+
     function OwnerCreateProfile() {
         window.location.href = 'OwnerCreateUserProfile.html';
     }
+
     function OwnerUpdateProfile() {
         window.location.href = 'OwnerUpdateUserProfile.html';
     }
 </script>
 </body>
 </html>
-

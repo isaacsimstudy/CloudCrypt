@@ -55,6 +55,16 @@
             padding-right: 20px; /* Add spacing after CloudCrypt */
             margin-right: 20px; /* Add spacing after CloudCrypt */
         }
+
+        menu{
+            font-size: 20px;
+            color: black;
+            overflow: hidden; /* Ensures the content doesn't overflow */
+            display: flex; /* Use flexbox for layout */
+            align-items: normal; /* Align items vertically in the center */
+            justify-content: space-between; /* Spacing between items */
+            padding: 10px; /* Add padding for top and bottom spacing */
+        }
     </style>
 </head>
 <body>
@@ -70,34 +80,24 @@
     <button class="logout-btn">Logout</button>
 </nav>
 
-<h1>Update Subscriptions</h1>
+<h1>Settings</h1>
 
-<h3>Current Subscription: </h3>
+<h2><u>My Account</u></h2>
 
-<form>
-    <label for="tierList">Select Subscription Tier: </label>
-    <select id="tierList" name="subTier">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-    </select>
+<form action="" method="post">
+    <h3>Email:</h3>
+    <input type="text" name="email"/>
     <br/>
-    <h3><u>Payment Info</u></h3>
-    <label>Credit Card no.</label>
-    <input type="text" pattern="[0-9]*" inputmode="numeric" maxlength="4" />
-    <input type="text" pattern="[0-9]*" inputmode="numeric" maxlength="4" />
-    <input type="text" pattern="[0-9]*" inputmode="numeric" maxlength="4" />
-    <input type="text" pattern="[0-9]*" inputmode="numeric" maxlength="4" />
+    <h3>Username:</h3>
+    <input type="text" name="username"/>
+    <br/>
+    <h3>Password:</h3>
+    <input type="password" name="password"/>
     <br/><br/>
-
-    <label>Exp.</label>
-    <input type="text" pattern="[0-9]*" inputmode="numeric" maxlength="5" />
-    <span> </span>
-    <label>CV:</label>
-    <input type="text" pattern="[0-9]*" inputmode="numeric" maxlength="3" />
-    <br/><br/>
-    <input type="submit" value="Update Subscription"/>
+    <input type="submit" value="Update Account"/>
 </form>
+<br/>
+<span> </span><button onclick="Settings()">Cancel</button>
 
 <script>
     function Home() {

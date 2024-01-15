@@ -2,18 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Accounts</title>
+    <title>Home Page</title>
     <style>
         /* Basic styles for the navigation */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
         }
+
         header {
             font-family: Arial, sans-serif;
             text-align: left;
             margin: 20px 20px;
         }
+
         nav {
             font-size: 20px;
             background-color: #333;
@@ -45,7 +47,6 @@
             padding: 10px 20px;
             margin-left: auto; /* Pushes the logout button to the right */
         }
-
         .logout-btn:hover {
             background-color: #777;
         }
@@ -59,33 +60,23 @@
             margin-right: 20px; /* Add spacing after CloudCrypt */
         }
 
-        #OwnerAdminAccTable {
-            border-collapse: collapse;
-            width: 90%;
-            margin: 20px 20px;
-        }
-
-        #OwnerAdminAccTable th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        #OwnerAdminAccTable th {
+        form {
+            max-width: 30%;
+            margin: 20px auto;
             background-color: #f2f2f2;
-        }
-
-        #OwnerCreateAdminTable {
-            border-collapse: collapse;
-            width: 90%;
-            margin: 20px 20px;
-        }
-
-        #OwnerCreateAdminTable td {
             border: 1px solid #ddd;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
             padding: 8px;
-            text-align: center;
-            background-color: #f2f2f2;
+            margin-bottom: 16px;
+            box-sizing: border-box;
         }
 
         .defaultButton {
@@ -105,100 +96,82 @@
             padding: 5px 10px;
             cursor: pointer;
         }
-        #SuspendButton:disabled {
-            background-color: #999; /* Change to the desired color for disabled state */
-            cursor: not-allowed;   /* Change cursor to indicate non-clickable */
-            /* Add any additional styles for the disabled state */
-        }
     </style>
 </head>
 <body>
-
 <nav>
     <div class="nav-links">CloudCrypt</div>
-    <div class="nav-links" onclick="Home()">Home</div>
-    <div class="nav-links" onclick="AdminAcc()">Admin Account</div>
-    <div class="nav-links" onclick="UserProfile()">User Profile</div>
-    <div class="nav-links" onclick="UserStats()">User Statistic</div>
-    <div class="nav-links" onclick="Settings()">Settings</div>
+    <div class="nav-links" onclick="AdminHome()">Home</div>
+    <div class="nav-links" onclick="AdminCustomerAcc()">Customer Account</div>
+    <div class="nav-links" onclick="AdminAdminAcc()">Admin Account</div>
+    <div class="nav-links" onclick="AdminPolicies()">Policies</div>
+    <div class="nav-links" onclick="AdminReports()">Reports</div>
+    <div class="nav-links" onclick="AdminSettings()">Settings</div>
     <button class="logout-btn">Logout</button>
 </nav>
+<!-- Rest of your HTML content -->
 
-<table id="OwnerCreateAdminTable">
-    <tr>
-        <td>
-            <header>
-                <h1>Admin Accounts</h1>
-            </header>
-        </td>
-        <td>
-            <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="OwnerCreateAdminAcc()">Create</button> <button id ="SuspendButton" class="defaultButton">Suspend</button>
-        </td>
-    </tr>
-</table>
+<form action="/submit" method="post">
+    <header>
+        <h1>Create Admin Account</h1>
+    </header>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
 
-<table id="OwnerAdminAccTable">
-    <tr>
-        <th>S/N</th>
-        <th>Username</th>
-        <th>Email</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Action</th>
-    </tr>
-    <tbody id="OwnerAdminAccTableBody">
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td><button id="SelectButton" class="defaultButton">Select</button> </td>
-    </tr>
-    </tbody>
-</table>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
 
-<script>
-    function OwnerCreateAdminAcc(){
-        window.location.href = 'OwnerCreateAdminAcc.html';
-    }
-    function Home() {
-        window.location.href = 'OwnerHomePage.html';
-    }
-    function Settings() {
-        window.location.href = 'OwnerSettings.html';
-    }
-    function AdminAcc() {
-        window.location.href = 'OwnerAdminAccount.html';
-    }
-    function UserProfile() {
-        window.location.href = 'OwnerUserProfile.html';
-    }
-    function UserStats() {
-        window.location.href = 'OwnerUserStats.html';
-    }
-</script>
+    <label for="username">Username:</label>
+    <input type="username" id="username" name="username" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
+           title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
+
+    <button id="SubmitButton" type="submit" class="defaultButton">Submit</button>
+</form>
+
+
+
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
+
 <script>
     $(function () {
-        // Disable the "Suspend" button by default
-        $('#SuspendButton').prop('disabled', true);
-
-        // Attach a click event handler to the "Select" button
-        $('#SelectButton').on('click', function () {
+        // Attach a click event handler to the button
+        $('#SubmitButton').on('click', function () {
             // Toggle the classes when the button is clicked
             $(this).toggleClass('defaultButton alternateButton');
 
             // Change the text content based on the current class
             var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
             $(this).text(newText);
-
-            // Enable or disable the "Suspend" button based on the class of the "Select" button
-            var isDefaultButton = $(this).hasClass('defaultButton');
-            $('#SuspendButton').prop('disabled', isDefaultButton);
         });
     });
 </script>
+
+
+<script>
+    function AdminHome() {
+        window.location.href = 'AdminHomePage.html';
+    }
+    function AdminCustomerAcc() {
+        window.location.href = 'AdminCustomerAccount.html';
+    }
+    function AdminAdminAcc() {
+        window.location.href = 'AdminAdminAccount.html';
+    }
+    function AdminPolicies() {
+        window.location.href = 'AdminPolicies.html';
+    }
+    function AdminReports() {
+        window.location.href = 'AdminReports.html';
+    }
+    function AdminSettings() {
+        window.location.href = 'AdminSettings.html';
+    }
+</script>
 </body>
 </html>
-

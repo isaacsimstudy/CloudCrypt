@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home Page</title>
+  <style>
+    /* Basic styles for the navigation */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+    header {
+      font-family: Arial, sans-serif;
+      text-align: left;
+      margin: 20px 20px;
+    }
+    nav {
+      font-size: 20px;
+      background-color: #333;
+      color: white;
+      overflow: hidden; /* Ensures the content doesn't overflow */
+      display: flex; /* Use flexbox for layout */
+      align-items: center; /* Align items vertically in the center */
+      justify-content: space-between; /* Spacing between items */
+      padding: 10px; /* Add padding for top and bottom spacing */
+    }
+    /* Updated styles for the navigation */
+    .nav-links {
+      text-decoration: none;
+      color: white;
+      margin-right: 55px; /* Increase margin for spacing between links */
+      margin-left: 30px;
+    }
+    .nav-links:first-child {
+      pointer-events: none;
+      font-size: 2em;
+      border-right: 1px solid white;
+      margin-left: 30px; /* Add margin to the left of CloudCrypt */
+    }
+    .logout-btn {
+      background-color: #555;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 10px 20px;
+      margin-left: auto; /* Pushes the logout button to the right */
+    }
+    .logout-btn:hover {
+      background-color: #777;
+    }
+
+    /* Specific style for CloudCrypt */
+    .nav-links:first-child {
+      pointer-events: none; /* Disables pointer events */
+      font-size: 2em; /* Increase font size */
+      border-right: 1px solid white; /* Add separator line */
+      padding-right: 20px; /* Add spacing after CloudCrypt */
+      margin-right: 20px; /* Add spacing after CloudCrypt */
+    }
+
+    #AdminAdminAccTable {
+      border-collapse: collapse;
+      width: 90%;
+      margin: 20px 20px;
+    }
+
+    #AdminAdminAccTable th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    #AdminAdminAccTable th {
+      background-color: #f2f2f2;
+    }
+
+    #AdminCreateAdminTable {
+      border-collapse: collapse;
+      width: 90%;
+      margin: 20px 20px;
+    }
+
+    #AdminCreateAdminTable td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+      background-color: #f2f2f2;
+    }
+
+    .defaultButton {
+      background-color: #777;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .defaultButton:hover {
+      background-color: #555;
+    }
+    .alternateButton {
+      background-color: #555;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-links">CloudCrypt</div>
+  <div class="nav-links" onclick="AdminHome()">Home</div>
+  <div class="nav-links" onclick="AdminCustomerAcc()">Customer Account</div>
+  <div class="nav-links" onclick="AdminAdminAcc()">Admin Account</div>
+  <div class="nav-links" onclick="AdminPolicies()">Policies</div>
+  <div class="nav-links" onclick="AdminReports()">Reports</div>
+  <div class="nav-links" onclick="AdminSettings()">Settings</div>
+  <button class="logout-btn">Logout</button>
+</nav>
+<!-- Rest of your HTML content -->
+
+<table id="AdminCreateAdminTable">
+  <tr>
+    <td>
+      <header>
+        <h1>Admin Accounts</h1>
+      </header>
+    </td>
+    <td>
+      <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="AdminCreateAdminAcc()">Create</button> <button id ="SuspendButton" class="defaultButton">Suspend</button>
+    </td>
+  </tr>
+</table>
+
+<table id="AdminAdminAccTable">
+  <tr>
+    <th>S/N</th>
+    <th>Name</th>
+    <th>Type</th>
+    <th>Status</th>
+    <th>Action</th>
+  </tr>
+  <tbody id="AdminAdminAccTableBody">
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><button id="SelectButton" class="defaultButton">Select</button> <button id="UpdateButton" class="defaultButton">Update</button> <button id="LogsButton" class="defaultButton">Logs</button></td>
+  </tr>
+  </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+  function UpdateAdminCustomerAccTable(user) {
+    var tableBody = $('#AdminAdminAccTableBody');
+    var newRow = '<tr><td>'+user.id+'</td><td>'+user.name+'</td><td>'+user.tier+'</td><td>'+user.status+'</td></tr>';
+    tableBody.append(newRow);
+  }
+</script>
+
+<script>
+  $(function () {
+    // Attach a click event handler to the button
+    $('#SelectButton').on('click', function () {
+      // Toggle the classes when the button is clicked
+      $(this).toggleClass('defaultButton alternateButton');
+
+      // Change the text content based on the current class
+      var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
+      $(this).text(newText);
+    });
+  });
+</script>
+
+
+<script>
+  function AdminCreateAdminAcc(){
+    window.location.href = 'AdminCreateAdminAcc.html';
+  }
+  function AdminHome() {
+    window.location.href = 'AdminHomePage.html';
+  }
+  function AdminCustomerAcc() {
+    window.location.href = 'AdminCustomerAccount.html';
+  }
+  function AdminAdminAcc() {
+    window.location.href = 'AdminAdminAccount.html';
+  }
+  function AdminPolicies() {
+    window.location.href = 'AdminPolicies.html';
+  }
+  function AdminReports() {
+    window.location.href = 'AdminReports.html';
+  }
+  function AdminSettings() {
+    window.location.href = 'AdminSettings.html';
+  }
+</script>
+</body>
+</html>

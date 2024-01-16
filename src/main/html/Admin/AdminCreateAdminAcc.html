@@ -89,13 +89,6 @@
         .defaultButton:hover {
             background-color: #555;
         }
-        .alternateButton {
-            background-color: #555;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -111,15 +104,24 @@
 </nav>
 <!-- Rest of your HTML content -->
 
-<form action="/submit" method="post">
+<form action="/submit" method="post" onsubmit="return validateForm()">
     <header>
         <h1>Create Admin Account</h1>
     </header>
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required>
+    <label for="fname">First Name:</label>
+    <input type="text" id="fname" name="fname" required>
+
+    <label for="lname">Last Name:</label>
+    <input type="text" id="lname" name="lname" required>
 
     <label for="email">Email:</label>
     <input type="email" id="email" name="email" required>
+
+    <label for="address">Address:</label>
+    <input type="text" id="address" name="address" required>
+
+    <label for="dob">Date Of Birth:</label>
+    <input type="date" id="dob" min="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" required>
 
     <label for="username">Username:</label>
     <input type="username" id="username" name="username" required>
@@ -127,6 +129,9 @@
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
            title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
+
+    <label for="password">Confirm Password:</label>
+    <input type="password" id="confirmPassword" name="confirmPassword" required>
 
     <button id="SubmitButton" type="submit" class="defaultButton">Submit</button>
 </form>
@@ -136,22 +141,55 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-
-
 <script>
-    $(function () {
-        // Attach a click event handler to the button
-        $('#SubmitButton').on('click', function () {
-            // Toggle the classes when the button is clicked
-            $(this).toggleClass('defaultButton alternateButton');
+    function validateForm() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
+        var messageContainer = document.getElementById("message");
 
-            // Change the text content based on the current class
-            var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
-            $(this).text(newText);
-        });
-    });
+        var confirmation = confirm("Are you sure you want to create the admin account?");
+
+        var dobInput = document.getElementById('dob');
+        var selectedDate = new Date(dobInput.value);
+        var currentDate = new Date();
+
+        // Calculate age by subtracting birth year from the current year
+        var age = currentDate.getFullYear() - selectedDate.getFullYear();
+
+        // If the birthday hasn't occurred yet this year, decrement the age
+        if (currentDate.getMonth() < selectedDate.getMonth() || (currentDate.getMonth() === selectedDate.getMonth() && currentDate.getDate() < selectedDate.getDate())) {
+            age--;
+        }
+        // Check if the user is at least 18 years old
+        if (age < 18) {
+            alert("You must be at least 18 years old.");
+            return false
+        }
+        if (password === confirmPassword) {
+            alert("Password matches!");
+            if (confirmation) {
+                // If "Yes" is clicked, redirect to admin account page and show success message
+                redirectToAdminAdminAcc();
+                return false; // Prevent form submission
+            } else {
+                // If "No" is clicked, return to the current page
+                return false; // Prevent form submission
+            }
+
+        } else {
+            alert("Password does not match. Please try again.");
+            return false; // Prevent form submission
+        }
+
+        function redirectToAdminAdminAcc() {
+            // Show success message
+            alert("Admin account created successfully!");
+            // Redirect to user profile page
+            window.location.href = 'AdminAdminAccount.html';
+
+        }
+    }
 </script>
-
 
 <script>
     function AdminHome() {

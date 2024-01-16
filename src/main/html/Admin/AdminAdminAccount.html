@@ -104,6 +104,11 @@
       padding: 5px 10px;
       cursor: pointer;
     }
+    #SuspendButton:disabled {
+      background-color: #999; /* Change to the desired color for disabled state */
+      cursor: not-allowed;   /* Change cursor to indicate non-clickable */
+      /* Add any additional styles for the disabled state */
+    }
   </style>
 </head>
 <body>
@@ -127,7 +132,7 @@
       </header>
     </td>
     <td>
-      <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="AdminCreateAdminAcc()">Create</button> <button id ="SuspendButton" class="defaultButton">Suspend</button>
+      <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="AdminCreateAdminAcc()">Create</button> <button id ="SuspendButton" class="defaultButton" onclick="confirmSuspend()">Suspend</button>
     </td>
   </tr>
 </table>
@@ -146,7 +151,7 @@
     <td></td>
     <td></td>
     <td></td>
-    <td><button id="SelectButton" class="defaultButton">Select</button> <button id="UpdateButton" class="defaultButton">Update</button> <button id="LogsButton" class="defaultButton">Logs</button></td>
+    <td><button id="SelectButton" class="defaultButton">Select</button> <button id="UpdateButton" class="defaultButton">Update</button></td>
   </tr>
   </tbody>
 </table>
@@ -162,7 +167,23 @@
 </script>
 
 <script>
+  function confirmSuspend() {
+    var selectButton = $('#SelectButton');
+
+    var confirmation = confirm("Are you sure you want to suspend this admin account?");
+    if (confirmation) {
+      alert("Admin Account Successfully Suspended");
+      // Reset the state of the "Select" button
+      selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
+      $('#SuspendButton').prop('disabled', true);
+      // Perform any additional actions upon suspension if needed
+      // Return to the page
+    }
+  }
   $(function () {
+    // Disable the "Suspend" button by default
+    $('#SuspendButton').prop('disabled', true);
+
     // Attach a click event handler to the button
     $('#SelectButton').on('click', function () {
       // Toggle the classes when the button is clicked
@@ -171,6 +192,10 @@
       // Change the text content based on the current class
       var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
       $(this).text(newText);
+
+      // Enable or disable the "Suspend" button based on the class of the "Select" button
+      var isDefaultButton = $(this).hasClass('defaultButton');
+      $('#SuspendButton').prop('disabled', isDefaultButton);
     });
   });
 </script>

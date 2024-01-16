@@ -75,8 +75,9 @@ CREATE TABLE Cloud
     file_name      varchar(255) NOT NULL UNIQUE,
     encrypted_file bytea      NOT NULL,
     key_id         uuid       NOT NULL REFERENCES key(uuid) ON UPDATE CASCADE,
-    file_info      uuid       NOT NULL REFERENCES file_info(log_id) ON UPDATE CASCADE,
     status         varchar(255) NOT NULL CHECK ( status IN ('active', 'deleted')),
     checksum       varchar(255) NOT NULL UNIQUE
 );
+
+
 

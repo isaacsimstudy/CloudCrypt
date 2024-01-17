@@ -102,7 +102,7 @@
     <div class="nav-links" onclick="Settings()">Settings</div>
     <button class="logout-btn">Logout</button>
 </nav>
-<form action="/submit" method="post" onsubmit="return validateDOB()">
+<form action="/submit" method="post" onsubmit="return validation()">
     <header>
         <h1>Create Admin Account</h1>
     </header>
@@ -124,11 +124,12 @@
     <label for="dob">Date Of Birth:</label>
     <input type="date" id="dob" min="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" required>
 
-
-
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
            title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
+
+    <label for="confirm_password">Confirm Password:</label>
+    <input type="password" id="confirm_password" required>
 
     <button id="CreateButton" type="submit" class="defaultButton">Create</button>
 </form>
@@ -138,7 +139,20 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    function validateDOB() {
+    var password = document.getElementById("password")
+        , confirm_password = document.getElementById("confirm_password");
+
+    function validatePassword(){
+        if(password.value !== confirm_password.value) {
+            confirm_password.setCustomValidity("Passwords Don't Match");
+        } else {
+            confirm_password.setCustomValidity('');
+        }
+    }
+
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+    function validation() {
         var dobInput = document.getElementById('dob');
         var selectedDate = new Date(dobInput.value);
         var currentDate = new Date();
@@ -178,9 +192,6 @@
         window.location.href = 'OwnerAdminAccount.html';
 
     }
-</script>
-
-<script>
     function Home() {
     window.location.href = 'OwnerHomePage.html';
     }

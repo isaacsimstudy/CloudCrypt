@@ -154,6 +154,14 @@
     </tr>
     <tr>
         <td>
+            <h2>Account Password</h2>
+        </td>
+        <td>
+            <button id ="PWUpdateButton" class="UpdateButton" onclick="UpdateAccountPassword()">Update</button>
+        </td>
+    </tr>
+    <tr>
+        <td>
             <h2 id="mfaStatusLabel">Multi-Factor Authentication:</h2>
         </td>
         <td>
@@ -183,6 +191,10 @@
 
     function UpdateAccountInformation() {
         window.location.href = 'OwnerUpdateAccountInformation.html'
+    }
+
+    function UpdateAccountPassword() {
+        window.location.href = 'OwnerUpdatePassword.html'
     }
     function toggleMFA() {
         var mfaStatus = document.getElementById("mfaStatusLabel");

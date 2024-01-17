@@ -41,8 +41,6 @@
             margin-left: auto; /* Pushes the logout button to the right */
         }
 
-
-
         .logout-btn:hover {
             background-color: #777;
         }
@@ -55,30 +53,25 @@
             padding-right: 20px; /* Add spacing after CloudCrypt */
             margin-right: 20px; /* Add spacing after CloudCrypt */
         }
-
-        .menu{
-            font-size: 18px;
-            color: black;
-            overflow: hidden; /* Ensures the content doesn't overflow */
-            display: flex; /* Use flexbox for layout */
-            align-items: normal; /* Align items vertically in the center */
-            justify-content: space-between; /* Spacing between items */
-            padding: 8px; /* Add padding for top and bottom spacing */
+        option[disabled]:first-child{
+            color: gray;
         }
+        #otherTextBox {
+            width: 400px;
+            height: 20px;
+            border: 2px solid #000000;
+            border-radius: 4px;
 
-        .menuButton {
-            font-size: 14px;
-            color: black;
-            overflow: hidden; /* Ensures the content doesn't overflow */
-            display: flex; /* Use flexbox for layout */
-            align-items: normal; /* Align items vertically in the center */
-            justify-content: space-between; /* Spacing between items */
-            padding: 6px; /* Add padding for top and bottom spacing */
+        }
+        #feedback {
+            width: 500px;
+            height: 150px;
+            border: 2px solid #000000;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
-
 <nav>
     <div class="nav-links">CloudCrypt</div>
     <div class="nav-links" onclick="Home()">Home</div>
@@ -90,66 +83,33 @@
     <button class="logout-btn">Logout</button>
 </nav>
 
-<h1>Settings</h1>
+<h1>Feedback Form</h1>
 
-<div class="menu">
-    <button class="menuButton" onclick="MyAccount()">Update My Account</button>
-</div>
+<label for="feedbackCategory">Please select an appropriate category regarding your feedback.</label><br/>
+<select id="feedbackCategory" onchange="HandleSelection(this)">
+    <option disabled selected value="">Select a category...</option>
+    <option value="option1">General Feedback</option>
+    <option value="issues">Report an Issue
+    </option>
+    <option value="option3">Suggestions for Improvements (Features)</option>
+    <option value="option4">Suggestions for Improvements (User Interface)</option>
+    <option value="option5">Suggestions for Improvements (Development)</option>
+    <option value="option6">Suggestions for Improvements (Integration)</option>
+    <option value="others">Others</option>
+</select><br/><br/>
 
-<div class="menu">File Encryption Type
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="option1">Insert type here</option>
-            <option value="option2">Insert type here</option>
-        </select>
-    </label>
-</div>
+<div id="otherTextContainer" style="display:none;">
+    <label for="otherTextBox">Please Specify:</label>
+    <input type="text" id="otherTextBox" name="otherText">
+</div><br/>
 
-<h2>Notifications (Email)</h2>
-<div class="menu">Notify me for Major Activities (Login)
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="Enabled">Enabled</option>
-            <option value="Disabled">Disabled</option>
-        </select>
-    </label>
-</div>
-<div class="menu">Notify me for File Downloads
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="Enabled">Enabled</option>
-            <option value="Disabled">Disabled</option>
-        </select>
-    </label>
-</div>
+<label for="feedback">
+    <textarea id="feedback" rows="10" cols="60" placeholder="Insert additional information here..."></textarea><br/>
+</label>
 
-<h2>Additional Security</h2>
-<div class="menu">Authentication upon Upload/Download
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="Enabled">Enabled</option>
-            <option value="Disabled">Disabled</option>
-        </select>
-    </label>
-</div>
-<div class="menu">Multi-Factor Authentication
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="Enabled">Enabled</option>
-            <option value="Disabled">Disabled</option>
-        </select>
-    </label>
-</div>
+<button onclick="ConfirmSubmit()">Submit</button>
 
-<h2>User Feedback</h2>
-<div class="menu">
-    <button class="menuButton" onclick="FeedbackForm()">Feedback Form</button>
-</div>
 
-<h2>Account Handling</h2>
-<div class="menu">
-    <button class="menuButton" onclick="DeleteAccount()">Delete Account</button>
-</div>
 
 <script>
     function Home() {
@@ -170,19 +130,23 @@
     function Integration() {
         window.location.href = 'CustomerIntegration.html';
     }
-    function MyAccount() {
-        window.location.href = 'CustomerViewAccount.html';
+    function HandleSelection(selectElement) {
+        const otherTextContainer = document.getElementById("otherTextContainer");
+        if(selectElement.value === "others" || selectElement.value === "issues") {
+            otherTextContainer.style.display = "block"
+        } else {
+            otherTextContainer.style.display = "none";
+        }
     }
-    function DeleteAccount() {
-        window.location.href = 'CustomerDeleteAccount.html';
+    function ConfirmSubmit() {
+        if(confirm("Are you sure you want to Submit? Click on 'OK' to proceed.")) {
+            SubmitFeedback();
+        }
     }
-    function FeedbackForm() {
-        window.location.href = 'CustomerFeedbackForm.html'
+    function SubmitFeedback() {
+        // insert code here
     }
-    function HandleSelection(selectedElement) {
-        // TBC
-    }
+
 </script>
 </body>
 </html>
-

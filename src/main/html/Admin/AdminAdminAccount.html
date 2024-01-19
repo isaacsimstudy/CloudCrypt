@@ -151,7 +151,7 @@
     <td></td>
     <td></td>
     <td></td>
-    <td><button id="SelectButton" class="defaultButton">Select</button> <button id="UpdateButton" class="defaultButton">Update</button></td>
+    <td><button id="SelectButton" class="defaultButton">Select</button> <button id="UpdateButton" class="defaultButton" onclick="AdminUpdateAdmin()">Update</button></td>
   </tr>
   </tbody>
 </table>
@@ -202,6 +202,9 @@
 
 
 <script>
+  function AdminUpdateAdmin(){
+    window.location.href = 'AdminUpdateAdmin.html';
+  }
   function AdminCreateAdminAcc(){
     window.location.href = 'AdminCreateAdminAcc.html';
   }

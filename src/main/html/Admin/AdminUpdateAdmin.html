@@ -85,12 +85,10 @@
             color: white;
             padding: 5px 10px;
             cursor: pointer;
-
         }
         .defaultButton:hover {
             background-color: #555;
         }
-
     </style>
 </head>
 <body>
@@ -106,9 +104,9 @@
 </nav>
 <!-- Rest of your HTML content -->
 
-<form action="/submit" method="post" onsubmit="return validateForm()">
+<form id="updateForm" action="/submit" method="post" onsubmit="return validateForm()">
     <header>
-        <h1>Create Customer Account</h1>
+        <h1>Update Admin Account</h1>
     </header>
     <label for="fname">First Name:</label>
     <input type="text" id="fname" name="fname" required>
@@ -132,27 +130,37 @@
     <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
            title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
 
-    <label for="password">Confirm Password:</label>
-    <input type="password" id="confirm_password" required>
-
-    <button id="SubmitButton" type="submit" class="defaultButton">Submit</button>
+    <button id="SubmitButton" type="submit" class="defaultButton">Update</button>
 </form>
+
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
-    var password = document.getElementById("password")
-        , confirm_password = document.getElementById("confirm_password");
+    document.addEventListener("DOMContentLoaded", function () {
+        // Assume you have a variable `dataRetrieved` indicating whether data is retrieved or not
+        var dataRetrieved = true/* true or false based on your condition */;
 
-    function validatePassword(){
-        if(password.value !== confirm_password.value) {
-            confirm_password.setCustomValidity("Passwords Don't Match");
-        } else {
-            confirm_password.setCustomValidity('');
+        // Function to disable form fields
+        function disableFields() {
+            var form = document.getElementById("updateForm");
+
+            // Array of field IDs to be disabled
+            var fieldsToDisable = ["email", "username" ];
+
+            // Loop through the field IDs and disable them
+            fieldsToDisable.forEach(function (fieldId) {
+                var field = document.getElementById(fieldId);
+                if (field) {
+                    field.disabled = dataRetrieved; // Disable if data is retrieved
+                }
+            });
         }
-    }
-    password.onchange = validatePassword;
-    confirm_password.onkeyup = validatePassword;
+
+        // Call the function to disable fields on page load
+        disableFields();
+    });
+
     function validateForm() {
         var dobInput = document.getElementById('dob');
         var selectedDate = new Date(dobInput.value);
@@ -172,11 +180,11 @@
         }
 
         // Show the confirmation dialog
-        var confirmation = confirm("Are you sure you want to create the admin account?");
+        var confirmation = confirm("Are you sure you want to update the admin account?");
 
         if (confirmation) {
             // If "Yes" is clicked, redirect to admin account page and show success message
-            redirectToAdminCustomerAcc();
+            redirectToAdminAdminAcc();
             return false; // Prevent form submission
         } else {
             // If "No" is clicked, return to the current page
@@ -184,11 +192,11 @@
         }
     }
 
-    function redirectToAdminCustomerAcc() {
+    function redirectToAdminAdminAcc() {
         // Show success message
-        alert("Customer account created successfully!");
+        alert("Admin account updated successfully!");
         // Redirect to user profile page
-        window.location.href = 'AdminCustomerAccount.html';
+        window.location.href = 'AdminAdminAccount.html';
 
     }
 
@@ -196,27 +204,21 @@
     function AdminHome() {
         window.location.href = 'AdminHomePage.html';
     }
-
     function AdminCustomerAcc() {
         window.location.href = 'AdminCustomerAccount.html';
     }
-
     function AdminAdminAcc() {
         window.location.href = 'AdminAdminAccount.html';
     }
-
     function AdminPolicies() {
         window.location.href = 'AdminPolicies.html';
     }
-
     function AdminReports() {
         window.location.href = 'AdminReports.html';
     }
-
     function AdminSettings() {
         window.location.href = 'AdminSettings.html';
     }
 </script>
-
 </body>
 </html>

@@ -131,7 +131,7 @@
            title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
 
     <label for="password">Confirm Password:</label>
-    <input type="password" id="confirmPassword" name="confirmPassword" required>
+    <input type="password" id="confirm_password" required>
 
     <button id="SubmitButton" type="submit" class="defaultButton">Submit</button>
 </form>
@@ -142,13 +142,19 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
+    var password = document.getElementById("password")
+        , confirm_password = document.getElementById("confirm_password");
+
+    function validatePassword(){
+        if(password.value !== confirm_password.value) {
+            confirm_password.setCustomValidity("Passwords Don't Match");
+        } else {
+            confirm_password.setCustomValidity('');
+        }
+    }
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
     function validateForm() {
-        var password = document.getElementById("password").value;
-        var confirmPassword = document.getElementById("confirmPassword").value;
-        var messageContainer = document.getElementById("message");
-
-        var confirmation = confirm("Are you sure you want to create the admin account?");
-
         var dobInput = document.getElementById('dob');
         var selectedDate = new Date(dobInput.value);
         var currentDate = new Date();
@@ -163,35 +169,31 @@
         // Check if the user is at least 18 years old
         if (age < 18) {
             alert("You must be at least 18 years old.");
-            return false
+            return false;
         }
-        if (password === confirmPassword) {
-            alert("Password matches!");
-            if (confirmation) {
-                // If "Yes" is clicked, redirect to admin account page and show success message
-                redirectToAdminAdminAcc();
-                return false; // Prevent form submission
-            } else {
-                // If "No" is clicked, return to the current page
-                return false; // Prevent form submission
-            }
 
+        // Show the confirmation dialog
+        var confirmation = confirm("Are you sure you want to create the admin account?");
+
+        if (confirmation) {
+            // If "Yes" is clicked, redirect to admin account page and show success message
+            redirectToAdminAdminAcc();
+            return false; // Prevent form submission
         } else {
-            alert("Password does not match. Please try again.");
+            // If "No" is clicked, return to the current page
             return false; // Prevent form submission
         }
-
-        function redirectToAdminAdminAcc() {
-            // Show success message
-            alert("Admin account created successfully!");
-            // Redirect to user profile page
-            window.location.href = 'AdminAdminAccount.html';
-
-        }
     }
-</script>
 
-<script>
+    function redirectToAdminAdminAcc() {
+        // Show success message
+        alert("Admin account created successfully!");
+        // Redirect to user profile page
+        window.location.href = 'AdminAdminAccount.html';
+
+    }
+
+
     function AdminHome() {
         window.location.href = 'AdminHomePage.html';
     }

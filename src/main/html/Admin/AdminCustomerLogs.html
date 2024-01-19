@@ -84,13 +84,9 @@
         .defaultButton:hover {
             background-color: #555;
         }
-        .alternateButton {
-            background-color: #555;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
+
+
+
     </style>
 </head>
 <body>
@@ -133,19 +129,7 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 
-<script>
-    $(function () {
-        // Attach a click event handler to the button
-        $('#SubmitButton').on('click', function () {
-            // Toggle the classes when the button is clicked
-            $(this).toggleClass('defaultButton alternateButton');
 
-            // Change the text content based on the current class
-            var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
-            $(this).text(newText);
-        });
-    });
-</script>
 
 
 <script>

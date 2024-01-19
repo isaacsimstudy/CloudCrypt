@@ -40,6 +40,9 @@
             padding: 10px 20px;
             margin-left: auto; /* Pushes the logout button to the right */
         }
+
+
+
         .logout-btn:hover {
             background-color: #777;
         }
@@ -52,8 +55,85 @@
             padding-right: 20px; /* Add spacing after CloudCrypt */
             margin-right: 20px; /* Add spacing after CloudCrypt */
         }
+        form {
+            max-width: 30%;
+            margin: 20px;
+            background-color: #f2f2f2;
+            text-align: left;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
 
+        label {
+            display: block;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+        input {
+            display: block;
+            margin-bottom: 8px;
+            width: 20%; /* Adjust the width as needed */
+        }
 
+        .defaultButton {
+            background-color: #777;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .defaultButton:hover {
+            background-color: #555;
+        }
+        #policyTable {
+            border-collapse: collapse;
+            width: 90%;
+            margin: 20px 20px;
+        }
+
+        #policyTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+        h1 {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px 20px;
+        }
+        h2 {
+            font-family: Arial, sans-serif;
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        #mfaToggleBar {
+            display: flex;
+            background-color: #f2f2f2;
+        }
+        #mfaStatusLabel {
+            margin-right: 10px;
+        }
+        #enableMFABtn {
+            background-color: #777;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+        #enableMFABtn:hover {
+            background-color: #555;
+        }
+        .enabled {
+            color: green;
+        }
+
+        .disabled {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -68,11 +148,68 @@
     <button class="logout-btn">Logout</button>
 </nav>
 <!-- Rest of your HTML content -->
+<table id="policyTable">
+    <tr>
+        <td>
+            <h1>Policies</h1>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h2>Password Requirement</h2>
+            <form action="/submit" method="post" onsubmit="return validation()">
+                <label for="MTC">Minimum Total Characters:</label>
+                <input id="MTC" >
 
+                <label for="CSS">Contain Special Character:</label>
+                <input  id="CSS" >
+
+                <label for="CUC">Contain UpperCase:</label>
+                <input  id="CUC" >
+                <button id ="UpdateButton" type="submit" class="defaultButton">Update</button>
+            </form>
+        </td>
+
+    </tr>
+    <tr>
+        <td>
+            <h2 id="mfaStatusLabel">Multi-Factor Authentication:</h2>
+            <div id="mfaToggleBar">
+                <button id="enableMFABtn" class="enableMFA" onclick="toggleMFA()">Enable</button>
+            </div>
+        </td>
+    </tr>
+
+</table>
 <script>
-    function AdminHome() {
-        window.location.href = 'AdminHomePage.html';
+    function toggleMFA() {
+        var mfaStatus = document.getElementById("mfaStatusLabel");
+        var enableMFABtn = document.getElementById("enableMFABtn");
+
+        if (enableMFABtn.textContent === "Enable") {
+            mfaStatus.classList.add("enabled");
+            mfaStatus.classList.remove("disabled");
+            enableMFABtn.textContent = "Disable";
+        } else {
+            mfaStatus.classList.remove("enabled");
+            mfaStatus.classList.add("disabled");
+            enableMFABtn.textContent = "Enable";
+        }
     }
+    function validation() {
+        // Show the confirmation dialog
+        var confirmation = confirm("Are you sure you want to update policies?");
+
+        if (confirmation) {
+            // If "Yes" is clicked, redirect to admin account page and show success message
+            return false; // Prevent form submission
+        } else {
+            // If "No" is clicked, return to the current page
+            return false; // Prevent form submission
+        }
+    }
+
+
     function AdminCustomerAcc() {
         window.location.href = 'AdminCustomerAccount.html';
     }

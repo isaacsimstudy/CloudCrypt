@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CloudCrypt Login</title>
+</head>
+<style>
+    h1 {
+        text-align: center;
+        pointer-events: none;
+        font-size: 80px;
+        font-family: "Lucida Console", "Courier New", monospace;
+    }
+
+    #LoginAs {
+        font-size: 20px;
+        margin-left: 100px;
+    }
+    #usernameLabel, #passwordLabel{
+        font-size: 20px;
+    }
+
+    table {
+        background-color: aquamarine;
+    }
+
+    #UserLoginTable {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    #UserLoginTable th, td {
+        width: 50%;
+        padding: 8px 50px 8px 8px;
+        text-align: right;
+    }
+
+    #UserLoginTable th {
+        background-color: #f2f2f2;
+    }
+
+    .rightColumn {
+        padding: 8px 8px 8px 50px;
+        text-align: left;
+    }
+
+    #LoginButton{
+        font-size: 93.8%;
+        font-family: Arial,serif;
+        font-weight: normal;
+        border: solid 1px #fff;
+        transition: box-shadow 0.3s;
+        color: #000000;
+    }
+
+    #SelectUser{
+        background-color: #f2f2f2;
+    }
+    .forgetPw{
+        text-align: center;
+    }
+    .fgPWhpL{
+        color: blue;
+        font-size: 14px;
+        line-height: 14px;
+        margin: 0;
+        overflow-y: visible;
+    }
+    #forgetPw{
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    #createAccount{
+        border-collapse: collapse;
+        width: 100%;
+        display: none;
+    }
+</style>
+<body>
+
+<h1>CloudCrypt</h1>
+<table id="UserLoginTable">
+    <tr><td></td></tr><tr><td></td></tr>
+    <tr>
+        <td valign="top">
+            <header>
+                <label for="SelectUser" id="LoginAs">Login As:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <select name="user" id="SelectUser" onchange="enableFields()">
+                    <option selected="selected"></option>
+                    <option value="Customer">Customer
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Owner">Owner</option>
+                </select>
+            </header>
+        </td>
+        <td class="rightColumn">
+            <form id="login">
+                <label for="username" id="usernameLabel">Username&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+                <input id="username" type="text" value="" disabled="">
+                <br /><br />
+                <label for="password" id="passwordLabel">Password&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+                <input id="password" type="text" value="" disabled="">
+                <br /><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input id ="LoginButton" type="submit" name="Submit" value="Log In" disabled=""></input>
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td class="rightColumn"></td>
+    </tr>
+    <tr><td></td></tr>
+    <tr><td></td></tr>
+</table>
+<table id="forgetPw">
+    <tr><td class="forgetPw"><a class="fgPWhpL" href="ForgetPassword.html">Forget Password?</a></td></tr>
+</table>
+
+<br /><br />
+<table id="createAccount">
+    <tr><td></td></tr>
+    <tr><td class="forgetPw">Dont have an account? &nbsp;&nbsp;&nbsp;&nbsp;<a class="fgPWhpL" href="CreateAccount.html">Sign Up!</a></td></tr>
+    <tr><td></td></tr>
+</table>
+
+<script>
+    function enableFields() {
+        var selectUser = document.getElementById("SelectUser");
+        var usernameInput = document.getElementById("username");
+        var passwordInput = document.getElementById("password");
+        var loginButton = document.getElementById("LoginButton");
+        var createAccountTable = document.getElementById("createAccount");
+
+
+        if (selectUser.value === "") { // Check if the selected value is the default (empty)
+            usernameInput.disabled = true;
+            passwordInput.disabled = true;
+            loginButton.disabled = true; // Disable the login button
+            createAccountTable.style.display = "none"; // Hide the createAccount table
+        } else {
+            usernameInput.disabled = false;
+            passwordInput.disabled = false;
+            loginButton.disabled = false; // Enable the login button
+
+            if (selectUser.value === "Customer") {
+                createAccountTable.style.display = "table"; // Show the createAccount table for Customer
+            } else {
+                createAccountTable.style.display = "none"; // Hide the createAccount table for others
+            }
+        }
+
+    }
+
+    // New function to reset the form on page load or refresh
+    window.onload = function () {
+        var selectUser = document.getElementById("SelectUser");
+        var usernameInput = document.getElementById("username");
+        var passwordInput = document.getElementById("password");
+        var loginButton = document.getElementById("LoginButton");
+        var createAccountTable = document.getElementById("createAccount");
+
+        // Reset select option to default
+        selectUser.value = "";
+
+        // Clear input fields
+        usernameInput.value = "";
+        passwordInput.value = "";
+
+        // Disable/enable fields based on the select option
+        enableFields();
+    };
+</script>
+</body>
+</html>

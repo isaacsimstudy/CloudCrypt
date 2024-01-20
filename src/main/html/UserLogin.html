@@ -5,91 +5,94 @@
     <title>CloudCrypt Login</title>
 </head>
 <style>
-    h1 {
-        text-align: center;
-        pointer-events: none;
-        font-size: 80px;
-        font-family: "Lucida Console", "Courier New", monospace;
+    body {
+        background-color: #333;
+        font-family: Arial, sans-serif;
+        color: white;
+        margin: 0;
     }
 
-    #LoginAs {
-        font-size: 20px;
-        margin-left: 100px;
-    }
-    #usernameLabel, #passwordLabel{
-        font-size: 20px;
+    h1 {
+        text-align: center;
+        font-size: 80px;
     }
 
     table {
-        background-color: aquamarine;
+        width: 100%;
+        margin: auto;
     }
 
     #UserLoginTable {
         border-collapse: collapse;
-        width: 100%;
+        background-color: #f2f2f2;
+        color: black;
     }
 
-    #UserLoginTable th, td {
-        width: 50%;
-        padding: 8px 50px 8px 8px;
-        text-align: right;
+    #UserLoginTable th, #UserLoginTable td {
+        padding: 10px;
+        text-align: center;
     }
 
     #UserLoginTable th {
-        background-color: #f2f2f2;
+        background-color: #ddd;
     }
 
     .rightColumn {
-        padding: 8px 8px 8px 50px;
+        padding: 10px;
         text-align: left;
     }
 
-    #LoginButton{
-        font-size: 93.8%;
-        font-family: Arial,serif;
+    #LoginButton {
+        font-size: 1em;
+        font-family: Arial, serif;
         font-weight: normal;
+        cursor: pointer;
         border: solid 1px #fff;
-        transition: box-shadow 0.3s;
-        color: #000000;
+        transition: background-color 0.3s;
+        color: white;
+        background-color: #555;
+        padding: 8px 15px;
     }
 
-    #SelectUser{
+    #LoginButton:hover {
+        background-color: #777;
+    }
+
+    #SelectUser {
         background-color: #f2f2f2;
     }
-    .forgetPw{
+
+    .forgetPw {
         text-align: center;
+        background-color: #f2f2f2;
+        color: black;
     }
-    .fgPWhpL{
+    .fgPWhpL {
         color: blue;
         font-size: 14px;
         line-height: 14px;
         margin: 0;
         overflow-y: visible;
     }
-    #forgetPw{
+    #forgetPw, #createAccount {
         border-collapse: collapse;
         width: 100%;
-    }
-
-    #createAccount{
-        border-collapse: collapse;
-        width: 100%;
-        display: none;
+        margin: auto;
+        background-color: #f2f2f2;
+        color: black;
     }
 </style>
 <body>
-
 <h1>CloudCrypt</h1>
+
 <table id="UserLoginTable">
-    <tr><td></td></tr><tr><td></td></tr>
     <tr>
         <td valign="top">
             <header>
                 <label for="SelectUser" id="LoginAs">Login As:&nbsp;&nbsp;&nbsp;&nbsp;</label>
                 <select name="user" id="SelectUser" onchange="enableFields()">
                     <option selected="selected"></option>
-                    <option value="Customer">Customer
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                    <option value="Customer">Customer</option>
                     <option value="Admin">Admin</option>
                     <option value="Owner">Owner</option>
                 </select>
@@ -101,10 +104,9 @@
                 <input id="username" type="text" value="" disabled="">
                 <br /><br />
                 <label for="password" id="passwordLabel">Password&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
-                <input id="password" type="text" value="" disabled="">
+                <input id="password" type="password" value="" disabled="">
                 <br /><br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <input id ="LoginButton" type="submit" name="Submit" value="Log In" disabled=""></input>
+                <input id="LoginButton" type="submit" name="Submit" value="Log In" disabled="">
             </form>
         </td>
     </tr>
@@ -115,14 +117,16 @@
     <tr><td></td></tr>
     <tr><td></td></tr>
 </table>
+
 <table id="forgetPw">
     <tr><td class="forgetPw"><a class="fgPWhpL" href="ForgetPassword.html">Forget Password?</a></td></tr>
 </table>
 
 <br /><br />
+
 <table id="createAccount">
     <tr><td></td></tr>
-    <tr><td class="forgetPw">Dont have an account? &nbsp;&nbsp;&nbsp;&nbsp;<a class="fgPWhpL" href="CreateAccount.html">Sign Up!</a></td></tr>
+    <tr><td class="forgetPw">Don't have an account? &nbsp;&nbsp;&nbsp;&nbsp;<a class="fgPWhpL" href="CreateAccount.html">Sign Up!</a></td></tr>
     <tr><td></td></tr>
 </table>
 
@@ -134,26 +138,23 @@
         var loginButton = document.getElementById("LoginButton");
         var createAccountTable = document.getElementById("createAccount");
 
-
-        if (selectUser.value === "") { // Check if the selected value is the default (empty)
+        if (selectUser.value === "") {
             usernameInput.disabled = true;
             passwordInput.disabled = true;
-            loginButton.disabled = true; // Disable the login button
-            createAccountTable.style.display = "none"; // Hide the createAccount table
+            loginButton.disabled = true;
+            createAccountTable.style.display = "none";
         } else {
             usernameInput.disabled = false;
             passwordInput.disabled = false;
-            loginButton.disabled = false; // Enable the login button
+            loginButton.disabled = false;
 
             if (selectUser.value === "Customer") {
-                createAccountTable.style.display = "table"; // Show the createAccount table for Customer
+                createAccountTable.style.display = "table";
             } else {
-                createAccountTable.style.display = "none"; // Hide the createAccount table for others
+                createAccountTable.style.display = "none";
             }
         }
-
     }
-
     // New function to reset the form on page load or refresh
     window.onload = function () {
         var selectUser = document.getElementById("SelectUser");
@@ -175,3 +176,6 @@
 </script>
 </body>
 </html>
+
+
+

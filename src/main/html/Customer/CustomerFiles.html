@@ -141,6 +141,10 @@
     </tr>
 </table>
 
+<label for="searchInput">Search: </label>
+<input type="text" id="searchInput" oninput="SearchFiles()" />
+<br/>
+
 <table id="CustomerFileTable">
     <tr>
         <th>S/N</th>
@@ -183,6 +187,30 @@
 
     function CustomerCreateFile() {
 
+    }
+    function SearchFiles() {
+        const searchInput = document.getElementById('searchInput');
+        const dataTable = document.getElementById('CustomerFileTable');
+        const rows = dataTable.getElementsByTagName('tr');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const columns = row.getElementsByTagName('td');
+                let matchFound = false;
+
+
+                Array.from(columns).forEach(function(column) {
+                    const cellText = column.textContent.toLowerCase();
+                    if (cellText.includes(searchTerm)) {
+                        matchFound = true;
+                    }
+                });
+                row.style.display = matchFound ? 'table-row' : 'none';
+            }
+        });
     }
 </script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

@@ -111,6 +111,26 @@
             cursor: not-allowed;   /* Change cursor to indicate non-clickable */
             /* Add any additional styles for the disabled state */
         }
+
+        .addNewKey {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .addNewKey-content {
+            background-color: #fff;
+            width: 300px;
+            padding: 20px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
     </style>
 </head>
 <body>
@@ -154,6 +174,17 @@
     </tbody>
 </table>
 
+<div id="addNewKey" class="addNewKey">
+    <div class="addNewKey-content">
+        <h2>Select Encryption Key</h2>
+        <button onclick="KeyManagement()">Key Management</button><br/>
+        <button onclick="CurrentUpload()">Current Upload</button><br/>
+        <input type="file" id="fileInput" style="display: none;" multiple>
+        <button onclick="AutoGenerate()">Generate Automatically</button><br/>
+        <button onclick="CancelAddNewKey()">Cancel</button>
+    </div>
+</div>
+
 <script>
     function Home() {
         window.location.href = 'CustomerHomePage.html';
@@ -175,7 +206,31 @@
     }
 
     function CustomerAddKey() {
+        var addNewKey = document.getElementById("addNewKey");
+        addNewKey.style.display = "block";
+    }
+    function CancelAddNewKey() {
+        var addNewKey = document.getElementById("addNewKey");
+        addNewKey.style.display = "none";
+    }
 
+    function KeyManagement() {
+        // route to database/ key storage
+    }
+    function CurrentUpload() {
+        var fileInput = document.getElementById("fileInput");
+        fileInput.click()
+
+        fileInput.addEventListener("change", function(event) {
+            var selectedFiles = event.target.files;
+            // process selected files
+
+            console.log(selectedFiles);
+        });
+    }
+
+    function AutoGenerate() {
+        // code to generate key automatically
     }
 
 </script>

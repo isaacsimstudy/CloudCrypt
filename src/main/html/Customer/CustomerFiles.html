@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Settings</title>
+    <title>My Files</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -55,6 +61,58 @@
             padding-right: 20px; /* Add spacing after CloudCrypt */
             margin-right: 20px; /* Add spacing after CloudCrypt */
         }
+
+        #CustomerFileTable {
+            border-collapse: collapse;
+            width: 90%;
+            margin: 20px 20px;
+        }
+
+        #CustomerFileTable th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #CustomerFileTable th {
+            background-color: #f2f2f2;
+        }
+
+        #CustomerCreateFileNavBar {
+            border-collapse: collapse;
+            width: 90%;
+            margin: 20px 20px;
+        }
+
+        #CustomerCreateFileNavBar td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+
+        .defaultButton {
+            background-color: #777;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .defaultButton:hover {
+            background-color: #555;
+        }
+        .alternateButton {
+            background-color: #555;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        #DownloadButton:disabled {
+            background-color: #999; /* Change to the desired color for disabled state */
+            cursor: not-allowed;   /* Change cursor to indicate non-clickable */
+            /* Add any additional styles for the disabled state */
+        }
     </style>
 </head>
 <body>
@@ -70,21 +128,36 @@
     <button class="logout-btn">Logout</button>
 </nav>
 
-<h1>My Files</h1>
-
-<label for="searchInput">Search: </label>
-<input type="text" id="searchInput"/><span> </span><button onclick="SearchFiles()">Search</button>
-<br/><br/>
-
-<button onclick="CreateFile()">Create</button>
-<br/>
-<table border="1" style="background-color:white;">
+<table id="CustomerCreateFileNavBar">
     <tr>
-        <th width="300px">Name</th>
-        <th width="100px">Type</th>
-        <th width="100px">Size</th>
-        <th width="100px">Action</th>
+        <td>
+            <header>
+                <h1>My Files</h1>
+            </header>
+        </td>
+        <td>
+            <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="CustomerCreateFile()">Create</button> <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
+        </td>
     </tr>
+</table>
+
+<table id="CustomerFileTable">
+    <tr>
+        <th>S/N</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Size</th>
+        <th>Action</th>
+    </tr>
+    <tbody id="CustomerFileTableBody">
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><button id="SelectButton" class="defaultButton">Select</button> </td>
+    </tr>
+    </tbody>
 </table>
 
 
@@ -107,6 +180,46 @@
     function Integration() {
         window.location.href = 'CustomerIntegration.html';
     }
+
+    function CustomerCreateFile() {
+
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function DownloadFile() {
+        var selectButton = $('#SelectButton');
+
+        var confirmation = confirm("Are you sure you want to download this file?");
+        if (confirmation) {
+            //Verify user has the necessary encryption key to decrypt the file for download or mutli authenticate if setting is on
+            alert("Download started successfully");
+            // Reset the state of the "Select" button
+            selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
+            $('#DownloadButton').prop('disabled', true);
+            // Perform any additional actions upon suspension if needed
+            // Return to the page
+        }
+    }
+
+    $(function () {
+        // Disable the "Suspend" button by default
+        $('#DownloadButton').prop('disabled', true);
+
+        // Attach a click event handler to the "Select" button
+        $('#SelectButton').on('click', function () {
+            // Toggle the classes when the button is clicked
+            $(this).toggleClass('defaultButton alternateButton');
+
+            // Change the text content based on the current class
+            var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
+            $(this).text(newText);
+
+            // Enable or disable the "Suspend" button based on the class of the "Select" button
+            var isDefaultButton = $(this).hasClass('defaultButton');
+            $('#DownloadButton').prop('disabled', isDefaultButton);
+        });
+    });
 </script>
 </body>
 </html>

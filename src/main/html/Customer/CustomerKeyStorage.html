@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Settings</title>
+    <title>Key Storage</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -41,8 +47,6 @@
             margin-left: auto; /* Pushes the logout button to the right */
         }
 
-
-
         .logout-btn:hover {
             background-color: #777;
         }
@@ -54,6 +58,58 @@
             border-right: 1px solid white; /* Add separator line */
             padding-right: 20px; /* Add spacing after CloudCrypt */
             margin-right: 20px; /* Add spacing after CloudCrypt */
+        }
+
+        #CustomerKeyTable {
+            border-collapse: collapse;
+            width: 90%;
+            margin: 20px 20px;
+        }
+
+        #CustomerKeyTable th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #CustomerKeyTable th {
+            background-color: #f2f2f2;
+        }
+
+        #CustomerKeyStorageNavBar {
+            border-collapse: collapse;
+            width: 90%;
+            margin: 20px 20px;
+        }
+
+        #CustomerKeyStorageNavBar td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+
+        .defaultButton {
+            background-color: #777;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .defaultButton:hover {
+            background-color: #555;
+        }
+        .alternateButton {
+            background-color: #555;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        #DownloadButton:disabled {
+            background-color: #999; /* Change to the desired color for disabled state */
+            cursor: not-allowed;   /* Change cursor to indicate non-clickable */
+            /* Add any additional styles for the disabled state */
         }
     </style>
 </head>
@@ -70,15 +126,32 @@
     <button class="logout-btn">Logout</button>
 </nav>
 
-<h1>Key Storage</h1>
-
-<button onclick="AddNewKey()">Add New Key</button>
-<br/>
-<table border="1" style="background-color:white;">
+<table id="CustomerKeyStorageNavBar">
     <tr>
-        <th width="300px">Name</th>
-        <th width="100px">Action</th>
+        <td>
+            <header>
+                <h1>Key Storage</h1>
+            </header>
+        </td>
+        <td>
+            <button id ="AddButton" class="defaultButton" class="nav-links" onclick="CustomerAddKey()">Add New Key</button> <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
+        </td>
     </tr>
+</table>
+
+<table id="CustomerKeyTable">
+    <tr>
+        <th>S/N</th>
+        <th>Name</th>
+        <th>Action</th>
+    </tr>
+    <tbody id="CustomerFileTableBody">
+    <tr>
+        <td></td>
+        <td></td>
+        <td><button id="SelectButton" class="defaultButton">Select</button> </td>
+    </tr>
+    </tbody>
 </table>
 
 <script>
@@ -100,6 +173,48 @@
     function Integration() {
         window.location.href = 'CustomerIntegration.html';
     }
+
+    function CustomerAddKey() {
+
+    }
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function DownloadFile() {
+        var selectButton = $('#SelectButton');
+
+        var confirmation = confirm("Are you sure you want to download this Key?");
+        if (confirmation) {
+            //Verify codes for
+            //Multi Authentication
+            alert("Download started successfully");
+            // Reset the state of the "Select" button
+            selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
+            $('#DownloadButton').prop('disabled', true);
+            // Perform any additional actions upon suspension if needed
+            // Return to the page
+        }
+    }
+
+    $(function () {
+        // Disable the "Suspend" button by default
+        $('#DownloadButton').prop('disabled', true);
+
+        // Attach a click event handler to the "Select" button
+        $('#SelectButton').on('click', function () {
+            // Toggle the classes when the button is clicked
+            $(this).toggleClass('defaultButton alternateButton');
+
+            // Change the text content based on the current class
+            var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
+            $(this).text(newText);
+
+            // Enable or disable the "Suspend" button based on the class of the "Select" button
+            var isDefaultButton = $(this).hasClass('defaultButton');
+            $('#DownloadButton').prop('disabled', isDefaultButton);
+        });
+    });
 </script>
 </body>
 </html>

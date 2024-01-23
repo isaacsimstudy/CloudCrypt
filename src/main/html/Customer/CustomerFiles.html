@@ -148,6 +148,18 @@
             padding: 20px;
             z-index: 9999;
         }
+        .progressBarContainer {
+            width: 200px;
+            height: 20px;
+            border: 1px solid #000000;
+            margin-bottom: 10px;
+        }
+
+        #progressBar {
+            width: 0;
+            height: 100%;
+            background-color: #4CAF50;
+        }
     </style>
 </head>
 <body>
@@ -243,6 +255,12 @@
         <button class="alternateButton" onclick="CancelShareStatus()">Back</button>
     </div>
 </div>
+
+<div class="progressBarContainer">
+    <div id="progressBar"></div>
+</div>
+
+<button onclick="StartUpload()">Upload</button>
 
 
 <script>
@@ -350,6 +368,28 @@
         rows.forEach((row) => {
            tbody.appendChild(row);
         });
+    }
+    function StartUpload() {
+        const totalProgress = 100;
+        let currentProgress = 0;
+
+        const progressBar = document.getElementById('progressBar')
+
+        // start upload process
+        const uploadInterval = setInterval(() => {
+            currentProgress += 10 // increase progress by 10
+
+            progressBar.style.width = `${(currentProgress/totalProgress) * 100}%`;
+
+            if (currentProgress >= totalProgress) {
+                // upload completed
+                clearInterval(uploadInterval);
+                setTimeout(() => {
+                    alert('Upload Completed');
+                    progressBar.style.width = '0'; // reset progress bar
+                }, 500);
+            }
+        }, 500); // adjust interval as needed
     }
 
 </script>

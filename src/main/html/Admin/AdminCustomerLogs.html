@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home Page</title>
+    <title>View Customer Logs</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -16,8 +22,7 @@
             margin: 20px 20px;
 
         }
-
-        nav {
+        .navbar {
             font-size: 20px;
             background-color: #333;
             color: white;
@@ -27,38 +32,22 @@
             justify-content: space-between; /* Spacing between items */
             padding: 10px; /* Add padding for top and bottom spacing */
         }
-        /* Updated styles for the navigation */
-        .nav-links {
-            text-decoration: none;
-            color: white;
-            margin-right: 55px; /* Increase margin for spacing between links */
-            margin-left: 30px;
-        }
-        .nav-links:first-child {
-            pointer-events: none;
-            font-size: 2em;
-            border-right: 1px solid white;
-            margin-left: 30px; /* Add margin to the left of CloudCrypt */
+        .navbar-brand {
+            pointer-events: none; /* Disables pointer events */
+            font-size: 2em; /* Increase font size */
+            border-right: 1px solid white; /* Add separator line */
+            padding-right: 20px; /* Add spacing after CloudCrypt */
+            margin-right: 20px; /* Add spacing after CloudCrypt */
         }
         .logout-btn {
             background-color: #555;
             border: none;
             color: white;
             cursor: pointer;
-            padding: 10px 20px;
-            margin-left: auto; /* Pushes the logout button to the right */
-        }
-        .logout-btn:hover {
-            background-color: #777;
         }
 
-        /* Specific style for CloudCrypt */
-        .nav-links:first-child {
-            pointer-events: none; /* Disables pointer events */
-            font-size: 2em; /* Increase font size */
-            border-right: 1px solid white; /* Add separator line */
-            padding-right: 20px; /* Add spacing after CloudCrypt */
-            margin-right: 20px; /* Add spacing after CloudCrypt */
+        .logout-btn:hover {
+            background-color: #777;
         }
 
         form {
@@ -90,15 +79,34 @@
     </style>
 </head>
 <body>
-<nav>
-    <div class="nav-links">CloudCrypt</div>
-    <div class="nav-links" onclick="AdminHome()">Home</div>
-    <div class="nav-links" onclick="AdminCustomerAcc()">Customer Account</div>
-    <div class="nav-links" onclick="AdminAdminAcc()">Admin Account</div>
-    <div class="nav-links" onclick="AdminPolicies()">Policies</div>
-    <div class="nav-links" onclick="AdminReports()">Reports</div>
-    <div class="nav-links" onclick="AdminSettings()">Settings</div>
-    <button class="logout-btn">Logout</button>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" href="#">CloudCrypt</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" onclick="AdminHome()">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="AdminCustomerAcc()">Customer Account</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="AdminAdminAcc()">Admin Account</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="AdminPolicies()">Policies</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="AdminReports()">Reports</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="AdminSettings()">Settings</a>
+            </li>
+        </ul>
+        <button class="logout-btn btn-outline-light ml-auto">Logout</button>
+    </div>
 </nav>
 <!-- Rest of your HTML content -->
 

@@ -62,19 +62,19 @@
             margin-right: 20px; /* Add spacing after CloudCrypt */
         }
 
-        #CustomerFileTable {
+        .CustomerFileTable {
             border-collapse: collapse;
             width: 90%;
             margin: 20px 20px;
         }
 
-        #CustomerFileTable th, td {
+        .CustomerFileTable th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
 
-        #CustomerFileTable th {
+        .CustomerFileTable th {
             background-color: #f2f2f2;
         }
 
@@ -110,8 +110,43 @@
         }
         #DownloadButton:disabled {
             background-color: #999; /* Change to the desired color for disabled state */
-            cursor: not-allowed;   /* Change cursor to indicate non-clickable */
+            cursor: not-allowed; /* Change cursor to indicate non-clickable */
             /* Add any additional styles for the disabled state */
+        }
+        .hidden {
+            display: none;
+        }
+        #shareFile {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f1f1f1;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .popup-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            font-size: 16px;
+            color: #333;
+            text-align: left;
+            overflow-x: auto;
+            width: 100%;
+            table-layout: fixed;
+            white-space: nowrap;
+        }
+        #shareStatusInfo {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            z-index: 9999;
         }
     </style>
 </head>
@@ -136,22 +171,24 @@
             </header>
         </td>
         <td>
-            <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="CustomerCreateFile()">Create</button> <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
+            <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="CustomerCreateFile()">Create</button>
+            <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
+            <button id ="ShareStatusButton" class="defaultButton" onclick="ShareStatus()">Share Status</button>
         </td>
     </tr>
 </table>
 
 <label for="searchInput">Search: </label>
-<input type="text" id="searchInput" oninput="SearchFiles()" />
+<input type="text" id="searchInput" oninput="SearchFiles()">
 <br/>
 
-<table id="CustomerFileTable">
+<table id="CustomerFiles" class="CustomerFileTable">
     <tr>
-        <th>S/N</th>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Size</th>
-        <th>Action</th>
+        <th onclick="SortTable(0)">S/N</th>
+        <th onclick="SortTable(1)">Name</th>
+        <th onclick="SortTable(2)">Type</th>
+        <th onclick="SortTable(3)">Size</th>
+        <th onclick="SortTable(4)">Action</th>
     </tr>
     <tbody id="CustomerFileTableBody">
     <tr>
@@ -159,10 +196,53 @@
         <td></td>
         <td></td>
         <td></td>
-        <td><button id="SelectButton" class="defaultButton">Select</button> <button id="ShareButton" class="defaultButton">Share</button> </td>
+        <td><button id="SelectButton" class="defaultButton">Select</button>
+            <button id="ShareButton" class="defaultButton" onclick="ShareFile()">Share</button> </td>
     </tr>
     </tbody>
 </table>
+
+<div id="shareFile" class="hidden">
+    <h2>Share File</h2>
+    <form class="popup-content">
+        <label for="recipient">To:</label>
+        <input type="text" id="recipient" name="recipient" required><br/>
+
+        <label for="expiryDate">File Expiration Date:</label>
+        <input type="date" id="expiryDate" name="expiryDate" required><br/>
+
+        <label for="comments">Comments:</label>
+        <input type="text" id="comments" name="comments" placeholder="If necessary"><br/>
+
+        <button id="submit" type="submit" class="defaultButton">Submit</button>
+        <button class="alternateButton" onclick="CancelShare()">Cancel</button>
+    </form>
+</div>
+
+<div id="shareStatusInfo" class="hidden">
+    <div class="popup-content">
+        <h2>Share Status</h2>
+        <table class="CustomerFileTable">
+            <tr>
+                <th>S/N</th>
+                <th>Name</th>
+                <th>Shared To</th>
+                <th>Expiration Date</th>
+                <th>Action</th>
+            </tr>
+            <tbody id="SharedTo">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><button id="RevokeButton" class="defaultButton" onclick="RevokeShare()">Revoke Share</button></td>
+            </tr>
+            </tbody>
+        </table>
+        <button class="alternateButton" onclick="CancelShareStatus()">Back</button>
+    </div>
+</div>
 
 
 <script>
@@ -212,6 +292,66 @@
             }
         });
     }
+    function ShareFile() {
+        const shareFile = document.getElementById("shareFile");
+        shareFile.classList.remove('hidden');
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const recipient = document.getElementById('recipient').value;
+            const expiryDate = document.getElementById('expiryDate').value;
+            const comments = document.getElementById('comments').value;
+
+            // Perform further actions with the form data (e.g., send it to a server)
+
+            // Close the form
+            CancelShare();
+        });
+    }
+    function CancelShare() {
+        const shareFile = document.getElementById("shareFile");
+        shareFile.classList.add('hidden');
+        document.querySelector('form').reset();
+    }
+    function ShareStatus() {
+        const shareStatusInfo = document.getElementById("shareStatusInfo");
+        shareStatusInfo.classList.remove('hidden');
+    }
+    function CancelShareStatus() {
+        const shareStatusInfo = document.getElementById("shareStatusInfo");
+        shareStatusInfo.classList.add('hidden');
+    }
+    function RevokeShare() {
+        // code to revoke the share file
+    }
+    function SortTable(columnIndex) {
+        const table = document.getElementById("CustomerFiles");
+        const tbody = table.tBodies[0]; // exclude table header
+        const rows = Array.from(tbody.rows);
+
+        rows.sort((a, b) => {
+            const cellA = a.cells[columnIndex].textContent.toLowerCase();
+            const cellB = b.cells[columnIndex].textContent.toLowerCase();
+
+            if (cellA < cellB) {
+                return -1;
+            } else if (cellA > cellB) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        // clear the table body
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
+        // repopulate the table with sorted rows
+        rows.forEach((row) => {
+           tbody.appendChild(row);
+        });
+    }
+
 </script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
@@ -220,7 +360,7 @@
 
         var confirmation = confirm("Are you sure you want to download this file?");
         if (confirmation) {
-            //Verify user has the necessary encryption key to decrypt the file for download or mutli authenticate if setting is on
+            //Verify user has the necessary encryption key to decrypt the file for download or multi authenticate if setting is on
             alert("Download started successfully");
             // Reset the state of the "Select" button
             selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');

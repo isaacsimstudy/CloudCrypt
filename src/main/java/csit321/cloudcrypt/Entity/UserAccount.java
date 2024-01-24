@@ -1,4 +1,4 @@
-package Entity;
+package csit321.cloudcrypt.Entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,4 +1,4 @@
-package Entity;
+package csit321.cloudcrypt.Entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,13 +12,16 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "customer_details")
-public class CustomerDetail {
+@Table(name = "key")
+public class Key {
     @Id
     @Column(name = "uuid", nullable = false)
     private UUID id;
 
-    @Column(name = "sub_tier", nullable = false, length = 75)
-    private String subTier;
+    @Column(name = "keyname", nullable = false)
+    private String keyname;
+
+    @Column(name = "password_hash", nullable = false, length = 72)
+    private String passwordHash;
 
 }

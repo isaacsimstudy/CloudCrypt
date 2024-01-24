@@ -284,7 +284,15 @@
     }
 
     function CustomerCreateFile() {
+        const fileInput = document.getElementById("fileInput");
+        fileInput.click()
 
+        fileInput.addEventListener("change", function(event) {
+            let selectedFiles = event.target.files;
+            // process selected files
+
+            console.log(selectedFiles);
+        });
     }
     function SearchFiles() {
         const searchInput = document.getElementById('searchInput');

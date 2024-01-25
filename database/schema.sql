@@ -63,7 +63,8 @@ CREATE TABLE notification_settings
     notification_type varchar(255) NOT NULL CHECK ( notification_type IN ('all', 'login', 'logout', 'upload', 'download', 'delete', 'share', 'unshare')),
     notification_method varchar(255) NOT NULL CHECK ( notification_method IN ('email')),
     status         varchar(255) NOT NULL CHECK ( status IN ('active', 'inactive')),
-    notification_frequency varchar(255) NOT NULL CHECK ( notification_frequency IN ('immediate', 'daily', 'weekly', 'monthly'))
+    notification_frequency varchar(255) NOT NULL CHECK ( notification_frequency IN ('immediate', 'daily', 'weekly', 'monthly')),
+    PRIMARY KEY (user_account, notification_type)
 );
 
 CREATE TABLE key

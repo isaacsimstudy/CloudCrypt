@@ -21,6 +21,7 @@ CREATE INDEX ON user_profile (title);
 
 CREATE TABLE user_account
 (
+    -- Viewable to admin
     PRIMARY KEY (uuid),
     uuid            uuid        NOT NULL DEFAULT uuid_generate_v4(),
     is_active       boolean     NOT NULL DEFAULT true,
@@ -35,7 +36,18 @@ CREATE TABLE user_account
     address         VARCHAR(255) NOT NULL,               -- Users can enter their address in any format.
     date_of_birth   DATE         NOT NULL,               -- SELECT EXTRACT(YEAR FROM AGE(NOW(), date_of_birth)) FROM user_account;
     time_created    Timestamptz  NOT NULL DEFAULT NOW(), -- Long-term user benefits.
-    time_last_login Timestamptz  NOT NULL DEFAULT NOW()  -- User inactivity.
+    time_last_login Timestamptz  NOT NULL DEFAULT NOW(),  -- User inactivity.
+    phone_number    VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE login_settings
+(
+    user_account    uuid        NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    login_id        uuid        NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+    login_attempts  int         NOT NULL DEFAULT 0,
+    login_status    varchar(255) NOT NULL CHECK ( login_status IN ('active', 'inactive')),
+    login_time      Timestamptz NOT NULL DEFAULT NOW(),
+    two_factor_auth varchar(255) NOT NULL CHECK ( two_factor_auth IN ('active', 'inactive'))
 );
 
 CREATE TABLE customer_details
@@ -45,12 +57,42 @@ CREATE TABLE customer_details
     sub_tier         varchar(75) NOT NULL CHECK ( sub_tier IN ('free', 'premium'))
 );
 
+CREATE TABLE notification_settings
+(
+    user_account    uuid        NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    notification_type varchar(255) NOT NULL CHECK ( notification_type IN ('all', 'login', 'logout', 'upload', 'download', 'delete', 'share', 'unshare')),
+    notification_method varchar(255) NOT NULL CHECK ( notification_method IN ('email')),
+    status         varchar(255) NOT NULL CHECK ( status IN ('active', 'inactive')),
+    notification_frequency varchar(255) NOT NULL CHECK ( notification_frequency IN ('immediate', 'daily', 'weekly', 'monthly'))
+);
+
 CREATE TABLE key
 (
     uuid            uuid        NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     FOREIGN KEY (uuid) REFERENCES user_account(uuid) ON UPDATE CASCADE,
     name         varchar(255) NOT NULL UNIQUE,
     password_hash   VARCHAR(72) NOT NULL CHECK (length(password_hash) <= 72)
+);
+
+CREATE TABLE Cloud
+(
+    file_id        uuid       NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+    user_account   uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    file_name      varchar(255) NOT NULL UNIQUE,
+    encrypted_file bytea      NOT NULL,
+    key_id         uuid       NOT NULL REFERENCES key(uuid) ON UPDATE CASCADE,
+    status         varchar(255) NOT NULL CHECK ( status IN ('active', 'deleted')),
+    checksum       varchar(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE activity_log
+(
+    activity_id     uuid        NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+    user_account    uuid        NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    activity_type   varchar(255) NOT NULL CHECK ( activity_type IN ('login', 'logout', 'upload', 'download', 'delete', 'share', 'unshare')),
+    activity_time   Timestamptz NOT NULL DEFAULT NOW(),
+    status         varchar(255) NOT NULL CHECK ( status IN ('success', 'failure')),
+    file_id         uuid        REFERENCES Cloud(file_id) ON UPDATE CASCADE
 );
 
 CREATE TABLE file_info
@@ -68,16 +110,36 @@ CREATE TABLE file_info
     tags            varchar(255) NOT NULL
 );
 
-CREATE TABLE Cloud
+CREATE TABLE email_queue
 (
-    file_id        uuid       NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
-    user_account   uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
-    file_name      varchar(255) NOT NULL UNIQUE,
-    encrypted_file bytea      NOT NULL,
-    key_id         uuid       NOT NULL REFERENCES key(uuid) ON UPDATE CASCADE,
-    status         varchar(255) NOT NULL CHECK ( status IN ('active', 'deleted')),
-    checksum       varchar(255) NOT NULL UNIQUE
+    email_id     uuid       NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+    user_account uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    email_subject varchar(255) NOT NULL,
+    status      varchar(255) NOT NULL CHECK ( status IN ('pending', 'sent')),
+    time_sent   Timestamptz NOT NULL DEFAULT NOW(),
+    email_body  varchar(255) NOT NULL
 );
+
+CREATE TABLE share
+(
+    share_id     uuid       NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+    user_account uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    file_id      uuid       NOT NULL REFERENCES Cloud(file_id) ON UPDATE CASCADE,
+    share_type   varchar(255) NOT NULL CHECK ( share_type IN ('read', 'write')),
+    share_with   uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    status       varchar(255) NOT NULL CHECK ( status IN ('active', 'inactive'))
+);
+
+CREATE TABLE security_policies (
+    policy_id           uuid          NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+    policy_name         VARCHAR(255)    NOT NULL,
+    description         TEXT,
+    enforcement_level   VARCHAR(50),
+    policy_type         VARCHAR(50),
+    parameters          JSONB,
+    status              VARCHAR(50)
+);
+
 
 
 

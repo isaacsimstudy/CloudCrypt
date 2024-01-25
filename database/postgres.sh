@@ -45,7 +45,7 @@ sleep 60
 
 # Enter the container and create the schema.
 "$oci" exec pg psql -U postgres -f /home/postgres/schema.sql
-"$oci" exec pg psql -U postgres -f /home/postgres/database.sql
+#"$oci" exec pg psql -U postgres -f /home/postgres/database.sql
 
 # Unset variables from the environment.
 unset oci

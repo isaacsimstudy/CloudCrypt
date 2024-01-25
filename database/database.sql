@@ -19,5 +19,3 @@ VALUES
     ('password-owner-2', 'owner-2', 'owner2@cloudcrypt.com', 'owner', '2', 'address', '1990-01-01', (SELECT uuid FROM user_profile WHERE privilege = 'owner'));
 
 -- Insert customer_details for each customer
-INSERT INTO customer_details
-    ()

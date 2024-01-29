@@ -1,9 +1,6 @@
 package csit321.cloudcrypt.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +19,10 @@ public class UserAccount {
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = false;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_profile", nullable = false)
+    private UserProfile userProfile;
 
     @Column(name = "password_hash", nullable = false, length = 72)
     private String passwordHash;
@@ -50,5 +51,7 @@ public class UserAccount {
     @Column(name = "time_last_login", nullable = false)
     private OffsetDateTime timeLastLogin;
 
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
 
 }

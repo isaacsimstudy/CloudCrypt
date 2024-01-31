@@ -18,6 +18,9 @@ public class UserProfileServiceImpl implements UserProfileService{
         this.userProfileRepository = userProfileRepository;
     }
 
+    // Create a new user profile
+    // It works by creating a new user profile object and assigning it the respective values
+    // This is 50% complete as validation must still be done
     @Override
     public UserProfile createProfile(String privilege, String title) {
         UserProfile userProfile = new UserProfile();

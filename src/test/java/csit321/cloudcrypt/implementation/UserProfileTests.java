@@ -15,8 +15,13 @@ public class UserProfileTests {
 
         @Test
         public void testCreateProfile() {
+                // Create a new user profile
+                // Test that user profile is created according to database requirements ie. privilege and/or title
+                // must be "admin", "customer", "owner"
+                // Refer to schema.sql for database requirements
             UserProfile userProfile = userProfileServiceImpl.createProfile("admin", "admin");
-
+            assert(userProfile.getPrivilege().equals("admin"));
+            assert(userProfile.getTitle().equals("admin"));
         }
 
 //        @Test

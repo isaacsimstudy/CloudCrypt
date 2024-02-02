@@ -6,11 +6,11 @@ import csit321.cloudcrypt.Entity.UserProfile;
 @Service
 public interface UserProfileService {
 
-    UserProfile createProfile(String privilege, String title);
+    UserProfile createUserProfile(String privilege, String title);
 
-//    UserProfile getProfile(String privilege, String title);
-//
-//    UserProfile updateProfile(String privilege, String title);
-//
-//    UserProfile deleteProfile(String privilege, String title);
+    String readUserProfile(String param);
+
+    String updateUserProfile(String targetTitle, String privilege, String title);
+
+    String suspendUserProfile(String title);
 }

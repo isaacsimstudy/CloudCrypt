@@ -20,6 +20,8 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, UUID> 
 
     List<UserProfile> findUserProfilesByPrivilege(String privilege);
 
+    UserProfile findUserProfileByPrivilege(String s);
+
     List<UserProfile> findUserProfilesByIsActiveTrue();
 
     Optional<UserProfile> findUserProfileByTitle(String s);

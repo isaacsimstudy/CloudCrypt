@@ -88,7 +88,7 @@ public class UserAccountServiceImpl implements UserAccountService{
     }
 
     @Override
-    public String updateAccount(String username, String password, String email, String firstName, String lastName, String address, String phoneNumber) {
+    public String updateAccount(String username, String password, String title, String email, String firstName, String lastName, String address, String phoneNumber, String dateOfBirth) {
         UserAccount userAccount = userAccountRepository.findUserAccountByUsername(username).orElse(null);
         if (userAccount == null)
             return "User account not found.";
@@ -116,5 +116,18 @@ public class UserAccountServiceImpl implements UserAccountService{
             return "Account already suspended.";
         userAccount.setIsActive(false);
         return "Account suspended: " + userAccountRepository.save(userAccount).toString();
+    }
+
+    @Override
+    public String logInAccount(String username, String password) {
+        UserAccount userAccount = userAccountRepository.findUserAccountByUsername(username).orElse(null);
+        if (userAccount == null)
+            return "User account not found.";
+        if (!userAccount.getIsActive())
+            return "Account suspended.";
+        if (!userAccount.getPasswordHash().equals(password))
+            return "Incorrect password.";
+        userAccount.setTimeLastLogin(OffsetDateTime.now());
+        return "Login successful: " + userAccountRepository.save(userAccount).toString();
     }
 }

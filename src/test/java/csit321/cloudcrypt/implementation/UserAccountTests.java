@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-
 @SpringBootTest
 public class UserAccountTests {
 
@@ -23,14 +21,14 @@ public class UserAccountTests {
         UserAccount userAccount2 = userAccountServiceImplementation.createAccount("AdminTest2", "test", "admin", "test2", "test2", "test2", "test2", "12456789", "2021-01-01");
         if (userAccount == null) {
             System.out.println("User account not created");
-            new IllegalArgumentException("User account not created");
+            throw new IllegalArgumentException("User account not created");
         }
         else {
             System.out.println(userAccount);
         }
         if (userAccount2 == null) {
             System.out.println("User account not created");
-            new IllegalArgumentException("User account not created");
+            throw new IllegalArgumentException("User account not created");
         }
         else {
             System.out.println(userAccount2);
@@ -72,8 +70,8 @@ public class UserAccountTests {
     @Test
     public void testUpdateAccount() {
         // Test the updateAccount method using test for username, password, email, firstname, lastname, address, and phone number
-        String userAccount = userAccountServiceImplementation.updateAccount("customerTestupdate", "test", "test", "test", "test", "test", "12456789");
-        String userAccount2 = userAccountServiceImplementation.updateAccount("AdminTest2update", "test", "test", "test", "test", "test", "12456789");
+        String userAccount = userAccountServiceImplementation.updateAccount("customerTestupdate", "test", "customer", "updatetest", "updatetest", "test", "testAddress", "123456789", "2021-01-01");
+        String userAccount2 = userAccountServiceImplementation.updateAccount("AdminTest2update", "test2", "admin", "test23", "test34", "test34", "testAddress2","124567839", "1990-01-03");
         if (userAccount == null) {
             System.out.println("User account not updated");
             new IllegalArgumentException("User account not updated");

@@ -10,25 +10,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "/Account")
-public class CreateAccountController {
+public class UpdateAccountController {
 
     private final UserProfileService userProfileService;
     private final UserAccountService userAccountService;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public CreateAccountController(UserAccountService userAccountService, UserProfileService userProfileService) {
+    public UpdateAccountController(UserAccountService userAccountService, UserProfileService userProfileService) {
         this.userAccountService = userAccountService;
         this.userProfileService = userProfileService;
         this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     }
 
-    @PostMapping(path = "/Create")
-    public ResponseEntity<String> createAccount(@RequestBody String json) {
+    @PostMapping(path = "/Update")
+    public ResponseEntity<String> updateAccount(@RequestBody String json) {
         try {
+            // We can confirm behavior of data passing later on.
             JsonNode jsonNode = objectMapper.readTree(json);
             String username = jsonNode.get("username").asText();
             String password = jsonNode.get("password").asText();
@@ -39,24 +41,16 @@ public class CreateAccountController {
             String dateOfBirth = jsonNode.get("dateOfBirth").asText();
             String address = jsonNode.get("address").asText();
             String phoneNumber = jsonNode.get("phoneNumber").asText();
-            if (userAccountService.readAccount(username) != null) {
-                return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
-            }
-            if (userAccountService.readAccount(email) != null) {
-                return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
+            if (userAccountService.readAccount(username) == null) {
+                return new ResponseEntity<>("Username does not exist", HttpStatus.BAD_REQUEST);
             }
             if (userProfileService.readUserProfile(title) == null) {
                 return new ResponseEntity<>("Title does not exist", HttpStatus.BAD_REQUEST);
             }
-            if (username == null || password == null || title == null || email == null || firstName == null || lastName == null || address == null || phoneNumber == null) {
-                return new ResponseEntity<>("Missing fields", HttpStatus.BAD_REQUEST);
-            }
-            userAccountService.createAccount(username, password, title, email, firstName, lastName, address, phoneNumber, dateOfBirth);
+            userAccountService.updateAccount(username, password, title, email, firstName, lastName, address, phoneNumber, dateOfBirth);
             return new ResponseEntity<>("Success",HttpStatus.OK);
-        }
-        catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error", HttpStatus.BAD_REQUEST);
         }
     }
-
 }

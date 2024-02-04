@@ -20,7 +20,7 @@ public class UserAccountTests {
     public void testCreateAccount() {
         // Test the createAccount method using test for firstname, lastname, username, password, email, address, and phone number
         UserAccount userAccount = userAccountServiceImplementation.createAccount("customerTest", "test", "customer", "test", "test", "test", "test", "12456789", "2021-01-01");
-        UserAccount userAccount2 = userAccountServiceImplementation.createAccount("AdminTest2", "test", "admin", "test", "test", "test", "test", "12456789", "2021-01-01");
+        UserAccount userAccount2 = userAccountServiceImplementation.createAccount("AdminTest2", "test", "admin", "test2", "test2", "test2", "test2", "12456789", "2021-01-01");
         if (userAccount == null) {
             System.out.println("User account not created");
             new IllegalArgumentException("User account not created");

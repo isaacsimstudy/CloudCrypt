@@ -8,6 +8,7 @@ import csit321.cloudcrypt.Entity.UserProfile;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Repository.UserProfileRepository;
 import csit321.cloudcrypt.Service.User.UserAccountService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import csit321.cloudcrypt.Entity.UserAccount;
@@ -54,6 +55,7 @@ public class UserAccountServiceImpl implements UserAccountService{
         return userAccountRepository.save(userAccount);
     }
 
+    @Transactional
     @Override
     public String readAccount(String param) {
         List<UserAccount> userAccountList = switch(param) {

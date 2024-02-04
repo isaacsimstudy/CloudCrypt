@@ -37,7 +37,7 @@ CREATE TABLE user_account
     date_of_birth   DATE         NOT NULL,               -- SELECT EXTRACT(YEAR FROM AGE(NOW(), date_of_birth)) FROM user_account;
     time_created    Timestamptz  NOT NULL DEFAULT NOW(), -- Long-term user benefits.
     time_last_login Timestamptz  NOT NULL DEFAULT NOW(),  -- User inactivity.
-    phone_number    VARCHAR(255) NOT NULL UNIQUE
+    phone_number    VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE login_settings

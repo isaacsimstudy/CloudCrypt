@@ -29,4 +29,8 @@ public class ActivityLog {
     @Column(name = "status", nullable = false)
     private String status;
 
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "file_id", nullable = true)
+    private Cloud cloud;
+
 }

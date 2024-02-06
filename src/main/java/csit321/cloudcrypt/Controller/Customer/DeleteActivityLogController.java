@@ -1,5 +1,7 @@
 package csit321.cloudcrypt.Controller.Customer;
 
+import csit321.cloudcrypt.Entity.ActivityLog;
+import csit321.cloudcrypt.Repository.ActivityLogRepository;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Service.ActivityLogService;
 import csit321.cloudcrypt.Service.User.UserAccountService;
@@ -19,30 +21,26 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "/Customer")
-public class CreateActivityLogController {
+public class DeleteActivityLogController {
     private final ActivityLogService activityLogService;
-    private final ObjectMapper objectMapper;
-
-    private final UserAccountRepository userAccountRepository;
+    private final ActivityLogRepository activityLogRepository;
 
     @Autowired
-    public CreateActivityLogController(ActivityLogService activityLogService, UserAccountService userAccountService, UserAccountRepository userAccountRepository) {
+    public DeleteActivityLogController(ActivityLogService activityLogService,
+                                       ActivityLogRepository activityLogRepository) {
         this.activityLogService = activityLogService;
-        this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        this.userAccountRepository = userAccountRepository;
+        this.activityLogRepository = activityLogRepository;
     }
 
-    @PostMapping(path = "/CreateActivityLog")
-    public ResponseEntity<String> createActivityLog(@RequestBody String json) {
+    @PostMapping(path = "/DeleteActivityLog")
+    public ResponseEntity<String> deleteActivityLog(@RequestBody String uuid) {
         try {
-            JsonNode jsonNode = objectMapper.readTree(json);
-            String username = jsonNode.get("username").asText();
-            userAccountRepository.findUserAccountByUsername(username).orElseThrow();
-            String activityLog = activityLogService.createLog(username,
-                                                        jsonNode.get("action").asText(),
-                                                        jsonNode.get("status").asText(),
-                                                        jsonNode.get("fileName").asText());
-            return new ResponseEntity<>(activityLog, HttpStatus.OK);
+            ActivityLog activityLog = activityLogRepository.findActivityLogById(java.util.UUID.fromString(uuid));
+            if (activityLog == null) {
+                return new ResponseEntity<>("Activity log not found.", HttpStatus.BAD_REQUEST);
+            }
+            String result = activityLogService.deleteLog(activityLog);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
         catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

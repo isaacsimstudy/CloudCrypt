@@ -11,4 +11,7 @@ public interface ActivityLogService {
 
         // Read an activity log
         String readLog(String param, String userName, String fileName);
+
+        // Delete an activity log
+        String deleteLog(ActivityLog activityLog);
 }

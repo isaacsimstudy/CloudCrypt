@@ -52,16 +52,16 @@ public class ActivityLogServiceImpl implements ActivityLogService {
         // find all logs for user defined by param
         List<ActivityLog> activityLogList = switch(param) {
             case "login", "logout", "upload", "download", "delete", "share", "unshare" ->
-                activityLogRepository.findActivityLogByUserAccountIDAndActivityType(UUID.fromString(id), param);
+                activityLogRepository.findActivityLogByUserAccountUUIDAndActivityType(UUID.fromString(id), param);
 
             case "success", "failure" ->
-                activityLogRepository.findActivityLogByUserAccountIDAndStatus(UUID.fromString(id), param);
+                activityLogRepository.findActivityLogByUserAccountUUIDAndStatus(UUID.fromString(id), param);
 
             case "file" ->
-                activityLogRepository.findActivityLogByUserAccountIDAndCloudFileID(UUID.fromString(id),
+                activityLogRepository.findActivityLogByUserAccountUUIDAndCloudFileUUID(UUID.fromString(id),
                         cloudRepository.findCloudByFileName(fileName).orElseThrow().getId());
             default ->
-                activityLogRepository.findActivityLogByUserAccountID(UUID.fromString(id));
+                activityLogRepository.findActivityLogByUserAccountUUID(UUID.fromString(id));
 
         };
         ArrayNode an = objectMapper.createArrayNode();
@@ -76,5 +76,12 @@ public class ActivityLogServiceImpl implements ActivityLogService {
             an.add(on);
         }
         return an.toString();
+    }
+
+    // Delete an activity log
+    @Override
+    public String deleteLog(ActivityLog activityLog) {
+        activityLogRepository.delete(activityLog);
+        return "Activity log deleted.";
     }
 }

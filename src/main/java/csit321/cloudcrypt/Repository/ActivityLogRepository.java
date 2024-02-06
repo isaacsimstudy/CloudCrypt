@@ -7,11 +7,13 @@ import java.util.UUID;
 import java.util.List;
 
 public interface ActivityLogRepository extends JpaRepository<ActivityLog, UUID> {
-    List<ActivityLog> findActivityLogByUserAccountID(UUID uuid);
+    List<ActivityLog> findActivityLogByUserAccountUUID(UUID uuid);
 
-    List<ActivityLog> findActivityLogByUserAccountIDAndActivityType(UUID uuid, String param);
+    List<ActivityLog> findActivityLogByUserAccountUUIDAndActivityType(UUID uuid, String param);
 
-    List<ActivityLog> findActivityLogByUserAccountIDAndStatus(UUID uuid, String param);
+    List<ActivityLog> findActivityLogByUserAccountUUIDAndStatus(UUID uuid, String param);
 
-    List<ActivityLog> findActivityLogByUserAccountIDAndCloudFileID(UUID uuid, UUID cloudFileID);
+    List<ActivityLog> findActivityLogByUserAccountUUIDAndCloudFileUUID(UUID uuid, UUID cloudFileID);
+
+    ActivityLog findActivityLogByUUId(UUID uuid);
 }

@@ -55,5 +55,5 @@ public class UserController {
         logger.info("User account saved successfully!");
         return "null";
     }
-
+    
 }

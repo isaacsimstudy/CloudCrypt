@@ -10,6 +10,7 @@ import csit321.cloudcrypt.Repository.ActivityLogRepository;
 import csit321.cloudcrypt.Repository.CloudRepository;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Service.ActivityLogService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,11 +43,17 @@ public class ActivityLogServiceImpl implements ActivityLogService {
         activityLog.setStatus(status);
         activityLog.setActivityTime(OffsetDateTime.now());
         activityLog.setId(UUID.randomUUID());
+        if (fileName.equals("null")) {
+            activityLog.setCloud(null);
+            activityLogRepository.save(activityLog);
+            return "Activity log created.";
+        }
         activityLog.setCloud(cloudRepository.findCloudByFileName(fileName).orElseThrow());
         activityLogRepository.save(activityLog);
         return "Activity log created.";
     }
 
+    @Transactional
     @Override
     public String readLog(String param, String userName, String fileName) {
         UserAccount account = userAccountRepository.findUserAccountByUsername(userName).orElseThrow();
@@ -73,7 +80,8 @@ public class ActivityLogServiceImpl implements ActivityLogService {
             on.put("action", activityLog.getActivityType());
             on.put("status", activityLog.getStatus());
             on.put("time", activityLog.getActivityTime().toString());
-            on.put("file", activityLog.getCloud().getFileName());
+            if (activityLog.getCloud() != null)
+                on.put("file", activityLog.getCloud().getFileName());
             an.add(on);
         }
         return an.toString();

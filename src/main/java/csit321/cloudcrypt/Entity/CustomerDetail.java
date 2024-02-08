@@ -1,9 +1,6 @@
 package csit321.cloudcrypt.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,8 +12,12 @@ import java.util.UUID;
 @Table(name = "customer_details")
 public class CustomerDetail {
     @Id
-    @Column(name = "uuid", nullable = false)
+    @Column(name = "customer_details_id", nullable = false)
     private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_account", nullable = false)
+    private UserAccount userAccount;
 
     @Column(name = "sub_tier", nullable = false, length = 75)
     private String subTier;

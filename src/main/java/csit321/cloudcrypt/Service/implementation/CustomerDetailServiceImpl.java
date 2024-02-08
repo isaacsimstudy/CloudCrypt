@@ -1,12 +1,12 @@
 package csit321.cloudcrypt.Service.implementation;
 
+import csit321.cloudcrypt.Entity.CustomerDetail;
 import csit321.cloudcrypt.Entity.UserAccount;
 import csit321.cloudcrypt.Repository.CustomerDetailRepository;
 import csit321.cloudcrypt.Service.CustomerDetailService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import csit321.cloudcrypt.Entity.CustomerDetail;
 
 import java.util.UUID;
 
@@ -19,39 +19,44 @@ public class CustomerDetailServiceImpl implements CustomerDetailService {
         this.customerDetailRepository = customerDetailRepository;
     }
 
-    @Transactional
     @Override
-    public CustomerDetail createDetail(String subTier) {
+    public String createDetail(UserAccount userAccount, String subTier) {
         CustomerDetail customerDetail = new CustomerDetail();
         customerDetail.setId(UUID.randomUUID());
+        customerDetail.setUserAccount(userAccount);
         customerDetail.setSubTier(subTier);
-        return customerDetailRepository.save(customerDetail);
+        try{
+            customerDetailRepository.save(customerDetail);
+        } catch (Exception e) {
+            return "Customer detail record not created";
+        }
+        return "Customer detail record created";
     }
 
     @Transactional
     @Override
     public String readDetail(UserAccount userAccount) {
-        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailById(userAccount.getId());
+        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailByUserAccount(userAccount);
+        if (customerDetail == null)
+            return "Customer detail not found";
         return customerDetail.getSubTier();
     }
 
-    @Transactional
     @Override
     public String updateDetail(UserAccount userAccount, String newSubTier) {
-        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailById(userAccount.getId());
-        if (newSubTier != "premium" || newSubTier != "free" )
+        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailByUserAccount(userAccount);
+        if (newSubTier != "premium" && newSubTier != "free" )
             throw new IllegalArgumentException("Invalid sub-tier.");
         customerDetail.setSubTier(newSubTier);
         return customerDetailRepository.save(customerDetail).getSubTier();
     }
 
-    @Transactional
     @Override
     public String deleteDetail(UserAccount userAccount) {
-        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailById(userAccount.getId());
+        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailByUserAccount(userAccount);
         if (customerDetail == null)
             throw new IllegalArgumentException("Sub-tier does not exist.");
         customerDetailRepository.delete(customerDetail);
-        return "Sub-tier deleted.";
+        return "Customer detail record deleted";
     }
 }

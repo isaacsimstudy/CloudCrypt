@@ -1,9 +1,9 @@
 package csit321.cloudcrypt.Controller.Customer;
 
+import csit321.cloudcrypt.Entity.CustomerDetail;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Service.CustomerDetailService;
 import csit321.cloudcrypt.Service.User.UserAccountService;
-import csit321.cloudcrypt.Entity.CustomerDetail;
 import csit321.cloudcrypt.Entity.UserAccount;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +45,12 @@ public class CreateCustomerDetailController {
             if (userAccount == null) {
                 return new ResponseEntity<>("Invalid username: Username does not exist", HttpStatus.UNPROCESSABLE_ENTITY);
             }
-            CustomerDetail customerDetail = customerDetailService.createDetail(subTier);
-            return new ResponseEntity<>("Success", HttpStatus.OK);
+            String customerDetail = customerDetailService.createDetail(userAccount, subTier);
+            if (!customerDetail.matches("Customer detail record created")) {
+                return new ResponseEntity<>(customerDetail, HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+            else
+                return new ResponseEntity<>(customerDetail, HttpStatus.OK);
         }
         catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

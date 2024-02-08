@@ -27,6 +27,7 @@ public class LogInAccountController {
         public ResponseEntity<String> logInAccount(@RequestBody String json) {
             try {
                 JsonNode jsonNode = objectMapper.readTree(json);
+                //  todo: String role = jsonNode.get("SelectUser").asText();
                 String username = jsonNode.get("username").asText();
                 String password = jsonNode.get("password").asText();
                 String result = userAccountService.logInAccount(username, password);

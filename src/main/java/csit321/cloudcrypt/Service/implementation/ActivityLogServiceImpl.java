@@ -36,7 +36,10 @@ public class ActivityLogServiceImpl implements ActivityLogService {
     }
 
     @Override
-    public String createLog(String username, String action, String status, String fileName) {
+    public String createLog(String username,
+                            String action,
+                            String status,
+                            String fileName) {
         ActivityLog activityLog = new ActivityLog();
         activityLog.setUserAccount(userAccountRepository.findUserAccountByUsername(username).orElseThrow());
         activityLog.setActivityType(action);
@@ -75,7 +78,6 @@ public class ActivityLogServiceImpl implements ActivityLogService {
         ArrayNode an = objectMapper.createArrayNode();
         for (ActivityLog activityLog : activityLogList) {
             ObjectNode on = objectMapper.createObjectNode();
-            on.put("id", activityLog.getId().toString());
             on.put("user", activityLog.getUserAccount().getUsername());
             on.put("action", activityLog.getActivityType());
             on.put("status", activityLog.getStatus());

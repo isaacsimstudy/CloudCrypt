@@ -34,7 +34,15 @@ public class UserAccountServiceImpl implements UserAccountService{
     }
 
     @Override
-    public UserAccount createAccount(String username, String password, String title, String email, String firstName, String lastName, String address, String phoneNumber, String dateOfBirth) {
+    public UserAccount createAccount(String username,
+                                     String password,
+                                     String title,
+                                     String email,
+                                     String firstName,
+                                     String lastName,
+                                     String address,
+                                     String phoneNumber,
+                                     String dateOfBirth) {
         UserAccount userAccount = new UserAccount();
         userAccount.setId(UUID.randomUUID());
         userAccount.setIsActive(true);
@@ -88,7 +96,15 @@ public class UserAccountServiceImpl implements UserAccountService{
     }
 
     @Override
-    public String updateAccount(String username, String password, String title, String email, String firstName, String lastName, String address, String phoneNumber, String dateOfBirth) {
+    public String updateAccount(String username,
+                                String password,
+                                String title,
+                                String email,
+                                String firstName,
+                                String lastName,
+                                String address,
+                                String phoneNumber,
+                                String dateOfBirth) {
         UserAccount userAccount = userAccountRepository.findUserAccountByUsername(username).orElse(null);
         if (userAccount == null)
             return "User account not found.";

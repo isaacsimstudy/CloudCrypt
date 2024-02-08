@@ -60,11 +60,11 @@ CREATE TABLE customer_details
 CREATE TABLE notification_settings
 (
     user_account    uuid        NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    notification_id uuid        NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     notification_type varchar(255) NOT NULL CHECK ( notification_type IN ('all', 'login', 'logout', 'upload', 'download', 'delete', 'share', 'unshare')),
     notification_method varchar(255) NOT NULL CHECK ( notification_method IN ('email')),
     status         varchar(255) NOT NULL CHECK ( status IN ('active', 'inactive')),
-    notification_frequency varchar(255) NOT NULL CHECK ( notification_frequency IN ('immediate', 'daily', 'weekly', 'monthly')),
-    PRIMARY KEY (user_account, notification_type)
+    notification_frequency varchar(255) NOT NULL CHECK ( notification_frequency IN ('immediate', 'daily', 'weekly', 'monthly'))
 );
 
 CREATE TABLE key

@@ -4,18 +4,23 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Entity
 @Table(name = "notification_settings")
 public class NotificationSetting {
-    @EmbeddedId
-    private NotificationSettingId id;
+    @Id
+    @Column(name = "notification_id", nullable = false)
+    private UUID id;
 
-    @MapsId("userAccount")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_account", nullable = false)
     private UserAccount userAccount;
+
+    @Column(name = "notification_type", nullable = false)
+    private String notificationType;
 
     @Column(name = "notification_method", nullable = false)
     private String notificationMethod;

@@ -1,19 +1,21 @@
 package csit321.cloudcrypt.Repository;
 
 import csit321.cloudcrypt.Entity.ActivityLog;
+import csit321.cloudcrypt.Entity.Cloud;
+import csit321.cloudcrypt.Entity.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 import java.util.List;
 
 public interface ActivityLogRepository extends JpaRepository<ActivityLog, UUID> {
-    List<ActivityLog> findActivityLogByUserAccountUUID(UUID uuid);
+    List<ActivityLog> findActivityLogByUserAccount(UserAccount userAccount);
 
-    List<ActivityLog> findActivityLogByUserAccountUUIDAndActivityType(UUID uuid, String param);
+    List<ActivityLog> findActivityLogByUserAccountAndActivityType(UserAccount userAccount, String param);
 
-    List<ActivityLog> findActivityLogByUserAccountUUIDAndStatus(UUID uuid, String param);
+    List<ActivityLog> findActivityLogByUserAccountAndStatus(UserAccount userAccount, String param);
 
-    List<ActivityLog> findActivityLogByUserAccountUUIDAndCloudFileUUID(UUID uuid, UUID cloudFileID);
+    List<ActivityLog> findActivityLogByUserAccountAndCloud(UserAccount userAccount, Cloud cloudFileID);
 
-    ActivityLog findActivityLogByUUId(UUID uuid);
+    ActivityLog findActivityLogById(UUID activityID);
 }

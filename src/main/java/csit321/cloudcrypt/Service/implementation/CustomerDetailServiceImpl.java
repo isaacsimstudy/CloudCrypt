@@ -31,14 +31,14 @@ public class CustomerDetailServiceImpl implements CustomerDetailService {
     @Transactional
     @Override
     public String readDetail(UserAccount userAccount) {
-        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailByUUID(userAccount.getId());
+        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailById(userAccount.getId());
         return customerDetail.getSubTier();
     }
 
     @Transactional
     @Override
     public String updateDetail(UserAccount userAccount, String newSubTier) {
-        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailByUUID(userAccount.getId());
+        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailById(userAccount.getId());
         if (newSubTier != "premium" || newSubTier != "free" )
             throw new IllegalArgumentException("Invalid sub-tier.");
         customerDetail.setSubTier(newSubTier);
@@ -48,7 +48,7 @@ public class CustomerDetailServiceImpl implements CustomerDetailService {
     @Transactional
     @Override
     public String deleteDetail(UserAccount userAccount) {
-        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailByUUID(userAccount.getId());
+        CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailById(userAccount.getId());
         if (customerDetail == null)
             throw new IllegalArgumentException("Sub-tier does not exist.");
         customerDetailRepository.delete(customerDetail);

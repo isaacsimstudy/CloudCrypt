@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import csit321.cloudcrypt.Entity.ActivityLog;
+import csit321.cloudcrypt.Entity.UserAccount;
 import csit321.cloudcrypt.Repository.ActivityLogRepository;
 import csit321.cloudcrypt.Repository.CloudRepository;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
@@ -48,20 +49,20 @@ public class ActivityLogServiceImpl implements ActivityLogService {
 
     @Override
     public String readLog(String param, String userName, String fileName) {
-        String id = userAccountRepository.findUserAccountByUsername(userName).orElseThrow().getId().toString();
+        UserAccount account = userAccountRepository.findUserAccountByUsername(userName).orElseThrow();
         // find all logs for user defined by param
         List<ActivityLog> activityLogList = switch(param) {
             case "login", "logout", "upload", "download", "delete", "share", "unshare" ->
-                activityLogRepository.findActivityLogByUserAccountUUIDAndActivityType(UUID.fromString(id), param);
+                activityLogRepository.findActivityLogByUserAccountAndActivityType(account, param);
 
             case "success", "failure" ->
-                activityLogRepository.findActivityLogByUserAccountUUIDAndStatus(UUID.fromString(id), param);
+                activityLogRepository.findActivityLogByUserAccountAndStatus(account, param);
 
             case "file" ->
-                activityLogRepository.findActivityLogByUserAccountUUIDAndCloudFileUUID(UUID.fromString(id),
-                        cloudRepository.findCloudByFileName(fileName).orElseThrow().getId());
+                activityLogRepository.findActivityLogByUserAccountAndCloud(account,
+                        cloudRepository.findCloudByFileName(fileName).orElseThrow());
             default ->
-                activityLogRepository.findActivityLogByUserAccountUUID(UUID.fromString(id));
+                activityLogRepository.findActivityLogByUserAccount(account);
 
         };
         ArrayNode an = objectMapper.createArrayNode();

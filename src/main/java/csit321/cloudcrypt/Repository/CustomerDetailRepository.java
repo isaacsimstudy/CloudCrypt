@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public interface CustomerDetailRepository extends JpaRepository<CustomerDetail, UUID> {
-    CustomerDetail findCustomerDetailByUUID(UUID id);
+    CustomerDetail findCustomerDetailById(UUID id);
 }

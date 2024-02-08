@@ -52,8 +52,8 @@ CREATE TABLE login_settings
 
 CREATE TABLE customer_details
 (
-    uuid             uuid        NOT NULL PRIMARY KEY UNIQUE,
-    FOREIGN KEY (uuid) REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    user_account     uuid       NOT NULL UNIQUE REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    customer_details_id           uuid        NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     sub_tier         varchar(75) NOT NULL CHECK ( sub_tier IN ('free', 'premium'))
 );
 
@@ -69,8 +69,8 @@ CREATE TABLE notification_settings
 
 CREATE TABLE key
 (
-    uuid            uuid        NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
-    FOREIGN KEY (uuid) REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    key_id        uuid        NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+    uuid           uuid        NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
     name         varchar(255) NOT NULL UNIQUE,
     password_hash   VARCHAR(72) NOT NULL CHECK (length(password_hash) <= 72)
 );
@@ -81,7 +81,7 @@ CREATE TABLE Cloud
     user_account   uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
     file_name      varchar(255) NOT NULL UNIQUE,
     encrypted_file bytea      NOT NULL,
-    key_id         uuid       NOT NULL REFERENCES key(uuid) ON UPDATE CASCADE,
+    key_id         uuid       NOT NULL REFERENCES key(key_id) ON UPDATE CASCADE,
     status         varchar(255) NOT NULL CHECK ( status IN ('active', 'deleted')),
     checksum       varchar(255) NOT NULL UNIQUE
 );

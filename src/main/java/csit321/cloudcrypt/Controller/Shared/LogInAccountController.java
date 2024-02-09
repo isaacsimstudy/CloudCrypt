@@ -36,7 +36,7 @@ public class LogInAccountController {
                 }
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
-                return new ResponseEntity<>("Error", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Error Exc", HttpStatus.BAD_REQUEST);
             }
         }
 }

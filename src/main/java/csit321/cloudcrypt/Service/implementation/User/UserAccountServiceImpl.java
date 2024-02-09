@@ -134,6 +134,7 @@ public class UserAccountServiceImpl implements UserAccountService{
         return "Account suspended: " + userAccountRepository.save(userAccount).toString();
     }
 
+    //TODO: Write Test Method
     @Override
     public String logInAccount(String username, String password) {
         UserAccount userAccount = userAccountRepository.findUserAccountByUsername(username).orElse(null);
@@ -144,6 +145,7 @@ public class UserAccountServiceImpl implements UserAccountService{
         if (!userAccount.getPasswordHash().equals(password))
             return "Incorrect password.";
         userAccount.setTimeLastLogin(OffsetDateTime.now());
-        return "Login successful: " + userAccountRepository.save(userAccount).toString();
+        userAccountRepository.save(userAccount);
+        return "Success";
     }
 }

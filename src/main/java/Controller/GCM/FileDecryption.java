@@ -3,7 +3,7 @@ package Controller.GCM;
 import javax.crypto.*;
 import javax.crypto.spec.*;
 import java.io.*;
-import java.util.*;
+
 
 public class FileDecryption {
 
@@ -14,7 +14,6 @@ public class FileDecryption {
     };
 
     public static void main(String[] args) {
-
         decryptFiles();
     }
 
@@ -40,12 +39,6 @@ public class FileDecryption {
         } catch (Exception e) {
             e.printStackTrace(); //error checking
         }
-    }
-
-    public static byte[] getRandomBytes(int length) {
-        byte[] bytes = new byte[length];
-        new Random().nextBytes(bytes);
-        return bytes;
     }
 
     public static byte[] readFileContents(File file) throws IOException {

@@ -50,11 +50,6 @@ public class FileEncryption {
         }
     }
 
-    public static byte[] getRandomBytes(int length) {
-        byte[] bytes = new byte[length];
-        new Random().nextBytes(bytes);
-        return bytes;
-    }
 
     public static byte[] readFileContents(File file) throws IOException {
         byte[] fileBytes;

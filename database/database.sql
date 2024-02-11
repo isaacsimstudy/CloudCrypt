@@ -89,15 +89,15 @@ VALUES
 --     (SELECT uuid FROM cloud WHERE user_account = (SELECT uuid from user_account WHERE username = 'customer3') AND file_name = 'customer-3Sharing')),
 --    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 'logout', '2024-01-023 12:24:36+08:00', 'success', NULL);
 
--- Insert login_settings (customer-3 got 2 login_attempts on 2023-12-024 due to initial failure)
-INSERT INTO login_settings
-    (user_account, login_attempts, login_status, login_time, two_factor_auth)
-VALUES
-    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2023-12-024 21:12:47+08:00', 'active'),
-    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2023-12-024 21:13:32+08:00', 'active'),
-    ((SELECT uuid FROM user_account WHERE username = 'customer1'), 1, 'active', '2024-01-017 10:37:12+08:00', 'active'),
-    ((SELECT uuid FROM user_account WHERE username = 'customer2'), 1, 'active', '2024-01-019 16:58:42+08:00', 'active'),
-    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2024-01-023 12:18:54+08:00', 'active');
+-- Insert login_settings (customer-3 got 2 login_attempts on 2023-12-024 due to initial failure, need to change to allow one entry per user_account)
+-- INTO login_settings
+--    (user_account, login_attempts, login_status, login_time, two_factor_auth)
+--VALUES
+--    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2023-12-024 21:12:47+08:00', 'active'),
+--    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2023-12-024 21:13:32+08:00', 'active'),
+--    ((SELECT uuid FROM user_account WHERE username = 'customer1'), 1, 'active', '2024-01-017 10:37:12+08:00', 'active'),
+--    ((SELECT uuid FROM user_account WHERE username = 'customer2'), 1, 'active', '2024-01-019 16:58:42+08:00', 'active'),
+--    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2024-01-023 12:18:54+08:00', 'active');
 
 -- Insert share (customer-3 share file with customer-1
 --INSERT INTO share
@@ -106,11 +106,49 @@ VALUES
 --    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 'write', (SELECT uuid FROM user_account WHERE username = 'customer1', 'active'),
 --     SELECT uuid FROM cloud WHERE user_account = (SELECT uuid from user_account WHERE username = 'customer3') AND file_name = 'customer3Sharing');
 
+-- Insert cloud (checksum generated are samples and not to be used for actual encryption, encrypted_file is just a string-to-byte conversion of customer file name)
+--INSERT INTO cloud
+--    (user_account, file_name, encrypted_file, key_id, status, checksum)
+--VALUES
+--    ((SELECT uuid FROM user_account WHERE username = 'customer1'), 'customer-1File', E'\\x637573746F6D65722D3146696C65',
+--     (SELECT key_id FROM key WHERE uuid = (SELECT uuid FROM user_account WHERE username = 'customer1') AND name = 'sample-1'), 'active', '6b5e47b53957a1e9c7a3bc224a0b28f3e9e0d0e8f7b3a9c40b3c3d4e5f6a7b8c'),
+--    ((SELECT uuid FROM user_account WHERE username = 'customer2'), 'customer-2File', E'\\x637573746F6D65722D3246696C65',
+--     (SELECT key_id FROM key WHERE uuid = (SELECT uuid FROM user_account WHERE username = 'customer2') AND name = 'sample-3'), 'active', '8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3a2b1c0d9e8f7g6h5i4j3k2l1m0n9o8p7q6r5s4t3u2v1w0x9y8z7'),
+--    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 'customer-3Sharing', E'\\x637573746F6D65722D3353686172696E67',
+--     (SELECT key_id FROM key WHERE uuid = (SELECT uuid FROM user_account WHERE username = 'customer3') AND name = 'sample-5'), 'active', '7b6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3');
 
+-- Insert file_info (currently only have 3 files)
+--INSERT INTO file_info
+--    (file_id, user_account, original_size, file_type, original_hash, time_uploaded, last_modified, file_owner, encryption_type, tags)
+--VALUES
+--    ((SELECT file_id FROM cloud WHERE user_account = (SELECT uuid from user_account WHERE username = 'customer1') AND file_name = 'customer-1File'), (SELECT uuid FROM user_account WHERE username = 'customer1'),
+--     1024, 'docx', '6b5e47b53957a1e9c7a3bc224a0b28f3e9e0d0e8f7b3a9c40b3c3d4e5f6a7b8c', '2024-01-017 10:39:39+08:00', '2024-01-017 10:39:39+08:00', 'customer1', 'AES-256', 'customer1, file, docx'),
+--    ((SELECT file_id FROM cloud WHERE user_account = (SELECT uuid from user_account WHERE username = 'customer2') AND file_name = 'customer-2File'), (SELECT uuid FROM user_account WHERE username = 'customer2'),
+--     2048, 'pdf', '8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3a2b1c0d9e8f7g6h5i4j3k2l1m0n9o8p7q6r5s4t3u2v1w0x9y8z7', '2024-01-019 16:59:37+08:00', '2024-01-019 16:59:37+08:00', 'customer2', 'AES-256', 'customer2, file, pdf'),
+--    ((SELECT file_id FROM cloud WHERE user_account = (SELECT uuid from user_account WHERE username = 'customer3') AND file_name = 'customer-3Sharing'), (SELECT uuid FROM user_account WHERE username = 'customer3'),
+--     4096, 'ppt', '7b6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3', '2024-01-023 12:20:21+08:00', '2024-01-023 12:20:21+08:00', 'customer3', 'AES-256', 'customer3, file, ppt');
 
+-- Insert email_queue (following sequence of events from activity_log)
+-- INTO email_queue
+--    (user_account, email_subject, status, time_sent, email_body)
+--VALUES
+--    ((SELECT uuid from user_account WHERE username = 'customer3'), 'Login Notification', 'sent', '2023-12-024 21:12:47+08:00', 'Login attempt failed'),
+--    ((SELECT uuid from user_account WHERE username = 'customer3'), 'Login Notification', 'sent', '2023-12-024 21:13:32+08:00', 'Login attempt successful'),
+--    ((SELECT uuid from user_account WHERE username = 'customer3'), 'Share Notification', 'sent', '2023-12-024 21:15:52+08:00', 'File shared successfully'),
+--    ((SELECT uuid from user_account WHERE username = 'customer3'), 'Logout Notification', 'sent', '2023-12-024 21:19:36+08:00', 'Logout successful'),
+--    ((SELECT uuid from user_account WHERE username = 'customer1'), 'Login Notification', 'sent', '2024-01-017 10:37:12+08:00', 'Login successful'),
+--    ((SELECT uuid from user_account WHERE username = 'customer1'), 'Upload Notification', 'sent', '2024-01-017 10:39:39+08:00', 'File uploaded successfully'),
+--    ((SELECT uuid from user_account WHERE username = 'customer1'), 'Logout Notification', 'sent', '2024-01-017 10:43:53+08:00', 'Logout successful'),
+--    ((SELECT uuid from user_account WHERE username = 'customer2'), 'Login Notification', 'sent', '2024-01-019 16:58:42+08:00', 'Login successful'),
+--    ((SELECT uuid from user_account WHERE username = 'customer2'), 'Download Notification', 'sent', '2024-01-019 16:59:37+08:00', 'File downloaded successfully'),
+--    ((SELECT uuid from user_account WHERE username = 'customer2'), 'Logout Notification', 'sent', '2024-01-019 17:08:13+08:00', 'Logout successful'),
+--    ((SELECT uuid from user_account WHERE username = 'customer3'), 'Login Notification', 'sent', '2024-01-023 12:18:54+08:00', 'Login successful'),
+--    ((SELECT uuid from user_account WHERE username = 'customer3'), 'Unshare Notification', 'sent', '2024-01-023 12:20:21+08:00', 'File unshared successfully'),
+--    ((SELECT uuid from user_account WHERE username = 'customer3'), 'Logout Notification', 'sent', '2024-01-023 12:24:36+08:00', 'Logout successful');
 
-
-
-
-
+-- Insert security_policies
+--INSERT INTO security_policies
+--    (policy_name, description, enforcement_level, policy_type, parameters, status)
+--VALUES
+--    (varchar(255), TEXT, VARCHAR(50), VARCHAR(50), JSONB, VARCHAR(50));
 

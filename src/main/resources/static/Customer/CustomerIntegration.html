@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Settings</title>
+    <title>Integration</title>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -55,16 +55,6 @@
             padding-right: 20px; /* Add spacing after CloudCrypt */
             margin-right: 20px; /* Add spacing after CloudCrypt */
         }
-
-        menu{
-            font-size: 20px;
-            color: black;
-            overflow: hidden; /* Ensures the content doesn't overflow */
-            display: flex; /* Use flexbox for layout */
-            align-items: normal; /* Align items vertically in the center */
-            justify-content: space-between; /* Spacing between items */
-            padding: 10px; /* Add padding for top and bottom spacing */
-        }
     </style>
 </head>
 <body>
@@ -77,16 +67,26 @@
     <div class="nav-links" onclick="Subscription()">Subscription</div>
     <div class="nav-links" onclick="Integration()">Integration</div>
     <div class="nav-links" onclick="Settings()">Settings</div>
-    <button class="logout-btn">Logout</button>
+    <button class="logout-btn" onclick="LogOut()">Logout</button>
 </nav>
 
-<h1>Settings</h1>
+<h1>Integration</h1>
 
-<h2><u>Delete Account</u></h2>
+<h2><u>Link Your Dropbox Account</u></h2>
 
-<h3>Are you sure you want to delete your account?</h3>
-<button onclick="Delete()">Yes</button><span> </span><button onclick="Back()">No</button>
-
+<form action="" method="post">
+    <h3>Email:</h3>
+    <label>
+        <input type="text" name="email"/>
+    </label>
+    <br/>
+    <h3>Password:</h3>
+    <label>
+        <input type="password" name="password"/>
+    </label>
+    <br/><br/>
+    <input type="submit" value="Submit"/>
+</form>
 
 <script>
     function Home() {
@@ -107,11 +107,19 @@
     function Integration() {
         window.location.href = 'CustomerIntegration.html';
     }
-    function Delete() {
-        window.location.href = 'CustomerViewAccount.html';
-    }
-    function Back() {
-        window.location.href = 'CustomerSettings.html';
+
+    function LogOut() {
+        // Display a confirmation dialog
+        var confirmed = window.confirm("Are you sure you want to log out?");
+
+        // Check the user's choice
+        if (confirmed) {
+            // User clicked "OK" (Yes), proceed with log out
+            localStorage.setItem('username', '');
+            alert("Successfully Logged Out");
+            window.location.href = '../index.html';
+        } else {
+        }
     }
 </script>
 </body>

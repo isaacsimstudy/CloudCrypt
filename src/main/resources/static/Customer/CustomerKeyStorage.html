@@ -143,7 +143,7 @@
     <div class="nav-links" onclick="Subscription()">Subscription</div>
     <div class="nav-links" onclick="Integration()">Integration</div>
     <div class="nav-links" onclick="Settings()">Settings</div>
-    <button class="logout-btn">Logout</button>
+    <button class="logout-btn" onclick="LogOut()">Logout</button>
 </nav>
 
 <table id="CustomerKeyStorageNavBar">
@@ -233,6 +233,19 @@
         // code to generate key automatically
     }
 
+    function LogOut() {
+        // Display a confirmation dialog
+        var confirmed = window.confirm("Are you sure you want to log out?");
+
+        // Check the user's choice
+        if (confirmed) {
+            // User clicked "OK" (Yes), proceed with log out
+            localStorage.setItem('username', '');
+            alert("Successfully Logged Out");
+            window.location.href = '../index.html';
+        } else {
+        }
+    }
 </script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>

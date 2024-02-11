@@ -3,12 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Settings</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -62,24 +56,14 @@
             margin-right: 20px; /* Add spacing after CloudCrypt */
         }
 
-        .menu{
-            font-size: 18px;
+        menu{
+            font-size: 20px;
             color: black;
             overflow: hidden; /* Ensures the content doesn't overflow */
             display: flex; /* Use flexbox for layout */
             align-items: normal; /* Align items vertically in the center */
             justify-content: space-between; /* Spacing between items */
-            padding: 8px; /* Add padding for top and bottom spacing */
-        }
-
-        .menuButton {
-            font-size: 14px;
-            color: black;
-            overflow: hidden; /* Ensures the content doesn't overflow */
-            display: flex; /* Use flexbox for layout */
-            align-items: normal; /* Align items vertically in the center */
-            justify-content: space-between; /* Spacing between items */
-            padding: 6px; /* Add padding for top and bottom spacing */
+            padding: 10px; /* Add padding for top and bottom spacing */
         }
     </style>
 </head>
@@ -93,69 +77,16 @@
     <div class="nav-links" onclick="Subscription()">Subscription</div>
     <div class="nav-links" onclick="Integration()">Integration</div>
     <div class="nav-links" onclick="Settings()">Settings</div>
-    <button class="logout-btn">Logout</button>
+    <button class="logout-btn" onclick="LogOut()">Logout</button>
 </nav>
 
 <h1>Settings</h1>
 
-<div class="menu">
-    <button class="menuButton" onclick="MyAccount()">Update My Account</button>
-</div>
+<h2><u>Delete Account</u></h2>
 
-<div class="menu">File Encryption Type
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="option1">Insert type here</option>
-            <option value="option2">Insert type here</option>
-        </select>
-    </label>
-</div>
+<h3>Are you sure you want to delete your account?</h3>
+<button onclick="Delete()">Yes</button><span> </span><button onclick="Back()">No</button>
 
-<h2>Notifications (Email)</h2>
-<div class="menu">Notify me for Major Activities (Login)
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="Enabled">Enabled</option>
-            <option value="Disabled">Disabled</option>
-        </select>
-    </label>
-</div>
-<div class="menu">Notify me for File Downloads
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="Enabled">Enabled</option>
-            <option value="Disabled">Disabled</option>
-        </select>
-    </label>
-</div>
-
-<h2>Additional Security</h2>
-<div class="menu">Authentication upon Upload/Download
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="Enabled">Enabled</option>
-            <option value="Disabled">Disabled</option>
-        </select>
-    </label>
-</div>
-<div class="menu">Multi-Factor Authentication
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="Enabled">Enabled</option>
-            <option value="Disabled">Disabled</option>
-        </select>
-    </label>
-</div>
-
-<h2>User Feedback</h2>
-<div class="menu">
-    <button class="menuButton" onclick="FeedbackForm()">Feedback Form</button>
-</div>
-
-<h2>Account Handling</h2>
-<div class="menu">
-    <button class="menuButton" onclick="DeleteAccount()">Delete Account</button>
-</div>
 
 <script>
     function Home() {
@@ -176,17 +107,25 @@
     function Integration() {
         window.location.href = 'CustomerIntegration.html';
     }
-    function MyAccount() {
+    function Delete() {
         window.location.href = 'CustomerViewAccount.html';
     }
-    function DeleteAccount() {
-        window.location.href = 'CustomerDeleteAccount.html';
+    function Back() {
+        window.location.href = 'CustomerSettings.html';
     }
-    function FeedbackForm() {
-        window.location.href = 'CustomerFeedbackForm.html'
-    }
-    function HandleSelection(selectedElement) {
-        // TBC
+
+    function LogOut() {
+        // Display a confirmation dialog
+        var confirmed = window.confirm("Are you sure you want to log out?");
+
+        // Check the user's choice
+        if (confirmed) {
+            // User clicked "OK" (Yes), proceed with log out
+            localStorage.setItem('username', '');
+            alert("Successfully Logged Out");
+            window.location.href = '../index.html';
+        } else {
+        }
     }
 </script>
 </body>

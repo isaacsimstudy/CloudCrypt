@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Account</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        /* Basic styles for the navigation */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        nav {
+            font-size: 20px;
+            background-color: #333;
+            color: white;
+            overflow: hidden; /* Ensures the content doesn't overflow */
+            display: flex; /* Use flexbox for layout */
+            align-items: center; /* Align items vertically in the center */
+            justify-content: space-between; /* Spacing between items */
+            padding: 10px; /* Add padding for top and bottom spacing */
+        }
+        /* Updated styles for the navigation */
+        .nav-links {
+            text-decoration: none;
+            color: white;
+            margin-right: 55px; /* Increase margin for spacing between links */
+            margin-left: 30px;
+        }
+        .nav-links:first-child {
+            pointer-events: none;
+            font-size: 2em;
+            border-right: 1px solid white;
+            margin-left: 30px; /* Add margin to the left of CloudCrypt */
+        }
+        .logout-btn {
+            background-color: #555;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 10px 20px;
+            margin-left: auto; /* Pushes the logout button to the right */
+        }
+
+
+
+        .logout-btn:hover {
+            background-color: #777;
+        }
+
+        /* Specific style for CloudCrypt */
+        .nav-links:first-child {
+            pointer-events: none; /* Disables pointer events */
+            font-size: 2em; /* Increase font size */
+            border-right: 1px solid white; /* Add separator line */
+            padding-right: 20px; /* Add spacing after CloudCrypt */
+            margin-right: 20px; /* Add spacing after CloudCrypt */
+        }
+
+        menu{
+            font-size: 20px;
+            color: black;
+            overflow: hidden; /* Ensures the content doesn't overflow */
+            display: flex; /* Use flexbox for layout */
+            align-items: normal; /* Align items vertically in the center */
+            justify-content: space-between; /* Spacing between items */
+            padding: 10px; /* Add padding for top and bottom spacing */
+        }
+
+        form {
+            max-width: 30%;
+            margin: 20px auto;
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
+
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData(username);
+        }
+    };
+    function retrieveData() {
+        const username = localStorage.getItem('username');
+
+        axios.get('/Account/Read/', username)
+            .then(function (response) {
+                console.log(response.data);
+                alert("Data retrieval success");
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+</script>
+<nav>
+    <div class="nav-links">CloudCrypt</div>
+    <div class="nav-links" onclick="Home()">Home</div>
+    <div class="nav-links" onclick="MyFiles()">My Files</div>
+    <div class="nav-links" onclick="KeyStorage()">Key Storage</div>
+    <div class="nav-links" onclick="Subscription()">Subscription</div>
+    <div class="nav-links" onclick="Integration()">Integration</div>
+    <div class="nav-links" onclick="Settings()">Settings</div>
+    <button class="logout-btn" onclick="LogOut()">Logout</button>
+</nav>
+
+<h1>Settings</h1>
+
+<form action="/submit" method="post" onsubmit="return validation()">
+    <header>
+        <h1>Update Account</h1>
+    </header>
+    <label for="fName">First Name:</label>
+    <input type="text" id="fName" name="fName" required>
+
+    <label for="lName">Last Name:</label>
+    <input type="text" id="lName" name="lName" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="address">Address:</label>
+    <input type="text" id="address" name="address" required>
+
+    <label for="dob">Date Of Birth:</label>
+    <input type="date" id="dob" min="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
+           title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
+
+    <button id="UpdateButton" type="submit" class="defaultButton">Update Account</button>
+    <button onclick="Settings()">Cancel</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function Home() {
+        window.location.href = 'CustomerHomePage.html';
+    }
+    function Settings() {
+        window.location.href = 'CustomerSettings.html';
+    }
+    function MyFiles() {
+        window.location.href = 'CustomerFiles.html';
+    }
+    function KeyStorage() {
+        window.location.href = 'CustomerKeyStorage.html';
+    }
+    function Subscription() {
+        window.location.href = 'CustomerSubscription.html';
+    }
+    function Integration() {
+        window.location.href = 'CustomerIntegration.html';
+    }
+
+    function validation() {
+        var dobInput = document.getElementById('dob');
+        var selectedDate = new Date(dobInput.value);
+        var currentDate = new Date();
+
+        // Calculate age by subtracting birth year from the current year
+        var age = currentDate.getFullYear() - selectedDate.getFullYear();
+
+        // If the birthday hasn't occurred yet this year, decrement the age
+        if (currentDate.getMonth() < selectedDate.getMonth() || (currentDate.getMonth() === selectedDate.getMonth() && currentDate.getDate() < selectedDate.getDate())) {
+            age--;
+        }
+        // Check if the user is at least 18 years old
+        if (age < 18) {
+            alert("You must be at least 18 years old.");
+            return false;
+        }
+
+        // Show the confirmation dialog
+        var confirmation = confirm("Are you sure you want to update your account?");
+
+        if (confirmation) {
+            // If "Yes" is clicked, submit to database
+            const fname = document.getElementById('fName').value;
+            const lname = document.getElementById('lName').value;
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const address = document.getElementById('address').value;
+            const dob = document.getElementById('dob').value;
+            const password = document.getElementById('password').value;
+            const userData = { fname , lname , email , username , address , dob , password};
+            if (sendData(userData)) {
+                redirectToSettings();
+                return false;
+            }
+        } else {
+            // If "No" is clicked, return to the current page
+            return false; // Prevent form submission
+        }
+    }
+    function redirectToSettings() {
+        // Show success message
+        alert("Account updated successfully!");
+        // Redirect to user profile page
+        window.location.href = 'CustomerSettings.html';
+
+    }
+
+    function LogOut() {
+        // Display a confirmation dialog
+        var confirmed = window.confirm("Are you sure you want to log out?");
+
+        // Check the user's choice
+        if (confirmed) {
+            // User clicked "OK" (Yes), proceed with log out
+            localStorage.setItem('username', '');
+            alert("Successfully Logged Out");
+            window.location.href = '../index.html';
+        } else {
+        }
+    }
+
+    function sendData(userData) {
+        axios.post('/Customer/Update', userData)
+            .then(function (response) {
+                console.log(response.data);
+                alert("Success");
+                window.location.href = "Customer/CustomerHomePage.html";
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+</script>
+</body>
+</html>
+

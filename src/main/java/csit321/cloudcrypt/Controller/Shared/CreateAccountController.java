@@ -39,6 +39,7 @@ public class CreateAccountController {
             String dateOfBirth = jsonNode.get("dateOfBirth").asText();
             String address = jsonNode.get("address").asText();
             String phoneNumber = jsonNode.get("phoneNumber").asText();
+            //todo: Check read methods since returning a null value cuts off the whole process
 //            if (userAccountService.readAccount(username) != null) {
 //                return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
 //            }

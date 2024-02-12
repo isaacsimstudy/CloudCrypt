@@ -42,7 +42,7 @@ CREATE TABLE user_account
 
 CREATE TABLE login_settings
 (
-    user_account    uuid        NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    user_account    uuid        NOT NULL UNIQUE REFERENCES user_account(uuid) ON UPDATE CASCADE,
     login_id        uuid        NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     login_attempts  int         NOT NULL DEFAULT 0,
     login_status    varchar(255) NOT NULL CHECK ( login_status IN ('active', 'inactive')),
@@ -80,7 +80,7 @@ CREATE TABLE Cloud
     file_id        uuid       NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     user_account   uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
     file_name      varchar(255) NOT NULL UNIQUE,
-    encrypted_file bytea      NOT NULL,
+    file_path      varchar(255) NOT NULL,
     key_id         uuid       NOT NULL REFERENCES key(key_id) ON UPDATE CASCADE,
     status         varchar(255) NOT NULL CHECK ( status IN ('active', 'deleted')),
     checksum       varchar(255) NOT NULL UNIQUE

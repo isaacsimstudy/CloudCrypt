@@ -89,15 +89,15 @@ VALUES
 --     (SELECT uuid FROM cloud WHERE user_account = (SELECT uuid from user_account WHERE username = 'customer3') AND file_name = 'customer-3Sharing')),
 --    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 'logout', '2024-01-023 12:24:36+08:00', 'success', NULL);
 
--- Insert login_settings (customer-3 got 2 login_attempts on 2023-12-024 due to initial failure, need to change to allow one entry per user_account)
--- INTO login_settings
---    (user_account, login_attempts, login_status, login_time, two_factor_auth)
---VALUES
---    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2023-12-024 21:12:47+08:00', 'active'),
---    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2023-12-024 21:13:32+08:00', 'active'),
---    ((SELECT uuid FROM user_account WHERE username = 'customer1'), 1, 'active', '2024-01-017 10:37:12+08:00', 'active'),
---    ((SELECT uuid FROM user_account WHERE username = 'customer2'), 1, 'active', '2024-01-019 16:58:42+08:00', 'active'),
---    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2024-01-023 12:18:54+08:00', 'active');
+-- Insert login_settings (customer-3 got 2 login_attempts on 2023-12-024 due to initial failure)
+INSERT INTO login_settings
+    (user_account, login_attempts, login_status, login_time, two_factor_auth)
+VALUES
+    --((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2023-12-024 21:12:47+08:00', 'active'),
+    --((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2023-12-024 21:13:32+08:00', 'active'),
+    --((SELECT uuid FROM user_account WHERE username = 'customer1'), 1, 'active', '2024-01-017 10:37:12+08:00', 'active'),
+    ((SELECT uuid FROM user_account WHERE username = 'customer2'), 1, 'active', '2024-01-019 16:58:42+08:00', 'active'),
+    ((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2024-01-023 12:18:54+08:00', 'active');
 
 -- Insert share (customer-3 share file with customer-1
 --INSERT INTO share

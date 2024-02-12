@@ -18,4 +18,8 @@ public interface UserAccountService {
     String logInAccount(String username, String password);
 
     String verifyOTP(String username, boolean otpPass);
+
+    String updatePassword(String email, String newPassword);
+
+    String readEmail(String email);
 }

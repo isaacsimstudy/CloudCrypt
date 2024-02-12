@@ -50,7 +50,7 @@ public class CreateAccountController {
             if (userAccountRepository.findUserAccountByUsername(username).orElse(null) != null) {
                 return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
             }
-            if (userAccountRepository.findUserAccountByEmail(email)) {
+            if (userAccountRepository.findUserAccountByEmail(email).orElse(null) != null) {
                 return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
             }
             if (userProfileRepository.findUserProfileByTitle(title).orElse(null) == null) {

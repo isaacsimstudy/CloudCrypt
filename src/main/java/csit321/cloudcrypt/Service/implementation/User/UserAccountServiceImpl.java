@@ -160,4 +160,22 @@ public class UserAccountServiceImpl implements UserAccountService{
         userAccountRepository.save(userAccount);
         return "Success";
     }
+
+    @Override
+    public String updatePassword(String email, String newPassword) {
+        UserAccount userAccount = userAccountRepository.findUserAccountByEmail(email).orElse(null);
+        if (userAccount == null)
+            return "User account not found.";
+        userAccount.setPasswordHash(newPassword);
+        userAccountRepository.save(userAccount);
+        return "Success";
+    }
+
+    @Override
+    public String readEmail(String email) {
+        UserAccount userAccount = userAccountRepository.findUserAccountByEmail(email).orElse(null);
+        if (userAccount == null)
+            return "Email not found.";
+        return "Success";
+    }
 }

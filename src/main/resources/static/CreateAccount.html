@@ -151,7 +151,6 @@
                     console.log(response.data);
                     alert("Account Creation Success");
                     localStorage.setItem('username', document.getElementById('username').value);
-                    localStorage.setItem('email', document.getElementById('email').value);
                     const otp = Math.floor(100000 + Math.random() * 900000);
                     localStorage.setItem('otp', otp);
 

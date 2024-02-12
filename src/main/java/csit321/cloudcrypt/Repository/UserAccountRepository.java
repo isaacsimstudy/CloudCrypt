@@ -15,4 +15,6 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, UUID> 
     List<UserAccount> findUserAccountsByIsActiveTrue();
 
     List<UserAccount> findAllByUserProfile_Privilege(final String privilege);
+
+    boolean findUserAccountByEmail(String email);
 }

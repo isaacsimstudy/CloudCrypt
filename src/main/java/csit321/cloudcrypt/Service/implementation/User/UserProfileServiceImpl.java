@@ -50,8 +50,6 @@ public class UserProfileServiceImpl implements UserProfileService{
             case "all" -> userProfileRepository.findAll();
             default -> {
                 UserProfile userProfile = userProfileRepository.findUserProfileByTitle(param).orElse(null);
-                if (userProfile == null)
-                    throw new IllegalArgumentException("User profile not found: " + param);
                 yield List.of(userProfile);
             }
         };

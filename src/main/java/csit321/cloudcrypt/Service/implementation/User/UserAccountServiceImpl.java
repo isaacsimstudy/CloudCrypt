@@ -72,11 +72,6 @@ public class UserAccountServiceImpl implements UserAccountService{
             case "all" -> userAccountRepository.findAll();
             default -> {
                 UserAccount userAccount = userAccountRepository.findUserAccountByUsername(param).orElse(null);
-                if (userAccount == null)
-                {
-                    //todo: Check if there's another way to rephrase this without cutting off the whole process
-                    throw new IllegalArgumentException("User account not found: " + param);
-                }
                 yield List.of(userAccount);
             }
         };

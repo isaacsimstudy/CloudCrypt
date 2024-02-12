@@ -1,16 +1,10 @@
 package csit321.cloudcrypt.Controller.Shared;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import csit321.cloudcrypt.Entity.UserProfile;
 import csit321.cloudcrypt.Service.User.UserProfileService;
-import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
-import csit321.cloudcrypt.Entity.UserAccount;
 import csit321.cloudcrypt.Service.User.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +31,7 @@ public class ReadAccountController {
             if (param.matches(".*\\d.*")) {
                 return new ResponseEntity<>("Invalid input", HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(userAccountService.readAccount(param).toString(), HttpStatus.OK);
+            return new ResponseEntity<>(userAccountService.readAccount(param), HttpStatus.OK);
         }
         catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

@@ -16,4 +16,6 @@ public interface UserAccountService {
 
     //TODO: Write Test Method
     String logInAccount(String username, String password);
+
+    String verifyOTP(String username, boolean otpPass);
 }

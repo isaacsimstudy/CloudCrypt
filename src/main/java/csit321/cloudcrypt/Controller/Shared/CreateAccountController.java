@@ -39,18 +39,18 @@ public class CreateAccountController {
             String dateOfBirth = jsonNode.get("dateOfBirth").asText();
             String address = jsonNode.get("address").asText();
             String phoneNumber = jsonNode.get("phoneNumber").asText();
-            if (userAccountService.readAccount(username) != null) {
-                return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
-            }
-            if (userAccountService.readAccount(email) != null) {
-                return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
-            }
-            if (userProfileService.readUserProfile(title) == null) {
-                return new ResponseEntity<>("Title does not exist", HttpStatus.BAD_REQUEST);
-            }
-            if (username == null || password == null || title == null || email == null || firstName == null || lastName == null || address == null || phoneNumber == null) {
-                return new ResponseEntity<>("Missing fields", HttpStatus.BAD_REQUEST);
-            }
+//            if (userAccountService.readAccount(username) != null) {
+//                return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
+//            }
+//            if (userAccountService.readAccount(email) != null) {
+//                return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
+//            }
+//            if (userProfileService.readUserProfile(title) == null) {
+//                return new ResponseEntity<>("Title does not exist", HttpStatus.BAD_REQUEST);
+//            }
+//            if (username == null || password == null || title == null || email == null || firstName == null || lastName == null || address == null || phoneNumber == null) {
+//                return new ResponseEntity<>("Missing fields", HttpStatus.BAD_REQUEST);
+//            }
             userAccountService.createAccount(username, password, title, email, firstName, lastName, address, phoneNumber, dateOfBirth);
             return new ResponseEntity<>("Success",HttpStatus.OK);
         }
@@ -59,4 +59,16 @@ public class CreateAccountController {
         }
     }
 
+    @PostMapping(path = "/Verify")
+    public ResponseEntity<String> verifyOTP(@RequestBody String json) {
+        try {
+            JsonNode jsonNode = objectMapper.readTree(json);
+            String username = jsonNode.get("username").asText();
+            boolean otp = jsonNode.get("otp").asBoolean();
+            userAccountService.verifyOTP(username, otp);
+            return new ResponseEntity<>("Success", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
 <style>
     h1 {
@@ -47,10 +54,16 @@
 </style>
 <body>
 <h1 onclick="BackToLogin()">CloudCrypt</h1>
-<form action="/submit" method="post" onsubmit="return validation()">
+<form>
     <header>
         <h2>Create Account</h2>
     </header>
+    <label for="title">Title:</label>
+    <select id="title" name="title">
+        <option value="customer">Customer</option>
+        <option value="admin">Admin</option>
+    </select>
+
     <label for="fName">First Name:</label>
     <input type="text" id="fName" name="fName" required>
 
@@ -69,6 +82,9 @@
     <label for="dob">Date Of Birth:</label>
     <input type="date" id="dob" min="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" required>
 
+    <label for="phoneNumber">Phone Number:</label>
+    <input type="tel" id="phoneNumber" name="phoneNumber" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
            title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
@@ -76,7 +92,7 @@
     <label for="confirm_password">Confirm Password:</label>
     <input type="password" id="confirm_password" required>
 
-    <button id="CreateButton" type="submit" class="defaultButton">Sign Up</button>
+    <button id="CreateButton" type="button" onclick="validation()" class="defaultButton">Sign Up</button>
 </form>
 
 
@@ -119,12 +135,46 @@
         var confirmation = confirm("Are you sure you want to sign up?");
 
         if (confirmation) {
-            // If "Yes" is clicked, redirect to
-            window.location.href = 'OTPSignUp.html';
-            return false; // Prevent form submission
+            const userData = {
+                firstName: document.getElementById('fName').value,
+                lastName: document.getElementById('lName').value,
+                email: document.getElementById('email').value,
+                username: document.getElementById('username').value,
+                address: document.getElementById('address').value,
+                dateOfBirth: document.getElementById('dob').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                title: document.getElementById('title').value,
+                password: document.getElementById('password').value
+            };
+            axios.post('/Account/Create', userData)
+                .then(function (response) {
+                    console.log(response.data);
+                    alert("Account Creation Success");
+                    localStorage.setItem('username', document.getElementById('username').value);
+                    localStorage.setItem('email', document.getElementById('email').value);
+                    const otp = Math.floor(100000 + Math.random() * 900000);
+                    localStorage.setItem('otp', otp);
+
+                    emailjs.init("fljmK1Spno-FhP6lQ");
+                    // Send the OTP via Email.js using the API key
+                    emailjs.send("service_cloudcrypt", "template_sissasf", {
+                        to_email: document.getElementById('email').value,
+                        otp: otp.toString()  // Convert OTP to string before sending
+                    })
+                        .then(function(response) {
+                            alert("Email sent. ", response.status, response.text);
+
+                            window.location.href = 'OTPSignUp.html';
+                        })
+                        .catch(function(error) {
+                            console.error("Error sending email:", error);
+                        });
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                });
         } else {
-            // If "No" is clicked, return to the current page
-            return false; // Prevent form submission
+            alert("You have cancelled the sign up process.");
         }
     }
     function BackToLogin(){

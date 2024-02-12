@@ -31,7 +31,7 @@ public class ReadAccountController {
         this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     }
 
-    @GetMapping(path = "/Read/{username}")
+    @GetMapping(path = "/Read/{param}")
     public ResponseEntity<String> readAccount(@PathVariable String param) {
         try {
             if (param.matches(".*\\d.*")) {

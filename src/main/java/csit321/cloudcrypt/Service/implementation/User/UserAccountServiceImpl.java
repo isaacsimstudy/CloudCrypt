@@ -45,7 +45,7 @@ public class UserAccountServiceImpl implements UserAccountService{
                                      String dateOfBirth) {
         UserAccount userAccount = new UserAccount();
         userAccount.setId(UUID.randomUUID());
-        userAccount.setIsActive(true);
+        userAccount.setIsActive(false);
         UserProfile userProfile = userProfileRepository.findUserProfileByTitle(title).orElse(null);
         if (userProfile == null)
             throw new IllegalArgumentException("Title does not exist.");
@@ -73,7 +73,9 @@ public class UserAccountServiceImpl implements UserAccountService{
             default -> {
                 UserAccount userAccount = userAccountRepository.findUserAccountByUsername(param).orElse(null);
                 if (userAccount == null)
+                {
                     throw new IllegalArgumentException("User account not found: " + param);
+                }
                 yield List.of(userAccount);
             }
         };
@@ -90,6 +92,8 @@ public class UserAccountServiceImpl implements UserAccountService{
             on.put("address", userAccount.getAddress());
             on.put("phoneNumber", userAccount.getPhoneNumber());
             on.put("isActive", userAccount.getIsActive());
+            on.put("dateOfBirth", userAccount.getDateOfBirth().toString());
+            on.put("passwordHash", userAccount.getPasswordHash());
             an.add(on);
         }
         return an.toString();
@@ -120,6 +124,8 @@ public class UserAccountServiceImpl implements UserAccountService{
             userAccount.setAddress(address);
         if (phoneNumber != null)
             userAccount.setPhoneNumber(phoneNumber);
+        if (dateOfBirth != null)
+            userAccount.setDateOfBirth(LocalDate.parse(dateOfBirth));
         return "Successful change " + userAccountRepository.save(userAccount).toString();
     }
 
@@ -145,6 +151,16 @@ public class UserAccountServiceImpl implements UserAccountService{
         if (!userAccount.getPasswordHash().equals(password))
             return "Incorrect password.";
         userAccount.setTimeLastLogin(OffsetDateTime.now());
+        userAccountRepository.save(userAccount);
+        return "Success";
+    }
+
+    @Override
+    public String verifyOTP(String username, boolean otpPass) {
+        UserAccount userAccount = userAccountRepository.findUserAccountByUsername(username).orElse(null);
+        if (userAccount == null)
+            return "User account not found.";
+        userAccount.setIsActive(true);
         userAccountRepository.save(userAccount);
         return "Success";
     }

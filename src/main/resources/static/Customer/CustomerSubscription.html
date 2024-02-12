@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Subscriptions</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -58,7 +63,44 @@
     </style>
 </head>
 <body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
 
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData(username);
+        }
+    };
+    function retrieveData() {
+        const username = localStorage.getItem('username');
+        console.log(username);
+        axios.post('/Customer/Read', { username: username })
+            .then(function (response) {
+                console.log(response.data);
+                if (response.data === "free") {
+                    document.getElementById('currentSubscription').innerText = "free";
+                    document.getElementById('tierList').disabled = true;
+                }
+                else if (response.data === "premium") {
+                    document.getElementById('currentSubscription').innerText = "premium";
+                    document.getElementById('tierList').disabled = false;
+                }
+                document.getElementById('tierList').value = response.data;
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+
+
+</script>
 <nav>
     <div class="nav-links">CloudCrypt</div>
     <div class="nav-links" onclick="Home()">Home</div>
@@ -72,14 +114,13 @@
 
 <h1>Update Subscriptions</h1>
 
-<h3>Current Subscription: </h3>
+<h3>Current Subscription: <span id="currentSubscription"></span></h3>
 
 <form>
-    <label for="tierList">Select Subscription Tier: </label>
+    <label for="tierList">Select New Subscription Tier:  </label>
     <select id="tierList" name="subTier">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
+        <option value="free">free</option>
+        <option value="premium">premium</option>
     </select>
     <br/>
     <h3><u>Payment Info</u></h3>
@@ -96,7 +137,7 @@
     <label>CV:</label>
     <input type="text" pattern="[0-9]*" inputmode="numeric" maxlength="3" />
     <br/><br/>
-    <input type="submit" value="Update Subscription"/>
+    <button type="button" onclick="updateSubTier()">Update Subscription</button>
 </form>
 
 <script>
@@ -119,6 +160,21 @@
         window.location.href = 'CustomerIntegration.html';
     }
 
+    function updateSubTier() {
+        var subTier = document.getElementById('tierList').value;
+        const username = localStorage.getItem('username');
+        const userData = { username: username, subTier: subTier };
+        console.log(userData);
+        axios.post('/Customer/Update', userData)
+            .then(function (response) {
+                alert(response.data);
+                window.location.href = 'CustomerSubscription.html';
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
     function LogOut() {
         // Display a confirmation dialog
         var confirmed = window.confirm("Are you sure you want to log out?");

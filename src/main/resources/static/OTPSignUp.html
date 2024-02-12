@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up OTP</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<style>
+    h1 {
+        text-align: center;
+        font-size: 80px;
+        background-color: #333;
+        font-family: Arial, sans-serif;
+        color: white;
+        border-collapse: collapse;
+        width: 100%;
+        margin: auto;
+    }
+    form {
+        max-width: 30%;
+        margin: 20px auto;
+        background-color: #f2f2f2;
+        border: 1px solid #ddd;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 16px;
+        box-sizing: border-box;
+    }
+
+    .defaultButton {
+        background-color: #777;
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+    .defaultButton:hover {
+        background-color: #555;
+    }
+</style>
+<body>
+<script>
+    // Retrieve the shared variable from localStorage
+    const username = localStorage.getItem('username');
+    const otp = localStorage.getItem('otp');
+    console.log(username);
+    console.log(otp);
+</script>
+<h1 onclick="BackToLogin()">CloudCrypt</h1>
+
+<form action="/submit" method="post" onsubmit="return validation()">
+    <header>
+        <h2>One-Time Password</h2>
+        <p>An OTP was sent to your email address, please enter the OTP!</p>
+    </header>
+    <label for="otp">OTP:</label>
+    <input type="text" id="otp" name="otp" required>
+
+    <button id="CreateButton" type="button" onclick="verifyOTP()" class="defaultButton">Submit</button>
+</form>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+
+
+
+    function BackToLogin(){
+        window.location.href = 'UserLogin.html';
+    }
+    function verifyOTP()
+    {
+        var otp = document.getElementById("otp").value;
+        if(otp === localStorage.getItem('otp'))
+        {
+            var userData = {
+                username: localStorage.getItem('username'),
+                otp: true
+            };
+            axios.post('/Account/Verify', userData)
+                .then(function (response) {
+                    console.log(response.data);
+                    alert("Success, account activated");
+                }).catch(function (error) {
+                    console.error("An error occurred:", error);
+                    alert(error);
+                });
+            }
+        else
+        {
+            alert("Invalid OTP");
+        }
+    }
+</script>
+</body>
+</html>

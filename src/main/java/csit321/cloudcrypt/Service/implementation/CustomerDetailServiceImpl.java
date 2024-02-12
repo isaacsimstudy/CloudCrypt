@@ -45,7 +45,7 @@ public class CustomerDetailServiceImpl implements CustomerDetailService {
     @Override
     public String updateDetail(UserAccount userAccount, String newSubTier) {
         CustomerDetail customerDetail = customerDetailRepository.findCustomerDetailByUserAccount(userAccount);
-        if (newSubTier != "premium" && newSubTier != "free" )
+        if (!"premium".equals(newSubTier) && !"free".equals(newSubTier))
             throw new IllegalArgumentException("Invalid sub-tier.");
         customerDetail.setSubTier(newSubTier);
         return customerDetailRepository.save(customerDetail).getSubTier();

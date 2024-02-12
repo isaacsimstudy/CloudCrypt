@@ -38,6 +38,7 @@ public class UpdateCustomerDetailController {
     @PostMapping(path = "/Update")
     public ResponseEntity<String> updateDetail(@RequestBody String json) {
         try {
+            System.out.println("json: " + json);
             JsonNode jsonNode = objectMapper.readTree(json);
             String username = jsonNode.get("username").asText();
             String subTier = jsonNode.get("subTier").asText();

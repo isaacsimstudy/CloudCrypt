@@ -61,8 +61,31 @@
     </style>
 </head>
 <body>
+<script>
+window.onload = function () {
+// Retrieve the shared variable from localStorage
+var username = localStorage.getItem('username');
 
-<nav class="navbar navbar-expand-lg navbar-dark">
+// Check if the username string exists
+if (username) {
+// Display the navigation links and headers
+showLoggedInContent(username);
+} else {
+// Display an error message or handle the absence of username as needed
+document.body.innerHTML = "<h1>Error: Username not found</h1>";
+
+// Show the button to go back
+var goBackButton = document.createElement('button');
+goBackButton.innerText = 'Back';
+goBackButton.onclick = redirectToHome;
+document.body.appendChild(goBackButton);
+}
+};
+
+function showLoggedInContent(username) {
+// Create and append the navigation links
+var nav = document.createElement('nav');
+nav.innerHTML = `<nav class="navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">CloudCrypt</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -88,13 +111,27 @@
         <button class="logout-btn btn-outline-light ml-auto">Logout</button>
     </div>
 </nav>
+`;
+document.body.appendChild(nav);
+
+// Create and append the header
+var header = document.createElement('h1');
+header.innerText = "Welcome, " + username + "!";
+document.body.appendChild(header);
+}
+
+function redirectToHome() {
+// Redirect to the first page
+window.location.href = '../index.html';
+}
+</script>
+
 <p></p>
-<!-- Rest of your HTML content -->
 <table id="Homepage">
     <tr>
         <td>
             <a href="OwnerSettings.html">
-                <img src="../Images/mfabanner.png" alt="Enable MFA">
+                <img src="../../templates/html/Images/mfabanner.png" alt="Enable MFA">
             </a>
         </td>
     </tr>

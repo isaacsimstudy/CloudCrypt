@@ -45,7 +45,7 @@ public class UserAccountServiceImpl implements UserAccountService{
                                      String dateOfBirth) {
         UserAccount userAccount = new UserAccount();
         userAccount.setId(UUID.randomUUID());
-        userAccount.setIsActive(false);
+        userAccount.setIsActive(title.equals("admin"));
         UserProfile userProfile = userProfileRepository.findUserProfileByTitle(title).orElse(null);
         if (userProfile == null)
             throw new IllegalArgumentException("Title does not exist.");
@@ -68,7 +68,7 @@ public class UserAccountServiceImpl implements UserAccountService{
     public String readAccount(String param) {
         List<UserAccount> userAccountList = switch(param) {
             case "active" -> userAccountRepository.findUserAccountsByIsActiveTrue();
-            case "privilege" -> userAccountRepository.findAllByUserProfile_Privilege(param);
+            case "privilege" -> userAccountRepository.findAllByUserProfile_Privilege("admin");
             case "all" -> userAccountRepository.findAll();
             default -> {
                 UserAccount userAccount = userAccountRepository.findUserAccountByUsername(param).orElse(null);

@@ -150,15 +150,18 @@
                 .then(function (response) {
                     console.log(response.data);
                     alert("Account Creation Success");
+
+                    //generate otp
                     localStorage.setItem('username', document.getElementById('username').value);
                     const otp = Math.floor(100000 + Math.random() * 900000);
                     localStorage.setItem('otp', otp);
 
+                    //Initiate emailJS
                     emailjs.init("fljmK1Spno-FhP6lQ");
                     // Send the OTP via Email.js using the API key
                     emailjs.send("service_cloudcrypt", "template_sissasf", {
                         to_email: document.getElementById('email').value,
-                        otp: otp.toString()  // Convert OTP to string before sending
+                        otp: otp.toString()  // Convert OTP to string and put it in email before sending
                     })
                         .then(function(response) {
                             alert("Email sent. ", response.status, response.text);

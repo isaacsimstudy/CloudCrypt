@@ -94,7 +94,7 @@
             </header>
         </td>
         <td class="rightColumn">
-            <form id="LogIn" method="post" onsubmit="event.preventDefault(); submitForm()">
+            <form id="LogIn" method="post" onsubmit="event.preventDefault();">
                 <label for="SelectUser" id="LoginAs">Login As:&nbsp;&nbsp;&nbsp;&nbsp;</label>
                 <select name="user" id="SelectUser" onchange="enableFields()">
                     <option selected="selected"></option>
@@ -185,17 +185,24 @@
     });
 
     function sendLoginData(userData) {
-        var role = document.getElementById("SelectUser");
+        const role = document.getElementById("SelectUser").value;
         const username = document.getElementById('username').value;
 
         axios.post('/LogIn/Validate', userData)
             .then(function (response) {
                 console.log(response.data);
-                alert("Success");
-                //if (role === "Customer") {
+                if (role === "Customer") {
                     localStorage.setItem('username', username);
                     window.location.href = "Customer/CustomerHomePage.html";
-                //}
+                }
+                else if (role === "Owner"){
+                    localStorage.setItem('username', username);
+                    window.location.href = "Owner/OwnerHomePage.html";
+                }
+                else if (role === "Admin"){
+                    localStorage.setItem('username', username);
+                    window.location.href = "Admin/AdminHomePage.html";
+                }
             })
             .catch(function (error) {
                 console.error("An error occurred:", error);

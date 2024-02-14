@@ -2,6 +2,7 @@ package csit321.cloudcrypt.Controller.Owner;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import csit321.cloudcrypt.Repository.UserProfileRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +17,14 @@ public class CreateUserProfileController {
     private final UserProfileService userProfileService;
 
     private final ObjectMapper objectMapper;
+    private final UserProfileRepository userProfileRepository;
 
     @Autowired
-    public CreateUserProfileController(UserProfileService userProfileService) {
+    public CreateUserProfileController(UserProfileService userProfileService,
+                                       UserProfileRepository userProfileRepository) {
         this.userProfileService = userProfileService;
         this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        this.userProfileRepository = userProfileRepository;
     }
 
     @PostMapping(path = "/Create")
@@ -35,7 +39,7 @@ public class CreateUserProfileController {
             if (!privilege.matches("^[a-zA-Z]+$")) {
                 return new ResponseEntity<>("Invalid privilege: Privilege must contain only letters and spaces", HttpStatus.UNPROCESSABLE_ENTITY);
             }
-            if (userProfileService.readUserProfile(title) != null) {
+            if (userProfileRepository.findUserProfileByTitle(title).orElse(null) != null) {
                 return new ResponseEntity<>("Invalid title: Title already exists", HttpStatus.UNPROCESSABLE_ENTITY);
             }
 

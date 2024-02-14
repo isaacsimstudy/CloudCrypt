@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -99,7 +100,96 @@
     </style>
 </head>
 <body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
 
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData(username);
+        }
+    };
+    function retrieveData() {
+        const username = localStorage.getItem('username');
+        console.log(username);
+        axios.get('/Profile/Read/all')
+            .then(function (response) {
+                console.log(response.data);
+                if (Array.isArray(response.data) && response.data.length > 0) {
+                    appendToProfileTable(response.data);
+                } else {
+                    console.error("No user data found");
+                    alert("No user data found");
+                }
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+
+    function appendToProfileTable(userList) {
+        const tableBody = document.getElementById('OwnerCreateProfileTableBody');
+
+        // Clear existing rows in the table body
+        tableBody.innerHTML = '';
+
+        // Iterate through the list of users and append each to the table
+        userList.forEach((userData, index) => {
+            // Create a new row
+            const newRow = tableBody.insertRow();
+
+            // Populate cells with user data
+            const serialNumberCell = newRow.insertCell(0);
+            const privilegeCell = newRow.insertCell(1);
+            const titleCell = newRow.insertCell(2);
+            const activeCell = newRow.insertCell(3);
+            const actionCell = newRow.insertCell(4);
+
+            // serial number is incremental for table
+            serialNumberCell.textContent = (index + 1).toString();
+            privilegeCell.textContent = userData.privilege;
+            titleCell.textContent = userData.title;
+            activeCell.textContent = userData.isActive;
+
+            const selectButton = document.createElement('button');
+            selectButton.textContent = 'Select';
+            selectButton.className = 'defaultButton';
+            selectButton.addEventListener('click', function() {
+                localStorage.setItem('selectedTitle', userData.title);
+                console.log(localStorage.getItem('selectedTitle'));
+                // Toggle the classes when the button is clicked
+                $(this).toggleClass('defaultButton alternateButton');
+
+                // Change the text content based on the current class
+                var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
+                $(this).text(newText);
+
+                // Enable or disable the "Suspend" button based on the class of the "Select" button
+                var isDefaultButton = $(this).hasClass('defaultButton');
+                $('#SuspendButton').prop('disabled', isDefaultButton);
+            });
+
+            const UpdateButton = document.createElement('button');
+            UpdateButton.textContent = 'Update';
+            UpdateButton.className = 'defaultButton';
+            UpdateButton.style.marginLeft = '10px';
+            UpdateButton.addEventListener('click', function() {
+                localStorage.setItem('selectedTitle', userData.title);
+                console.log(localStorage.getItem('selectedTitle'));
+                window.location.href = 'OwnerUpdateUserProfile.html';
+            });
+
+            actionCell.appendChild(selectButton);
+            actionCell.appendChild(UpdateButton);
+        });
+    }
+</script>
 <nav class="navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">CloudCrypt</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -148,12 +238,6 @@
         <th>Action</th>
     </tr>
     <tbody id="OwnerCreateProfileTableBody">
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td><button id="SelectButton" class="defaultButton">Select</button> <button id="UpdateButton" class="defaultButton" onclick="OwnerUpdateProfile()">Update</button> </td>
-    </tr>
     </tbody>
 </table>
 
@@ -163,20 +247,6 @@
     $(function () {
         // Disable the "Suspend" button by default
         $('#SuspendButton').prop('disabled', true);
-
-        // Attach a click event handler to the "Select" button
-        $('#SelectButton').on('click', function () {
-            // Toggle the classes when the button is clicked
-            $(this).toggleClass('defaultButton alternateButton');
-
-            // Change the text content based on the current class
-            var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
-            $(this).text(newText);
-
-            // Enable or disable the "Suspend" button based on the class of the "Select" button
-            var isDefaultButton = $(this).hasClass('defaultButton');
-            $('#SuspendButton').prop('disabled', isDefaultButton);
-        });
     });
 
     function confirmSuspend() {
@@ -184,12 +254,21 @@
 
         var confirmation = confirm("Are you sure you want to suspend this user profile?");
         if (confirmation) {
-            alert("User Profile Successfully Suspended");
-            // Reset the state of the "Select" button
-            selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
-            $('#SuspendButton').prop('disabled', true);
-            // Perform any additional actions upon suspension if needed
-            // Return to the page
+            var suspendTitle = localStorage.getItem('selectedTitle');
+            axios.put('/Owner/Profile/Suspend/' + suspendTitle)
+                .then(function (response) {
+                    console.log(response.data);
+                    alert("User Profile Successfully Suspended");
+                    // Reset the state of the "Select" button
+                    selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
+                    $('#SuspendButton').prop('disabled', true);
+                    localStorage.removeItem('selectedTitle');
+                    // Return to the page
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                    alert(error);
+                });
         }
     }
 

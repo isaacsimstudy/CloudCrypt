@@ -19,12 +19,12 @@ public class dropboxConfig {
     //TODO: Add dropbox configuration
 
     /* idk why but this line of code not working, instead I use the access_token on line 27
-    This current active access token was generated on 11 Feb 2024 8:00pm.
+    This current active access token was generated on 14 Feb 2024 7:53pm.
 
     @Value("<Access_Token>")
     private static String ACCESS_TOKEN;
      */
-    private static final String ACCESS_TOKEN = "sl.BvaYHnP-cGlaSnH3SHkGCm_QzbVUSQvWjUwax9gTYm5APFDXiW1re2rPM19zrPXuVzrmwFz_FBoU04OlZYCeQsbCO9Fhcj8H8JKnxDQzEH9NcoufO5ji185nXTW_mpg1YqjRKFfLW7Pm";
+    private static final String ACCESS_TOKEN = "sl.BvmrgbNClX5utoEsY0RlmBDG7zsY6NiAaS4-0LulvxQJuBWpdmM46EAdgctnYoaVx02zeI7dm17hkuZQrZoU_j1sp65aPKQKjQko9MSz_bUqX7G3lmyDoREmEJdnfqLxgOIwGrQEuP1i";
 
     @Value("${dropbox.app.key}")
     private String appKey;
@@ -37,7 +37,7 @@ public class dropboxConfig {
         return new DbxClientV2(config, ACCESS_TOKEN);
     }
 
-    public static void main(String args[]) throws DbxException, IOException {
+    public static void main(String[] args) throws DbxException, IOException {
         // use existing config to create a new client
         DbxClientV2 client = new dropboxConfig().dbxClientV2();
 
@@ -60,9 +60,11 @@ public class dropboxConfig {
         }
 
         // attempt to upload file "test.txt" to Dropbox. This will fail if the file is not found or does not exist.
+        /*
         try (InputStream in = new FileInputStream(("test.txt"))) {
             FileMetadata metadata = client.files().uploadBuilder("/test.txt").uploadAndFinish(in);
         }
+        */
 
 
     }

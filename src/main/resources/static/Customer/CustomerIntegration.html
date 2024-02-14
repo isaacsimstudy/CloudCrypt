@@ -88,6 +88,11 @@
     <input type="submit" value="Submit"/>
 </form>
 
+<br/><br/>
+<button id="AuthorizeDropbox">Dropbox Test</button>
+<br/><br/>
+<button id="RequestToken">Dropbox 2</button>
+
 <script>
     function Home() {
         window.location.href = 'CustomerHomePage.html';
@@ -121,7 +126,41 @@
         } else {
         }
     }
+
+    document.getElementById("AuthorizeDropbox").addEventListener("click", function() {
+        AuthorizeDropbox();
+    });
+    document.getElementById("RequestToken").addEventListener("click", function() {
+        getAccessToken();
+    });
+
+    function getAccessToken() {
+        const xhr = new XMLHttpRequest();
+
+        xhr.open("POST", "https://api.dropbox.com/oauth2/token");
+
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        const data = `code=EdQFpc-53p0AAAAAAAAFXO4ZWgYq7u8rje_BsTzRHD0&grant_type=authorization_code&redirect_uri=http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html&client_id=vint2uip4sqtcso&client_secret=nbfvz8fxt1xemrx`;
+        //const data = `code=<AUTHORIZATION_CODE>&grant_type=authorization_code&redirect_uri=http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html&client_id=vint2uip4sqtcso&client_secret=nbfvz8fxt1xemrx`;
+
+        xhr.onload = function() {
+            console.log(xhr.responseText);
+        }
+
+        xhr.send(data);
+    }
+
+    function AuthorizeDropbox() {
+        window.location.href = 'https://www.dropbox.com/oauth2/authorize?client_id=vint2uip4sqtcso&response_type=code&redirect_uri=http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html';
+
+
+
+    }
+
+
 </script>
+
 </body>
 </html>
 

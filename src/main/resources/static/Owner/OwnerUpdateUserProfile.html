@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -81,7 +82,44 @@
     </style>
 </head>
 <body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
 
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData(username);
+        }
+    };
+    function retrieveData() {
+        const username = localStorage.getItem('username');
+        const selectedTitle = localStorage.getItem('selectedTitle');
+        console.log(selectedTitle);
+        console.log(username);
+        axios.get('/Profile/Read/' + selectedTitle)
+            .then(function (response) {
+                console.log(response.data);
+                if (Array.isArray(response.data) && response.data.length > 0) {
+                    const userData = response.data[0];
+
+                    document.getElementById('privilege').value = userData.privilege;
+                    document.getElementById('title').value = userData.title;
+                } else {
+                    console.error("No user data found for the provided title");
+                    alert("No user data found for the provided title");
+                }
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+</script>
 <nav class="navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">CloudCrypt</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -112,12 +150,18 @@
     <header>
         <h1>Update User Profile</h1>
     </header>
+    <label for="privilege">Privilege:</label>
+    <select name="privilege" id="privilege">
+        <option value="customer">Customer</option>
+        <option value="admin">Admin</option>
+        <option value="owner">Owner</option>
+    </select>
+
     <label for="title">Title:</label>
     <input type="text" id="title" name="title" required>
 
-    <label for="privilege">Privilege:</label>
-    <input type="text" id="privilege" name="privilege" required>
     <button type="button" onclick="confirmUpdateUserProfile()" class="defaultButton">Update</button>
+    <button type="button" onclick="UserProfile()" class="defaultButton">Cancel</button>
 </form>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -126,8 +170,23 @@
     function confirmUpdateUserProfile() {
         var confirmation = confirm("Are you sure you want to update this user profile?");
         if (confirmation) {
-            alert("User Profile Successfully Updated");
-            window.location.href = 'OwnerUserProfile.html';
+            const userData = {
+                privilege: document.getElementById('privilege').value,
+                title: document.getElementById('title').value
+            };
+            axios.put('/Owner/Profile/Update/' + localStorage.getItem('selectedTitle'), userData)
+                .then(function (response) {
+                    console.log(response.data);
+                    alert("Profile Successfully Updated");
+                    localStorage.removeItem('selectedTitle');
+                    window.location.href = "OwnerUserProfile.html";
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                });
+        } else {
+            // If "No" is clicked, return to the current page
+            return false; // Prevent form submission
         }
     }
 
@@ -144,6 +203,7 @@
     }
 
     function UserProfile() {
+        localStorage.removeItem('selectedTitle');
         window.location.href = 'OwnerUserProfile.html';
     }
 

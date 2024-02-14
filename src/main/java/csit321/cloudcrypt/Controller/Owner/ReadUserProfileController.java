@@ -22,7 +22,7 @@ public class ReadUserProfileController {
         this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     }
 
-    @GetMapping(path = "/Read")
+    @GetMapping(path = "/Read/{param}")
     public ResponseEntity<String> readProfile(@PathVariable String param){
         try {
             // if param has numbers then invalid

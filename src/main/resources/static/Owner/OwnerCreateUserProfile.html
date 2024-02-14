@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -108,15 +109,20 @@
         <button class="logout-btn btn-outline-light ml-auto">Logout</button>
     </div>
 </nav>
-<form id="userProfileForm" action="/submit" method="post">
+<form>
     <header>
         <h1>Create User Profile</h1>
     </header>
+    <label for="privilege">Privilege:</label>
+    <select name="privilege" id="privilege">
+        <option value="customer">Customer</option>
+        <option value="admin">Admin</option>
+        <option value="owner">Owner</option>
+    </select>
+
     <label for="title">Title:</label>
     <input type="text" id="title" name="title" required>
 
-    <label for="privilege">Privilege:</label>
-    <input type="text" id="privilege" name="privilege" required>
     <button type="button" onclick="confirmCreateUserProfile()" class="defaultButton">Create</button>
 </form>
 
@@ -142,8 +148,22 @@
     function confirmCreateUserProfile() {
         var confirmation = confirm("Are you sure you want to create the user profile?");
         if (confirmation) {
-            alert("User Profile Successfully Created");
-            window.location.href = 'OwnerUserProfile.html';
+            const userData = {
+                title: document.getElementById('title').value,
+                privilege: document.getElementById('privilege').value
+            };
+            axios.post('/Profile/Create', userData)
+                .then(function (response) {
+                    console.log(response.data);
+                    alert("User Profile Successfully Created");
+                    window.location.href = "OwnerUserProfile.html";
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                });
+        } else {
+            // If "No" is clicked, return to the current page
+            return false; // Prevent form submission
         }
     }
 </script>

@@ -10,6 +10,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import reactor.core.publisher.Mono;
 
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.io.OutputStreamWriter;
 import java.util.Scanner;
@@ -48,14 +49,17 @@ public class DropboxIntegrationController {
                 .bodyToMono(String.class);
     }
 
+
     private MultiValueMap<String, String> getAccessTokenRequest(String code) {
         // build request
         return new LinkedMultiValueMap<>();
     }
+
+
     @PostMapping("/Token")
     public static String requestAccessToken(String authorizationCode, String redirectUri, String appKey, String appSecret) throws Exception {
 
-        URL url = new URL("https://api.dropboxapi.com/oauth2/token");
+        URL url = new URI("https://api.dropboxapi.com/oauth2/token").toURL();
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");

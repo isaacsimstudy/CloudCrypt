@@ -109,7 +109,11 @@
         #DownloadButton:disabled {
             background-color: #999; /* Change to the desired color for disabled state */
             cursor: not-allowed;   /* Change cursor to indicate non-clickable */
-            /* Add any additional styles for the disabled state */
+        }
+
+        #DeleteButton:disabled {
+            background-color: #999; /* Change to the desired color for disabled state */
+            cursor: not-allowed;   /* Change cursor to indicate non-clickable */
         }
 
         .addNewKey {
@@ -154,7 +158,7 @@
             </header>
         </td>
         <td>
-            <button id ="AddButton" class="defaultButton" class="nav-links" onclick="CustomerAddKey()">Add New Key</button> <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
+            <button id ="AddButton" class="defaultButton" class="nav-links" onclick="CustomerAddKey()">Add New Key</button> <button id ="DownloadButton" class="defaultButton" onclick="DownloadKey()">Download</button> <button id ="DeleteButton" class="defaultButton" onclick="DeleteKey()">Delete</button>
         </td>
     </tr>
 </table>
@@ -176,15 +180,27 @@
 
 <div id="addNewKey" class="addNewKey">
     <div class="addNewKey-content">
-        <h2>Select Encryption Key</h2>
-        <button onclick="KeyManagement()">Key Management</button><br/>
-        <button onclick="CurrentUpload()">Current Upload</button><br/>
-        <input type="file" id="fileInput" style="display: none;" multiple>
-        <button onclick="AutoGenerate()">Generate Automatically</button><br/>
+        <h2>Add New Key:</h2>
+        <label for="keyName">Key Name:</label>
+        <input type="text" id="keyName" name="keyName" required><br/>
+
+        <label for="key">Key:</label>
+        <input type="text" id="key" name="key" required><br/>
+        <button onclick="addNewKey()">Add New Key</button><br/>
         <button onclick="CancelAddNewKey()">Cancel</button>
     </div>
 </div>
 
+<!--<div id="addNewKey" class="addNewKey">-->
+<!--    <div class="addNewKey-content">-->
+<!--        <h2>Select Encryption Key</h2>-->
+<!--        <button onclick="KeyManagement()">Key Management</button><br/>-->
+<!--        <button onclick="CurrentUpload()">Current Upload</button><br/>-->
+<!--        <input type="file" id="fileInput" style="display: none;" multiple>-->
+<!--        <button onclick="AutoGenerate()">Generate Automatically</button><br/>-->
+<!--        <button onclick="CancelAddNewKey()">Cancel</button>-->
+<!--    </div>-->
+<!--</div>-->
 <script>
     function Home() {
         window.location.href = 'CustomerHomePage.html';
@@ -249,7 +265,37 @@
 </script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    function DownloadFile() {
+    //todo: 1. make two string input fields for the key and the name of the key
+    function addNewKey()
+    {
+        var keyName = document.getElementById("keyName").value;
+        var key = document.getElementById("key").value;
+
+        var confirmation = confirm("Are you sure you want to add this Key?");
+        if (confirmation) {
+            // axios.put('/Owner/Profile/Suspend/' + suspendTitle)
+            //     .then(function (response) {
+            //         console.log(response.data);
+            //         alert("User Profile Successfully Suspended");
+            //         // Reset the state of the "Select" button
+            //         selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
+            //         $('#SuspendButton').prop('disabled', true);
+            //         localStorage.removeItem('selectedTitle');
+            //         // Return to the page
+            //     })
+            //     .catch(function (error) {
+            //         console.error("An error occurred:", error);
+            //         alert(error);
+            //     });
+            //Verify codes for
+            //Multi Authentication
+            alert("Key added successfully");
+            // Perform any additional actions upon suspension if needed
+            // Return to the page
+        }
+    }
+
+    function DownloadKey() {
         var selectButton = $('#SelectButton');
 
         var confirmation = confirm("Are you sure you want to download this Key?");
@@ -268,6 +314,7 @@
     $(function () {
         // Disable the "Suspend" button by default
         $('#DownloadButton').prop('disabled', true);
+        $('#DeleteButton').prop('disabled', true);
 
         // Attach a click event handler to the "Select" button
         $('#SelectButton').on('click', function () {
@@ -281,6 +328,7 @@
             // Enable or disable the "Suspend" button based on the class of the "Select" button
             var isDefaultButton = $(this).hasClass('defaultButton');
             $('#DownloadButton').prop('disabled', isDefaultButton);
+            $('#DeleteButton').prop('disabled', isDefaultButton);
         });
     });
 </script>

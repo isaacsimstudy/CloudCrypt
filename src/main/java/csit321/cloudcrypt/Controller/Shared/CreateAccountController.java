@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import csit321.cloudcrypt.Controller.Customer.CreateCustomerDetailController;
+import csit321.cloudcrypt.Controller.Customer.CreateLoginSettingController;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -22,13 +24,19 @@ public class CreateAccountController {
     private final ObjectMapper objectMapper;
     private final UserAccountRepository userAccountRepository;
     private final UserProfileRepository userProfileRepository;
+    private final CreateCustomerDetailController createCustomerDetailController;
+    private final CreateLoginSettingController createLoginSettingController;
 
     @Autowired
     public CreateAccountController(UserAccountService userAccountService, UserProfileService userProfileService,
                                    UserAccountRepository userAccountRepository,
-                                   UserProfileRepository userProfileRepository) {
+                                   UserProfileRepository userProfileRepository,
+                                   CreateCustomerDetailController createCustomerDetailController,
+                                   CreateLoginSettingController createLoginSettingController) {
         this.userAccountService = userAccountService;
         this.userProfileService = userProfileService;
+        this.createCustomerDetailController = createCustomerDetailController;
+        this.createLoginSettingController = createLoginSettingController;
         this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         this.userAccountRepository = userAccountRepository;
         this.userProfileRepository = userProfileRepository;
@@ -60,6 +68,15 @@ public class CreateAccountController {
                 return new ResponseEntity<>("Missing fields", HttpStatus.BAD_REQUEST);
             }
             userAccountService.createAccount(username, password, title, email, firstName, lastName, address, phoneNumber, dateOfBirth);
+            //if title = customer, create notification, create login setting, create activity log
+            if (title.equals("customer")) {
+                if (createCustomerDetailController.createDetail(json).getStatusCode() != HttpStatus.OK) {
+                    return new ResponseEntity<>("Failed to create customer detail", HttpStatus.BAD_REQUEST);
+                }
+                if (createLoginSettingController.createLoginSetting(json).getStatusCode() != HttpStatus.OK) {
+                    return new ResponseEntity<>("Failed to create login setting", HttpStatus.BAD_REQUEST);
+                }
+            }
             return new ResponseEntity<>("Success",HttpStatus.OK);
         }
         catch (Exception e) {

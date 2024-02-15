@@ -66,10 +66,18 @@ public class LoginSettingServiceImpl implements LoginSettingService {
                                      String loginTime,
                                      String twoFactorAuth) {
         LoginSetting loginSetting = loginSettingRepository.findLoginSettingByUserAccount(user).orElseThrow();
-        loginSetting.setLoginAttempts(Integer.parseInt(loginAttempts));
-        loginSetting.setLoginStatus(loginStatus);
-        loginSetting.setLoginTime(OffsetDateTime.parse(loginTime));
-        loginSetting.setTwoFactorAuth(twoFactorAuth);
+        if (loginAttempts != null) {
+            loginSetting.setLoginAttempts(Integer.parseInt(loginAttempts));
+        }
+        if (loginStatus != null) {
+            loginSetting.setLoginStatus(loginStatus);
+        }
+        if (loginTime != null) {
+            loginSetting.setLoginTime(OffsetDateTime.parse(loginTime));
+        }
+        if (twoFactorAuth != null) {
+            loginSetting.setTwoFactorAuth(twoFactorAuth);
+        }
         loginSettingRepository.save(loginSetting);
         System.out.println("Login setting updated");
         return "Success";

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Customer Feedback Form</title>
     <!-- Bootstrap CSS -->
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -150,7 +151,22 @@
         }
     }
     function SubmitFeedback() {
-        // insert code here
+        //Initiate emailJS
+        emailjs.init("fljmK1Spno-FhP6lQ");
+        // Send the OTP via Email.js using the API key
+        emailjs.send("service_cloudcrypt", "template_7bwy0yb", {
+            to_email: "webhostingsim@gmail.com",
+            user: localStorage.getItem('username'),
+            message: document.getElementById('feedback').value
+        })
+            .then(function(response) {
+                alert("Email sent. ", response.status, response.text);
+
+                window.location.href = 'CustomerSettings.html';
+            })
+            .catch(function(error) {
+                console.error("Error sending email:", error);
+            });
     }
 
     function Back() {

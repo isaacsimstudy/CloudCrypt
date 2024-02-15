@@ -97,9 +97,15 @@
                 .then(function (response) {
                     console.log(response.data);
                     alert("Success, account activated");
-                    localStorage.setItem('username', '');
-                    localStorage.setItem('otp', '');
-                    window.location.href = 'index.html';
+                    localStorage.removeItem('otp');
+                    if (localStorage.getItem('title') === "customer")
+                    {
+                        window.location.href = 'Customer/CustomerHomePage.html';
+                    }
+                    else if (localStorage.getItem('title') === "admin")
+                    {
+                        window.location.href = 'Admin/AdminHomePage.html';
+                    }
                 }).catch(function (error) {
                     console.error("An error occurred:", error);
                     alert(error);

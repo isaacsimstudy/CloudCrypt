@@ -125,9 +125,9 @@ CREATE TABLE security_policies (
     user_account        uuid        NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
     policy_id           uuid          NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     policy_name         VARCHAR(255)    NOT NULL,
-    description         TEXT,
-    enforcement_level   VARCHAR(50),
-    policy_type         VARCHAR(50),
-    parameters          JSONB,
+    description         TEXT            NOT NULL,
+    enforcement_level   VARCHAR(50)     NOT NULL CHECK ( enforcement_level IN ('low', 'medium', 'high')),
+    policy_type         VARCHAR(50)    NOT NULL CHECK ( policy_type IN ('password', '2fa', 'encryption')),
+    parameters          JSONB         NOT NULL DEFAULT '{}',
     status              VARCHAR(50)
 );

@@ -132,8 +132,8 @@
                 if (Array.isArray(response.data) && response.data.length > 0) {
                     appendToAdminTable(response.data);
                 } else {
-                    console.error("No user data found for the provided username");
-                    alert("No user data found for the provided username");
+                    console.error("No user data found");
+                    alert("No user data found");
                 }
             })
             .catch(function (error) {

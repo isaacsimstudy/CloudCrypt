@@ -69,6 +69,7 @@ public class UserAccountServiceImpl implements UserAccountService{
         List<UserAccount> userAccountList = switch(param) {
             case "active" -> userAccountRepository.findUserAccountsByIsActiveTrue();
             case "privilege" -> userAccountRepository.findAllByUserProfile_Privilege("admin");
+            case "customers" -> userAccountRepository.findAllByUserProfile_Privilege("customer");
             case "all" -> userAccountRepository.findAll();
             default -> {
                 UserAccount userAccount = userAccountRepository.findUserAccountByUsername(param).orElse(null);

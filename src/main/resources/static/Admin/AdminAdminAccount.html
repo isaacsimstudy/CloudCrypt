@@ -9,6 +9,7 @@
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <style>
     /* Basic styles for the navigation */
     body {
@@ -97,11 +98,102 @@
     #SuspendButton:disabled {
       background-color: #999; /* Change to the desired color for disabled state */
       cursor: not-allowed;   /* Change cursor to indicate non-clickable */
-      /* Add any additional styles for the disabled state */
+    }
+    #updateButton:disabled {
+      background-color: #999; /* Change to the desired color for disabled state */
+      cursor: not-allowed;   /* Change cursor to indicate non-clickable */
     }
   </style>
 </head>
 <body>
+<script>
+  window.onload = function () {
+    // Retrieve the shared variable from localStorage
+    const username = localStorage.getItem('username');
+
+    // Check if the username string exists
+    if (!username) {
+      alert("Error. Please try again");
+      window.location.href = '../index.html';
+    }
+    else {
+      retrieveData(username);
+    }
+  };
+  function retrieveData() {
+    const username = localStorage.getItem('username');
+    console.log(username);
+    axios.get('/Account/Read/privilege')
+            .then(function (response) {
+              console.log(response.data);
+              if (Array.isArray(response.data) && response.data.length > 0) {
+                appendToAdminTable(response.data);
+              } else {
+                console.error("No user data found for the provided username");
+                alert("No user data found for the provided username");
+              }
+            })
+            .catch(function (error) {
+              console.error("An error occurred:", error);
+              alert(error);
+            });
+  }
+
+  function appendToAdminTable(userList) {
+    const tableBody = document.getElementById('AdminAdminAccTableBody');
+
+    // Clear existing rows in the table body
+    tableBody.innerHTML = '';
+
+    // Iterate through the list of users and append each to the table
+    userList.forEach((userData, index) => {
+      // Create a new row
+      const newRow = tableBody.insertRow();
+
+      // Populate cells with user data
+      const serialNumberCell = newRow.insertCell(0);
+      const usernameCell = newRow.insertCell(1);
+      const emailCell = newRow.insertCell(2);
+      const firstNameCell = newRow.insertCell(3);
+      const lastNameCell = newRow.insertCell(4);
+      const activeCell = newRow.insertCell(5);
+      const actionCell = newRow.insertCell(6);
+
+      // serial number is incremental for table
+      serialNumberCell.textContent = (index + 1).toString();
+      usernameCell.textContent = userData.username;
+      emailCell.textContent = userData.email;
+      firstNameCell.textContent = userData.firstName;
+      lastNameCell.textContent = userData.lastName;
+      activeCell.textContent = userData.isActive;
+
+      const selectButton = document.createElement('button');
+      selectButton.textContent = 'Select';
+      selectButton.className = 'defaultButton';
+      selectButton.addEventListener('click', function() {
+        localStorage.setItem('selectedUser', userData.username);
+        console.log(localStorage.getItem('selectedUser'));
+        // Toggle the classes when the button is clicked
+        $(this).toggleClass('defaultButton alternateButton');
+
+        // Change the text content based on the current class
+        var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
+        $(this).text(newText);
+
+        // Enable or disable the "Suspend" and "Update" button based on the class of the "Select" button
+        var isDefaultButton = $(this).hasClass('defaultButton');
+        $('#SuspendButton').prop('disabled', isDefaultButton);
+        $('#updateButton').prop('disabled', isDefaultButton);
+      });
+
+      actionCell.appendChild(selectButton);
+    });
+  }
+
+  function updateAdmin() {
+    window.location.href = 'AdminUpdateAdmin.html';
+  }
+</script>
 <nav class="navbar navbar-expand-lg navbar-dark">
   <a class="navbar-brand" href="#">CloudCrypt</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -128,7 +220,6 @@
     <button class="logout-btn btn-outline-light ml-auto" onclick="LogOut()">Logout</button>
   </div>
 </nav>
-<!-- Rest of your HTML content -->
 
 <table id="AdminCreateAdminTable">
   <tr>
@@ -138,17 +229,19 @@
       </header>
     </td>
     <td>
-      <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="AdminCreateAdminAcc()">Create</button> <button id ="SuspendButton" class="defaultButton" onclick="confirmSuspend()">Suspend</button>
+      <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="AdminCreateAdminAcc()">Create</button> <button id ="SuspendButton" class="defaultButton" onclick="confirmSuspend()">Suspend</button> <button id ="updateButton" class="defaultButton" onclick="updateAdmin()">Update</button>
     </td>
   </tr>
 </table>
 
 <table id="AdminAdminAccTable">
   <tr>
-    <th>S/N</th>
-    <th>Name</th>
-    <th>Type</th>
-    <th>Status</th>
+    <th onclick="sortTable(0)">S/N</th>
+    <th onclick="sortTable(1)">Name</th>
+    <th onclick="sortTable(2)">Email</th>
+    <th onclick="sortTable(3)">First Name</th>
+    <th onclick="sortTable(4)">Last Name</th>
+    <th>Active Status</th>
     <th>Action</th>
   </tr>
   <tbody id="AdminAdminAccTableBody">
@@ -157,7 +250,7 @@
     <td></td>
     <td></td>
     <td></td>
-    <td><button id="SelectButton" class="defaultButton">Select</button> <button id="UpdateButton" class="defaultButton" onclick="AdminUpdateAdmin()">Update</button></td>
+    <td><button id="SelectButton" class="defaultButton">Select</button>
   </tr>
   </tbody>
 </table>
@@ -178,31 +271,28 @@
 
     var confirmation = confirm("Are you sure you want to suspend this admin account?");
     if (confirmation) {
-      alert("Admin Account Successfully Suspended");
-      // Reset the state of the "Select" button
-      selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
-      $('#SuspendButton').prop('disabled', true);
-      // Perform any additional actions upon suspension if needed
-      // Return to the page
+      var suspendUser = localStorage.getItem('selectedUser');
+      axios.post('/Account/Suspend', { username: suspendUser })
+              .then(function (response) {
+                console.log(response.data);
+                alert("Admin Account Successfully Suspended");
+                // Reset the state of the "Select" button
+                selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
+                $('#SuspendButton').prop('disabled', true);
+                localStorage.removeItem('selectedUser');
+                // Return to the page
+                window.location.href = "AdminAdminAccount.html";
+              })
+              .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+              });
     }
   }
   $(function () {
     // Disable the "Suspend" button by default
     $('#SuspendButton').prop('disabled', true);
-
-    // Attach a click event handler to the button
-    $('#SelectButton').on('click', function () {
-      // Toggle the classes when the button is clicked
-      $(this).toggleClass('defaultButton alternateButton');
-
-      // Change the text content based on the current class
-      var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
-      $(this).text(newText);
-
-      // Enable or disable the "Suspend" button based on the class of the "Select" button
-      var isDefaultButton = $(this).hasClass('defaultButton');
-      $('#SuspendButton').prop('disabled', isDefaultButton);
-    });
+    $('#updateButton').prop('disabled', true);
   });
 </script>
 
@@ -242,6 +332,34 @@
     } else {
     }
   }
+  function sortTable(columnIndex) {
+    var table, rows, switching, i, x, y, shouldSwitch;
+    table = document.getElementById("AdminAdminAccTable");
+    switching = true;
+
+    while (switching) {
+      switching = false;
+      rows = table.rows;
+
+      for (i = 1; i < rows.length - 1; i++) {
+        shouldSwitch = false;
+        x = rows[i].getElementsByTagName("td")[columnIndex];
+        y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+
+      if (shouldSwitch) {
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+      }
+    }
+  }
+
+
 </script>
 </body>
 </html>

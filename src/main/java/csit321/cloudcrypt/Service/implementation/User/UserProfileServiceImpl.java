@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.stereotype.Service;
 import csit321.cloudcrypt.Entity.UserProfile;
-import csit321.cloudcrypt.Service.User.UserProfileService;
 import csit321.cloudcrypt.Repository.UserProfileRepository;
+import csit321.cloudcrypt.Service.User.UserProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;

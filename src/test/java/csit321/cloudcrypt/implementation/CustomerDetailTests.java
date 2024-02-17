@@ -1,6 +1,5 @@
 package csit321.cloudcrypt.implementation;
 
-import csit321.cloudcrypt.Entity.CustomerDetail;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Service.implementation.CustomerDetailServiceImpl;
 import org.junit.jupiter.api.Test;

@@ -3,6 +3,8 @@ package csit321.cloudcrypt.Controller.Shared;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import csit321.cloudcrypt.Controller.Customer.CreateCustomerDetailController;
+import csit321.cloudcrypt.Controller.Customer.CreateLoginSettingController;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Repository.UserProfileRepository;
 import csit321.cloudcrypt.Service.User.UserAccountService;
@@ -11,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import csit321.cloudcrypt.Controller.Customer.CreateCustomerDetailController;
-import csit321.cloudcrypt.Controller.Customer.CreateLoginSettingController;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")

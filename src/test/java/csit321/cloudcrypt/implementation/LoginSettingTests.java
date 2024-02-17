@@ -1,12 +1,8 @@
 package csit321.cloudcrypt.implementation;
 
-import csit321.cloudcrypt.Entity.LoginSetting;
-import csit321.cloudcrypt.Entity.UserAccount;
 import csit321.cloudcrypt.Repository.LoginSettingRepository;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
-import csit321.cloudcrypt.Service.LoginSettingService;
 import csit321.cloudcrypt.Service.implementation.LoginSettingServiceImpl;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

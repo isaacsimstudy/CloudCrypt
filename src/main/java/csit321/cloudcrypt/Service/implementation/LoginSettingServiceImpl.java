@@ -3,12 +3,10 @@ package csit321.cloudcrypt.Service.implementation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import csit321.cloudcrypt.Entity.LoginSetting;
 import csit321.cloudcrypt.Entity.UserAccount;
 import csit321.cloudcrypt.Repository.LoginSettingRepository;
 import csit321.cloudcrypt.Service.LoginSettingService;
-
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

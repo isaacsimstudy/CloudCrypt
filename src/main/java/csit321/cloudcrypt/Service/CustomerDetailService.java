@@ -1,6 +1,5 @@
 package csit321.cloudcrypt.Service;
 
-import csit321.cloudcrypt.Entity.CustomerDetail;
 import csit321.cloudcrypt.Entity.UserAccount;
 import org.springframework.stereotype.Service;
 

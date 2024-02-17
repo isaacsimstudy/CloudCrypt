@@ -4,12 +4,7 @@ import csit321.cloudcrypt.Entity.ActivityLog;
 import csit321.cloudcrypt.Repository.ActivityLogRepository;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Service.ActivityLogService;
-import csit321.cloudcrypt.Entity.UserAccount;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

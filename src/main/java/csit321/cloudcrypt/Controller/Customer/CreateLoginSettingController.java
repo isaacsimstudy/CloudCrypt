@@ -7,12 +7,12 @@ import csit321.cloudcrypt.Entity.UserAccount;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Service.LoginSettingService;
 import csit321.cloudcrypt.Service.User.UserAccountService;
-import lombok.extern.java.Log;
-import java.time.OffsetDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.OffsetDateTime;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")

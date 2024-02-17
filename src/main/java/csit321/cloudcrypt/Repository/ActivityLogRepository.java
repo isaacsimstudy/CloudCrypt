@@ -5,8 +5,8 @@ import csit321.cloudcrypt.Entity.Cloud;
 import csit321.cloudcrypt.Entity.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
 public interface ActivityLogRepository extends JpaRepository<ActivityLog, UUID> {
     List<ActivityLog> findActivityLogByUserAccount(UserAccount userAccount);

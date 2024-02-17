@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import csit321.cloudcrypt.Entity.UserAccount;
 import csit321.cloudcrypt.Entity.UserProfile;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Repository.UserProfileRepository;
@@ -11,7 +12,6 @@ import csit321.cloudcrypt.Service.User.UserAccountService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import csit321.cloudcrypt.Entity.UserAccount;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;

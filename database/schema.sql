@@ -121,17 +121,8 @@ CREATE TABLE email_queue
     email_body  varchar(255) NOT NULL
 );
 
-CREATE TABLE share
-(
-    share_id     uuid       NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
-    user_account uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
-    file_id      uuid       NOT NULL REFERENCES Cloud(file_id) ON UPDATE CASCADE,
-    share_type   varchar(255) NOT NULL CHECK ( share_type IN ('read', 'write')),
-    share_with   uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
-    status       varchar(255) NOT NULL CHECK ( status IN ('active', 'inactive'))
-);
-
 CREATE TABLE security_policies (
+    user_account        uuid        NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
     policy_id           uuid          NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     policy_name         VARCHAR(255)    NOT NULL,
     description         TEXT,
@@ -140,7 +131,3 @@ CREATE TABLE security_policies (
     parameters          JSONB,
     status              VARCHAR(50)
 );
-
-
-
-

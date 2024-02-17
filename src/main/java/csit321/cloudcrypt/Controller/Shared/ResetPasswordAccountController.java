@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "/Account")
-public class ResetPwAccountController {
+public class ResetPasswordAccountController {
 
     private final UserProfileService userProfileService;
     private final UserAccountService userAccountService;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public ResetPwAccountController(UserAccountService userAccountService, UserProfileService userProfileService) {
+    public ResetPasswordAccountController(UserAccountService userAccountService, UserProfileService userProfileService) {
         this.userAccountService = userAccountService;
         this.userProfileService = userProfileService;
         this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());

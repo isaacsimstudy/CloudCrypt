@@ -1,7 +1,7 @@
 package csit321.cloudcrypt.Service.User;
 
-import org.springframework.stereotype.Service;
 import csit321.cloudcrypt.Entity.UserProfile;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface UserProfileService {

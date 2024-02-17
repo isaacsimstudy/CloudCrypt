@@ -4,14 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import csit321.cloudcrypt.Entity.UserAccount;
-import csit321.cloudcrypt.Repository.UserAccountRepository;
-import org.apache.catalina.User;
-import org.springframework.stereotype.Service;
 import csit321.cloudcrypt.Entity.NotificationSetting;
-import csit321.cloudcrypt.Service.NotificationSettingService;
+import csit321.cloudcrypt.Entity.UserAccount;
 import csit321.cloudcrypt.Repository.NotificationSettingRepository;
+import csit321.cloudcrypt.Repository.UserAccountRepository;
+import csit321.cloudcrypt.Service.NotificationSettingService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;

@@ -165,7 +165,7 @@
                     })
                         .then(function(response) {
                             alert("Email sent. ", response.status, response.text);
-
+                            localStorage.setItem('title', document.getElementById('title').value);
                             window.location.href = 'OTPSignUp.html';
                         })
                         .catch(function(error) {

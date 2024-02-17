@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>View Policies</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <title>Update Account Information</title>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -49,23 +49,21 @@
         }
         form {
             max-width: 30%;
-            margin: 20px;
+            margin: 20px auto;
             background-color: #f2f2f2;
-            text-align: left;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            border: 1px solid #ddd;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-            width: 100%;
         }
-        input {
-            display: block;
-            margin-bottom: 8px;
-            width: 20%; /* Adjust the width as needed */
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
         }
 
         .defaultButton {
@@ -78,54 +76,7 @@
         .defaultButton:hover {
             background-color: #555;
         }
-        #policyTable {
-            border-collapse: collapse;
-            width: 90%;
-            margin: 20px 20px;
-        }
 
-        #policyTable td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-            background-color: #f2f2f2;
-        }
-        h1 {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px 20px;
-        }
-        h2 {
-            font-family: Arial, sans-serif;
-            text-align: left;
-            padding-left: 20px;
-        }
-
-        #mfaToggleBar {
-            display: flex;
-            background-color: #f2f2f2;
-        }
-        #mfaStatusLabel {
-            margin-right: 10px;
-        }
-        #enableMFABtn {
-            background-color: #777;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            cursor: pointer;
-            margin-left: 20px;
-        }
-        #enableMFABtn:hover {
-            background-color: #555;
-        }
-        .enabled {
-            color: green;
-        }
-
-        .disabled {
-            color: red;
-        }
     </style>
 </head>
 <body>
@@ -153,64 +104,76 @@
                 <a class="nav-link" onclick="AdminSettings()">Settings</a>
             </li>
         </ul>
-        <button class="logout-btn btn-outline-light ml-auto">Logout</button>
+        <button class="logout-btn btn-outline-light ml-auto" onclick="LogOut()">Logout</button>
     </div>
 </nav>
 <!-- Rest of your HTML content -->
-<table id="policyTable">
-    <tr>
-        <td>
-            <h1>Policies</h1>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <h2>Password Requirement</h2>
-            <form action="/submit" method="post" onsubmit="return validation()">
-                <label for="MTC">Minimum Total Characters:</label>
-                <input id="MTC" >
+<form action="/submit" method="post" onsubmit="return validation()">
+    <header>
+        <h1>Update Account Information</h1>
+    </header>
+    <label for="fName">First Name:</label>
+    <input type="text" id="fName" name="fName" required>
 
-                <label for="CSS">Contain Special Character:</label>
-                <input  id="CSS" >
+    <label for="lName">Last Name:</label>
+    <input type="text" id="lName" name="lName" required>
 
-                <label for="CUC">Contain UpperCase:</label>
-                <input  id="CUC" >
-                <button id ="UpdateButton" type="submit" class="defaultButton">Update</button>
-            </form>
-        </td>
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
 
-    </tr>
-    <tr>
-        <td>
-            <h2 id="mfaStatusLabel">Multi-Factor Authentication:</h2>
-            <div id="mfaToggleBar">
-                <button id="enableMFABtn" class="enableMFA" onclick="toggleMFA()">Enable</button>
-            </div>
-        </td>
-    </tr>
+    <label for="address">Address:</label>
+    <input type="text" id="address" name="address" required>
 
-</table>
+    <label for="dob">Date Of Birth:</label>
+    <input type="date" id="dob" min="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" required>
+
+    <button id="Update" type="submit" class="defaultButton">Update</button>
+</form>
+
 <script>
-    function toggleMFA() {
-        var mfaStatus = document.getElementById("mfaStatusLabel");
-        var enableMFABtn = document.getElementById("enableMFABtn");
+    document.addEventListener("DOMContentLoaded", function () {
+        // Assume you have a variable `dataRetrieved` indicating whether data is retrieved or not
+        var dataRetrieved = true/* true or false based on your condition */;
 
-        if (enableMFABtn.textContent === "Enable") {
-            mfaStatus.classList.add("enabled");
-            mfaStatus.classList.remove("disabled");
-            enableMFABtn.textContent = "Disable";
+        // Function to disable form fields
+        function disableFields() {
+            var form = document.getElementById("updateForm");
+
+            // Array of field IDs to be disabled
+            var fieldsToDisable = ["email", "username" ];
+
+            // Loop through the field IDs and disable them
+            fieldsToDisable.forEach(function (fieldId) {
+                var field = document.getElementById(fieldId);
+                if (field) {
+                    field.disabled = dataRetrieved; // Disable if data is retrieved
+                }
+            });
+        }
+        // Call the function to disable fields on page load
+        disableFields();
+    });
+
+    var password = document.getElementById("new_password")
+        , confirm_password = document.getElementById("confirm_password");
+
+    function validatePassword(){
+        if(password.value !== confirm_password.value) {
+            confirm_password.setCustomValidity("Passwords Don't Match");
         } else {
-            mfaStatus.classList.remove("enabled");
-            mfaStatus.classList.add("disabled");
-            enableMFABtn.textContent = "Enable";
+            confirm_password.setCustomValidity('');
         }
     }
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
     function validation() {
+
         // Show the confirmation dialog
-        var confirmation = confirm("Are you sure you want to update policies?");
+        var confirmation = confirm("Are you sure you want to update your account information?");
 
         if (confirmation) {
             // If "Yes" is clicked, redirect to admin account page and show success message
+            redirectToSettings();
             return false; // Prevent form submission
         } else {
             // If "No" is clicked, return to the current page
@@ -218,7 +181,16 @@
         }
     }
 
+    function redirectToSettings() {
+        alert("Account Information Successfully Updated!");
+        // Redirect to user profile page
+        window.location.href = 'OwnerSettings.html';
 
+    }
+
+    function AdminHome() {
+        window.location.href = 'AdminHomePage.html';
+    }
     function AdminCustomerAcc() {
         window.location.href = 'AdminCustomerAccount.html';
     }
@@ -231,6 +203,18 @@
 
     function AdminSettings() {
         window.location.href = 'AdminSettings.html';
+    }
+    function LogOut() {
+        // Display a confirmation dialog
+        var confirmed = window.confirm("Are you sure you want to log out?");
+
+        // Check the user's choice
+        if (confirmed) {
+            // User clicked "OK" (Yes), proceed with log out
+            localStorage.setItem('username', '');
+            window.location.href = '../index.html';
+        } else {
+        }
     }
 </script>
 </body>

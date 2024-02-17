@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>View Admin Accounts</title>
+  <title>View Customer Accounts</title>
   <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
   <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
@@ -48,29 +48,29 @@
       background-color: #777;
     }
 
-    #AdminAdminAccTable {
+    #AdminCustomerAccTable {
       border-collapse: collapse;
       width: 90%;
       margin: 20px 20px;
     }
 
-    #AdminAdminAccTable th, td {
+    #AdminCustomerAccTable th, td {
       border: 1px solid #ddd;
       padding: 8px;
       text-align: left;
     }
 
-    #AdminAdminAccTable th {
+    #AdminCustomerAccTable th {
       background-color: #f2f2f2;
     }
 
-    #AdminCreateAdminTable {
+    #AdminCreateCustomerTable {
       border-collapse: collapse;
       width: 90%;
       margin: 20px 20px;
     }
 
-    #AdminCreateAdminTable td {
+    #AdminCreateCustomerTable td {
       border: 1px solid #ddd;
       padding: 8px;
       text-align: center;
@@ -121,43 +121,44 @@
       <li class="nav-item">
         <a class="nav-link" onclick="AdminPolicies()">Policies</a>
       </li>
+
       <li class="nav-item">
         <a class="nav-link" onclick="AdminSettings()">Settings</a>
       </li>
     </ul>
-    <button class="logout-btn btn-outline-light ml-auto">Logout</button>
+    <button class="logout-btn btn-outline-light ml-auto" onclick="LogOut()">Logout</button>
   </div>
 </nav>
 <!-- Rest of your HTML content -->
 
-<table id="AdminCreateAdminTable">
+<table id="AdminCreateCustomerTable">
   <tr>
     <td>
       <header>
-        <h1>Admin Accounts</h1>
+        <h1>Customer Accounts</h1>
       </header>
     </td>
-    <td>
-      <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="AdminCreateAdminAcc()">Create</button> <button id ="SuspendButton" class="defaultButton" onclick="confirmSuspend()">Suspend</button>
-    </td>
+      <td>
+        <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="AdminCreateCustomerAcc()">Create</button> <button id ="SuspendButton" class="defaultButton" onclick="confirmSuspend()">Suspend</button>
+  </td>
   </tr>
 </table>
 
-<table id="AdminAdminAccTable">
+<table id="AdminCustomerAccTable">
   <tr>
     <th>S/N</th>
     <th>Name</th>
-    <th>Type</th>
+    <th>Tier</th>
     <th>Status</th>
     <th>Action</th>
   </tr>
-  <tbody id="AdminAdminAccTableBody">
+  <tbody id="AdminCustomerAccTableBody">
   <tr>
     <td></td>
     <td></td>
     <td></td>
     <td></td>
-    <td><button id="SelectButton" class="defaultButton">Select</button> <button id="UpdateButton" class="defaultButton" onclick="AdminUpdateAdmin()">Update</button></td>
+    <td><button id="SelectButton" class="defaultButton">Select</button> <button id="UpdateButton" class="defaultButton" onclick="AdminUpdateCustomer()">Update</button> <button id="LogsButton" class="defaultButton" class="nav-links" onclick="AdminCustomerLogs()">Logs</button></td>
   </tr>
   </tbody>
 </table>
@@ -166,7 +167,7 @@
 
 <script>
   function UpdateAdminCustomerAccTable(user) {
-    var tableBody = $('#AdminAdminAccTableBody');
+    var tableBody = $('#AdminCustomerAccTableBody');
     var newRow = '<tr><td>'+user.id+'</td><td>'+user.name+'</td><td>'+user.tier+'</td><td>'+user.status+'</td></tr>';
     tableBody.append(newRow);
   }
@@ -202,17 +203,20 @@
       // Enable or disable the "Suspend" button based on the class of the "Select" button
       var isDefaultButton = $(this).hasClass('defaultButton');
       $('#SuspendButton').prop('disabled', isDefaultButton);
-    });
   });
+});
 </script>
 
 
 <script>
-  function AdminUpdateAdmin(){
-    window.location.href = 'AdminUpdateAdmin.html';
+  function AdminUpdateCustomer(){
+    window.location.href = 'AdminUpdateCustomer.html';
   }
-  function AdminCreateAdminAcc(){
-    window.location.href = 'AdminCreateAdminAcc.html';
+  function AdminCreateCustomerAcc(){
+    window.location.href = 'AdminCreateCustomerAcc.html';
+  }
+  function AdminCustomerLogs(){
+    window.location.href ='AdminCustomerLogs.html'
   }
   function AdminHome() {
     window.location.href = 'AdminHomePage.html';
@@ -229,6 +233,18 @@
 
   function AdminSettings() {
     window.location.href = 'AdminSettings.html';
+  }
+  function LogOut() {
+    // Display a confirmation dialog
+    var confirmed = window.confirm("Are you sure you want to log out?");
+
+    // Check the user's choice
+    if (confirmed) {
+      // User clicked "OK" (Yes), proceed with log out
+      localStorage.setItem('username', '');
+      window.location.href = '../index.html';
+    } else {
+    }
   }
 </script>
 </body>

@@ -100,10 +100,12 @@
                     localStorage.removeItem('otp');
                     if (localStorage.getItem('title') === "customer")
                     {
+                        localStorage.removeItem('title');
                         window.location.href = 'Customer/CustomerHomePage.html';
                     }
                     else if (localStorage.getItem('title') === "admin")
                     {
+                        localStorage.removeItem('title');
                         window.location.href = 'Admin/AdminHomePage.html';
                     }
                 }).catch(function (error) {

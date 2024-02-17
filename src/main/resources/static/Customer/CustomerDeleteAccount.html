@@ -2,6 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <title>Settings</title>
     <style>
         /* Basic styles for the navigation */
@@ -108,7 +114,18 @@
         window.location.href = 'CustomerIntegration.html';
     }
     function Delete() {
-        window.location.href = 'CustomerViewAccount.html';
+        const username = localStorage.getItem('username');
+        console.log(username);
+        axios.post('/Account/Suspend', {username: username})
+            .then(function (response) {
+                console.log(response);
+                alert('Account Successfully Suspended');
+                localStorage.setItem('username', '');
+                window.location.href = '../index.html';
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
     function Back() {
         window.location.href = 'CustomerSettings.html';
@@ -122,7 +139,6 @@
         if (confirmed) {
             // User clicked "OK" (Yes), proceed with log out
             localStorage.setItem('username', '');
-            alert("Successfully Logged Out");
             window.location.href = '../index.html';
         } else {
         }

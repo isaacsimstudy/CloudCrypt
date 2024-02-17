@@ -186,7 +186,6 @@
             <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="CustomerCreateFile()">Create</button>
             <input type="file" id="fileInput" style="display: none;" multiple>
             <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
-            <button id ="ShareStatusButton" class="defaultButton" onclick="ShareStatus()">Share Status</button>
         </td>
     </tr>
 </table>
@@ -210,52 +209,10 @@
         <td></td>
         <td></td>
         <td><button id="SelectButton" class="defaultButton">Select</button>
-            <button id="ShareButton" class="defaultButton" onclick="ShareFile()">Share</button> </td>
+        </td>
     </tr>
     </tbody>
 </table>
-
-<div id="shareFile" class="hidden">
-    <h2>Share File</h2>
-    <form class="popup-content">
-        <label for="recipient">To:</label>
-        <input type="text" id="recipient" name="recipient" required><br/>
-
-        <label for="expiryDate">File Expiration Date:</label>
-        <input type="date" id="expiryDate" name="expiryDate" required><br/>
-
-        <label for="comments">Comments:</label>
-        <input type="text" id="comments" name="comments" placeholder="If necessary"><br/>
-
-        <button id="submit" type="submit" class="defaultButton">Submit</button>
-        <button class="alternateButton" onclick="CancelShare()">Cancel</button>
-    </form>
-</div>
-
-<div id="shareStatusInfo" class="hidden">
-    <div class="popup-content">
-        <h2>Share Status</h2>
-        <table class="CustomerFileTable">
-            <tr>
-                <th>S/N</th>
-                <th>Name</th>
-                <th>Shared To</th>
-                <th>Expiration Date</th>
-                <th>Action</th>
-            </tr>
-            <tbody id="SharedTo">
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><button id="RevokeButton" class="defaultButton" onclick="RevokeShare()">Revoke Share</button></td>
-            </tr>
-            </tbody>
-        </table>
-        <button class="alternateButton" onclick="CancelShareStatus()">Back</button>
-    </div>
-</div>
 
 <div class="progressBarContainer">
     <div id="progressBar"></div>
@@ -292,7 +249,6 @@
         if (confirmed) {
             // User clicked "OK" (Yes), proceed with log out
             localStorage.setItem('username', '');
-            alert("Successfully Logged Out");
             window.location.href = '../index.html';
         } else {
         }
@@ -332,39 +288,6 @@
                 row.style.display = matchFound ? 'table-row' : 'none';
             }
         });
-    }
-    function ShareFile() {
-        const shareFile = document.getElementById("shareFile");
-        shareFile.classList.remove('hidden');
-
-        document.querySelector('form').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const recipient = document.getElementById('recipient').value;
-            const expiryDate = document.getElementById('expiryDate').value;
-            const comments = document.getElementById('comments').value;
-
-            // Perform further actions with the form data (e.g., send it to a server)
-
-            // Close the form
-            CancelShare();
-        });
-    }
-    function CancelShare() {
-        const shareFile = document.getElementById("shareFile");
-        shareFile.classList.add('hidden');
-        document.querySelector('form').reset();
-    }
-    function ShareStatus() {
-        const shareStatusInfo = document.getElementById("shareStatusInfo");
-        shareStatusInfo.classList.remove('hidden');
-    }
-    function CancelShareStatus() {
-        const shareStatusInfo = document.getElementById("shareStatusInfo");
-        shareStatusInfo.classList.add('hidden');
-    }
-    function RevokeShare() {
-        // code to revoke the share file
     }
     function SortTable(columnIndex) {
         const table = document.getElementById("CustomerFiles");

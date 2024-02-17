@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create Customer Account</title>
+    <title>View Policies</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
@@ -15,7 +15,6 @@
             font-family: Arial, sans-serif;
             margin: 0;
         }
-
         header {
             font-family: Arial, sans-serif;
             text-align: left;
@@ -48,24 +47,25 @@
         .logout-btn:hover {
             background-color: #777;
         }
-
         form {
             max-width: 30%;
-            margin: 20px auto;
+            margin: 20px;
             background-color: #f2f2f2;
-            border: 1px solid #ddd;
+            text-align: left;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-        }
-
-        input, select {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 16px;
-            box-sizing: border-box;
+        }
+        input {
+            display: block;
+            margin-bottom: 8px;
+            width: 20%; /* Adjust the width as needed */
         }
 
         .defaultButton {
@@ -74,12 +74,58 @@
             color: white;
             padding: 5px 10px;
             cursor: pointer;
-
         }
         .defaultButton:hover {
             background-color: #555;
         }
+        #policyTable {
+            border-collapse: collapse;
+            width: 90%;
+            margin: 20px 20px;
+        }
 
+        #policyTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+        h1 {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px 20px;
+        }
+        h2 {
+            font-family: Arial, sans-serif;
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        #mfaToggleBar {
+            display: flex;
+            background-color: #f2f2f2;
+        }
+        #mfaStatusLabel {
+            margin-right: 10px;
+        }
+        #enableMFABtn {
+            background-color: #777;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+        #enableMFABtn:hover {
+            background-color: #555;
+        }
+        .enabled {
+            color: green;
+        }
+
+        .disabled {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -102,86 +148,69 @@
             <li class="nav-item">
                 <a class="nav-link" onclick="AdminPolicies()">Policies</a>
             </li>
+
             <li class="nav-item">
                 <a class="nav-link" onclick="AdminSettings()">Settings</a>
             </li>
         </ul>
-        <button class="logout-btn btn-outline-light ml-auto">Logout</button>
+        <button class="logout-btn btn-outline-light ml-auto" onclick="LogOut()">Logout</button>
     </div>
 </nav>
 <!-- Rest of your HTML content -->
+<table id="policyTable">
+    <tr>
+        <td>
+            <h1>Policies</h1>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h2>Password Requirement</h2>
+            <form action="/submit" method="post" onsubmit="return validation()">
+                <label for="MTC">Minimum Total Characters:</label>
+                <input id="MTC" >
 
-<form action="/submit" method="post" onsubmit="return validateForm()">
-    <header>
-        <h1>Create Customer Account</h1>
-    </header>
-    <label for="fname">First Name:</label>
-    <input type="text" id="fname" name="fname" required>
+                <label for="CSS">Contain Special Character:</label>
+                <input  id="CSS" >
 
-    <label for="lname">Last Name:</label>
-    <input type="text" id="lname" name="lname" required>
+                <label for="CUC">Contain UpperCase:</label>
+                <input  id="CUC" >
+                <button id ="UpdateButton" type="submit" class="defaultButton">Update</button>
+            </form>
+        </td>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
+    </tr>
+    <tr>
+        <td>
+            <h2 id="mfaStatusLabel">Multi-Factor Authentication:</h2>
+            <div id="mfaToggleBar">
+                <button id="enableMFABtn" class="enableMFA" onclick="toggleMFA()">Enable</button>
+            </div>
+        </td>
+    </tr>
 
-    <label for="address">Address:</label>
-    <input type="text" id="address" name="address" required>
-
-    <label for="dob">Date Of Birth:</label>
-    <input type="date" id="dob" min="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" required>
-
-    <label for="username">Username:</label>
-    <input type="username" id="username" name="username" required>
-
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
-           title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
-
-    <label for="password">Confirm Password:</label>
-    <input type="password" id="confirm_password" required>
-
-    <button id="SubmitButton" type="submit" class="defaultButton">Submit</button>
-</form>
-
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
+</table>
 <script>
-    var password = document.getElementById("password")
-        , confirm_password = document.getElementById("confirm_password");
+    function toggleMFA() {
+        var mfaStatus = document.getElementById("mfaStatusLabel");
+        var enableMFABtn = document.getElementById("enableMFABtn");
 
-    function validatePassword(){
-        if(password.value !== confirm_password.value) {
-            confirm_password.setCustomValidity("Passwords Don't Match");
+        if (enableMFABtn.textContent === "Enable") {
+            mfaStatus.classList.add("enabled");
+            mfaStatus.classList.remove("disabled");
+            enableMFABtn.textContent = "Disable";
         } else {
-            confirm_password.setCustomValidity('');
+            mfaStatus.classList.remove("enabled");
+            mfaStatus.classList.add("disabled");
+            enableMFABtn.textContent = "Enable";
         }
     }
-    password.onchange = validatePassword;
-    confirm_password.onkeyup = validatePassword;
-    function validateForm() {
-        var dobInput = document.getElementById('dob');
-        var selectedDate = new Date(dobInput.value);
-        var currentDate = new Date();
-
-        // Calculate age by subtracting birth year from the current year
-        var age = currentDate.getFullYear() - selectedDate.getFullYear();
-
-        // If the birthday hasn't occurred yet this year, decrement the age
-        if (currentDate.getMonth() < selectedDate.getMonth() || (currentDate.getMonth() === selectedDate.getMonth() && currentDate.getDate() < selectedDate.getDate())) {
-            age--;
-        }
-        // Check if the user is at least 18 years old
-        if (age < 18) {
-            alert("You must be at least 18 years old.");
-            return false;
-        }
-
+    function validation() {
         // Show the confirmation dialog
-        var confirmation = confirm("Are you sure you want to create the admin account?");
+        var confirmation = confirm("Are you sure you want to update policies?");
 
         if (confirmation) {
             // If "Yes" is clicked, redirect to admin account page and show success message
-            redirectToAdminCustomerAcc();
             return false; // Prevent form submission
         } else {
             // If "No" is clicked, return to the current page
@@ -189,27 +218,13 @@
         }
     }
 
-    function redirectToAdminCustomerAcc() {
-        // Show success message
-        alert("Customer account created successfully!");
-        // Redirect to user profile page
-        window.location.href = 'AdminCustomerAccount.html';
-
-    }
-
-
-    function AdminHome() {
-        window.location.href = 'AdminHomePage.html';
-    }
 
     function AdminCustomerAcc() {
         window.location.href = 'AdminCustomerAccount.html';
     }
-
     function AdminAdminAcc() {
         window.location.href = 'AdminAdminAccount.html';
     }
-
     function AdminPolicies() {
         window.location.href = 'AdminPolicies.html';
     }
@@ -217,7 +232,18 @@
     function AdminSettings() {
         window.location.href = 'AdminSettings.html';
     }
-</script>
+    function LogOut() {
+        // Display a confirmation dialog
+        var confirmed = window.confirm("Are you sure you want to log out?");
 
+        // Check the user's choice
+        if (confirmed) {
+            // User clicked "OK" (Yes), proceed with log out
+            localStorage.setItem('username', '');
+            window.location.href = '../index.html';
+        } else {
+        }
+    }
+</script>
 </body>
 </html>

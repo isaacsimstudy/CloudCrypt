@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Update Account Password</title>
+    <title>View Customer Logs</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
@@ -15,10 +15,12 @@
             font-family: Arial, sans-serif;
             margin: 0;
         }
+
         header {
             font-family: Arial, sans-serif;
-            text-align: left;
+            text-align:center;
             margin: 20px 20px;
+
         }
         .navbar {
             font-size: 20px;
@@ -47,23 +49,18 @@
         .logout-btn:hover {
             background-color: #777;
         }
+
         form {
             max-width: 30%;
             margin: 20px auto;
             background-color: #f2f2f2;
             border: 1px solid #ddd;
+            text-align:center;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 16px;
-            box-sizing: border-box;
         }
 
         .defaultButton {
@@ -76,6 +73,8 @@
         .defaultButton:hover {
             background-color: #555;
         }
+
+
 
     </style>
 </head>
@@ -104,61 +103,42 @@
                 <a class="nav-link" onclick="AdminSettings()">Settings</a>
             </li>
         </ul>
-        <button class="logout-btn btn-outline-light ml-auto">Logout</button>
+        <button class="logout-btn btn-outline-light ml-auto" onclick="LogOut()">Logout</button>
     </div>
 </nav>
 <!-- Rest of your HTML content -->
-<form action="/submit" method="post" onsubmit="return validation()">
+
+<form action="/submit" method="post">
     <header>
-        <h1>Update Account Password</h1>
+        <h1>Customer Account Logs</h1>
     </header>
-    <label for="OriginalPW">Original Password:</label>
-    <input type="password" id="OriginalPW" name="OriginalPW" required>
+    <label for="name">Name:</label>
+    <span id="name" > </span>
 
-    <label for="new_password">New Password:</label>
-    <input type="password" id="new_password" name="new_password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
-           title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
+    <label for="email">Email:</label>
+    <span  id="email" > </span>
 
-    <label for="confirm_password">Confirm Password:</label>
-    <input type="password" id="confirm_password" required>
+    <label for="numLogins">Num of Logins:</label>
+    <span  id="numLogins" > </span>
 
-    <button id="Update" type="submit" class="defaultButton">Update</button>
+    <label for="filesAccessed">Files Accessed:</label>
+    <span  id="filesAccessed" > </span>
+
+    <label for="filesDecrypted">Files Decrypted:</label>
+    <span  id="filesDecrypted" > </span>
+
+    <button id="SelectButton" class="defaultButton">Export</button>
 </form>
 
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
+
+
+
 <script>
-    var password = document.getElementById("new_password")
-        , confirm_password = document.getElementById("confirm_password");
-
-    function validatePassword(){
-        if(password.value !== confirm_password.value) {
-            confirm_password.setCustomValidity("Passwords Don't Match");
-        } else {
-            confirm_password.setCustomValidity('');
-        }
-    }
-    password.onchange = validatePassword;
-    confirm_password.onkeyup = validatePassword;
-    function validation() {
-
-        // Show the confirmation dialog
-        var confirmation = confirm("Are you sure you want to update your account information?");
-
-        if (confirmation) {
-            // If "Yes" is clicked, redirect to admin account page and show success message
-            redirectToSettings();
-            return false; // Prevent form submission
-        } else {
-            // If "No" is clicked, return to the current page
-            return false; // Prevent form submission
-        }
-    }
-
-    function redirectToSettings() {
-        alert("Account Information Successfully Updated!");
-        // Redirect to user profile page
-        window.location.href = 'OwnerSettings.html';
-
-    }
 
     function AdminHome() {
         window.location.href = 'AdminHomePage.html';
@@ -175,6 +155,18 @@
 
     function AdminSettings() {
         window.location.href = 'AdminSettings.html';
+    }
+    function LogOut() {
+        // Display a confirmation dialog
+        var confirmed = window.confirm("Are you sure you want to log out?");
+
+        // Check the user's choice
+        if (confirmed) {
+            // User clicked "OK" (Yes), proceed with log out
+            localStorage.setItem('username', '');
+            window.location.href = '../index.html';
+        } else {
+        }
     }
 </script>
 </body>

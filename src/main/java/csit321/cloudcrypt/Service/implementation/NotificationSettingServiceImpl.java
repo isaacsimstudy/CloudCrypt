@@ -31,7 +31,7 @@ public class NotificationSettingServiceImpl implements NotificationSettingServic
     @Override
     public String getNotificationSetting(UserAccount userAccount, String param) {
         List<NotificationSetting> notificationSettingsList = switch (param) {
-            case "login", "logout", "upload", "download", "delete", "share", "unshare" ->
+            case "login", "logout", "upload", "download", "delete" , "all" ->
                     notificationSettingRepository.findNotificationSettingByUserAccountAndNotificationType(userAccount, param);
             default -> notificationSettingRepository.findAllByUserAccount(userAccount);
         };

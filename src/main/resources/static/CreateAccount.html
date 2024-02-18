@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -150,27 +149,20 @@
                 .then(function (response) {
                     console.log(response.data);
                     alert("Account Creation Success");
-
-                    //generate otp
-                    localStorage.setItem('username', document.getElementById('username').value);
-                    const otp = Math.floor(100000 + Math.random() * 900000);
-                    localStorage.setItem('otp', otp);
-
-                    //Initiate emailJS
-                    emailjs.init("fljmK1Spno-FhP6lQ");
-                    // Send the OTP via Email.js using the API key
-                    emailjs.send("service_cloudcrypt", "template_sissasf", {
-                        to_email: document.getElementById('email').value,
-                        otp: otp.toString()  // Convert OTP to string and put it in email before sending
-                    })
-                        .then(function(response) {
-                            alert("Email sent. ", response.status, response.text);
+                    localStorage.setItem('title', document.getElementById('title').value);
+                    axios.post('/Customer/CreateNotificationSetting', {username: document.getElementById('username').value, notificationType: "login", notificationMethod: "email", status: "inactive", notificationFrequency: "immediate"})
+                        .then(function (response) {
+                            console.log(response.data);
+                            alert("Notification Setting Creation Success");
+                            localStorage.setItem('username', document.getElementById('username').value);
                             localStorage.setItem('title', document.getElementById('title').value);
+                            localStorage.setItem('email', document.getElementById('email').value);
                             window.location.href = 'OTPSignUp.html';
                         })
-                        .catch(function(error) {
-                            console.error("Error sending email:", error);
+                        .catch(function (error) {
+                            console.error("An error occurred:", error);
                         });
+                    window.location.href = 'OTPSignUp.html';
                 })
                 .catch(function (error) {
                     console.error("An error occurred:", error);

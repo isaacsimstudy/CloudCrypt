@@ -55,14 +55,32 @@
 <body>
 <script>
     // Retrieve the shared variable from localStorage
-    const username = localStorage.getItem('username');
-    const otp = localStorage.getItem('otp');
-    console.log(username);
-    console.log(otp);
+    console.log(localStorage.getItem('username'));
+    console.log(localStorage.getItem('email'));
+    window.onload = function () {
+        //generate otp
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('otp', otp.toString());
+        console.log(otp);
+
+        //Initiate emailJS
+        emailjs.init("fljmK1Spno-FhP6lQ");
+        // Send the OTP via Email.js using the API key
+        emailjs.send("service_cloudcrypt", "template_sissasf", {
+            to_email: localStorage.getItem('email'),
+            otp: otp.toString()  // Convert OTP to string and put it in email before sending
+        })
+            .then(function(response) {
+                alert("OTP sent to Email.", response.status, response.text);
+            })
+            .catch(function(error) {
+                console.error("Error sending email:", error);
+            });
+    }
 </script>
 <h1 onclick="BackToLogin()">CloudCrypt</h1>
 
-<form action="/submit" method="post" onsubmit="return validation()">
+<form>
     <header>
         <h2>One-Time Password</h2>
         <p>An OTP was sent to your email address, please enter the OTP!</p>

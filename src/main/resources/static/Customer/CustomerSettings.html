@@ -6,6 +6,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -84,7 +85,40 @@
     </style>
 </head>
 <body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
 
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData(username);
+        }
+    };
+    function retrieveData() {
+        // const username = localStorage.getItem('username');
+        // console.log(username);
+        // axios.post('/Customer/ReadNotificationSetting', {username: username})
+        //     .then(function (response) {
+        //         console.log(response.data);
+        //         if (Array.isArray(response.data) && response.data.length > 0) {
+        //             const userData = response.data[0];
+        //
+        //         } else {
+        //             console.error("No user data found for the provided username");
+        //             alert("No user data found for the provided username");
+        //         }
+        //     })
+        //     .catch(function (error) {
+        //         console.error("An error occurred:", error);
+        //         alert(error);
+        //     });
+    }
+</script>
 <nav>
     <div class="nav-links">CloudCrypt</div>
     <div class="nav-links" onclick="Home()">Home</div>
@@ -102,37 +136,15 @@
     <button class="menuButton" onclick="MyAccount()">Update My Account</button>
 </div>
 
-<div class="menu">File Encryption Type
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="option1">Insert type here</option>
-            <option value="option2">Insert type here</option>
-        </select>
-    </label>
-</div>
-
 <h2>Notifications (Email)</h2>
-<div class="menu">Notify me for Major Activities (Login)
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="Enabled">Enabled</option>
-            <option value="Disabled">Disabled</option>
-        </select>
-    </label>
-</div>
-<div class="menu">Notify me for File Downloads
-    <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
-            <option value="Enabled">Enabled</option>
-            <option value="Disabled">Disabled</option>
-        </select>
-    </label>
+<div class="menu">Edit Notification Settings
+    <button class="menuButton" onclick="EditNotification()">Edit</button>
 </div>
 
 <h2>Additional Security</h2>
 <div class="menu">Authentication upon Upload/Download
     <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
+        <select class="switchStatus" id="authFile">
             <option value="Enabled">Enabled</option>
             <option value="Disabled">Disabled</option>
         </select>
@@ -140,10 +152,16 @@
 </div>
 <div class="menu">Multi-Factor Authentication
     <label>
-        <select class="switchStatus" onchange="HandleSelection(this)">
+        <select class="switchStatus" id="authLogin">
             <option value="Enabled">Enabled</option>
             <option value="Disabled">Disabled</option>
         </select>
+    </label>
+</div>
+
+<div class="menu">
+    <label>
+        <button class="menuButton" type="button" onclick="applyChanges()">Apply Changes</button>
     </label>
 </div>
 
@@ -185,10 +203,13 @@
     function FeedbackForm() {
         window.location.href = 'CustomerFeedbackForm.html'
     }
-    function HandleSelection(selectedElement) {
-        // TBC
+    function applyChanges() {
+
     }
 
+    function EditNotification() {
+        window.location.href = 'CustomerNotificationSettings.html';
+    }
     function LogOut() {
         // Display a confirmation dialog
         var confirmed = window.confirm("Are you sure you want to log out?");

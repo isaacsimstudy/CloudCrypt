@@ -9,6 +9,7 @@ import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Repository.UserProfileRepository;
 import csit321.cloudcrypt.Service.User.UserAccountService;
 import csit321.cloudcrypt.Service.User.UserProfileService;
+import csit321.cloudcrypt.Controller.Customer.CreateNotificationSettingController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,17 +27,19 @@ public class CreateAccountController {
     private final UserProfileRepository userProfileRepository;
     private final CreateCustomerDetailController createCustomerDetailController;
     private final CreateLoginSettingController createLoginSettingController;
+    private final CreateNotificationSettingController createNotificationSettingController;
 
     @Autowired
     public CreateAccountController(UserAccountService userAccountService, UserProfileService userProfileService,
                                    UserAccountRepository userAccountRepository,
                                    UserProfileRepository userProfileRepository,
                                    CreateCustomerDetailController createCustomerDetailController,
-                                   CreateLoginSettingController createLoginSettingController) {
+                                   CreateLoginSettingController createLoginSettingController, CreateNotificationSettingController createNotificationSettingController) {
         this.userAccountService = userAccountService;
         this.userProfileService = userProfileService;
         this.createCustomerDetailController = createCustomerDetailController;
         this.createLoginSettingController = createLoginSettingController;
+        this.createNotificationSettingController = createNotificationSettingController;
         this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         this.userAccountRepository = userAccountRepository;
         this.userProfileRepository = userProfileRepository;

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create User Account</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        /* Basic styles for the navigation */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        header {
+            font-family: Arial, sans-serif;
+            text-align: left;
+            margin: 20px 20px;
+        }
+        .navbar {
+            font-size: 20px;
+            background-color: #333;
+            color: white;
+            overflow: hidden; /* Ensures the content doesn't overflow */
+            display: flex; /* Use flexbox for layout */
+            align-items: center; /* Align items vertically in the center */
+            justify-content: space-between; /* Spacing between items */
+            padding: 10px; /* Add padding for top and bottom spacing */
+        }
+        .navbar-brand {
+            pointer-events: none; /* Disables pointer events */
+            font-size: 2em; /* Increase font size */
+            border-right: 1px solid white; /* Add separator line */
+            padding-right: 20px; /* Add spacing after CloudCrypt */
+            margin-right: 20px; /* Add spacing after CloudCrypt */
+        }
+        .logout-btn {
+            background-color: #555;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background-color: #777;
+        }
+        form {
+            max-width: 30%;
+            margin: 20px auto;
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        .defaultButton {
+            background-color: #777;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .defaultButton:hover {
+            background-color: #555;
+        }
+
+    </style>
+</head>
+<body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
+
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData(username);
+        }
+    };
+    function retrieveData() {
+        const username = localStorage.getItem('username');
+        const selectedItem = localStorage.getItem('selectedItem');
+        console.log(selectedItem);
+        console.log(username);
+        axios.post('/Customer/ReadNotificationSetting', {username: username, notificationType: selectedItem})
+            .then(function (response) {
+                console.log(response.data);
+                if (Array.isArray(response.data) && response.data.length > 0) {
+                    const userData = response.data[0];
+
+                    // Set the form fields with the retrieved data
+                    document.getElementById('notifType').value = userData.notification_type;
+                    document.getElementById('status').value = userData.status;
+                    document.getElementById('freq').value = userData.notification_frequency;
+                } else {
+                    console.error("No user data found for the provided username");
+                    alert("No user data found for the provided username");
+                }
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+</script>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" href="#">CloudCrypt</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" onclick="Home()">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="MyFiles()">My Files</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="KeyStorage()">Key Storage</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="Subscription()">Subscription</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="Integration()">Integration</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="Settings()">Settings</a>
+            </li>
+        </ul>
+        <button class="logout-btn btn-outline-light ml-auto" onclick="LogOut()">Logout</button>
+    </div>
+</nav>
+<form>
+    <header>
+        <h1>Update Notification Settings</h1>
+    </header>
+    <input type="hidden" id="notification_method" value="email">
+
+    <label for="notifType">Notification Type:</label>
+    <select id="notifType">
+        <option value="all">All</option>
+        <option value="login">Login</option>
+        <option value="logout">Logout</option>
+        <option value="upload">Upload</option>
+        <option value="download">Download</option>
+        <option value="delete">Delete</option>
+    </select>
+
+    <label for="status">Status:</label>
+    <select id="status">
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+    </select>
+
+    <label for="freq">Frequency:</label>
+    <select id="freq">
+        <option value="immediate">Immediate</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+    </select>
+
+    <button id="CreateButton" type="button" onclick="validation()" class="defaultButton">Create</button>
+</form>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function validation() {
+        // Show the confirmation dialog
+        var confirmation = confirm("Are you sure you want to create this notification setting?");
+
+        if (confirmation) {
+            const userData = {
+                username: localStorage.getItem('username'),
+                notificationType: document.getElementById('notifType').value,
+                notificationMethod: document.getElementById('notification_method').value,
+                status: document.getElementById('status').value,
+                notificationFrequency: document.getElementById('freq').value
+            };
+            axios.post('/Customer/UpdateNotificationSetting', userData)
+                .then(function (response) {
+                    console.log(response.data);
+                    alert("Notification setting created successfully");
+                    window.location.href = "CustomerNotificationSettings.html";
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                });
+        } else {
+            // If "No" is clicked, return to the current page
+            return false; // Prevent form submission
+        }
+    }
+
+
+    function Home() {
+        window.location.href = 'CustomerHomePage.html';
+    }
+    function Settings() {
+        window.location.href = 'CustomerSettings.html';
+    }
+    function MyFiles() {
+        window.location.href = 'CustomerFiles.html';
+    }
+    function KeyStorage() {
+        window.location.href = 'CustomerKeyStorage.html';
+    }
+    function Subscription() {
+        window.location.href = 'CustomerSubscription.html';
+    }
+    function Integration() {
+        window.location.href = 'CustomerIntegration.html';
+    }
+
+    function LogOut() {
+        // Display a confirmation dialog
+        var confirmed = window.confirm("Are you sure you want to log out?");
+
+        // Check the user's choice
+        if (confirmed) {
+            // User clicked "OK" (Yes), proceed with log out
+            localStorage.setItem('username', '');
+            window.location.href = '../index.html';
+        } else {
+        }
+    }
+</script>
+</body>
+</html>
+

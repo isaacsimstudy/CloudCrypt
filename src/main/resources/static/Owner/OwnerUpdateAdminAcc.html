@@ -165,7 +165,7 @@
     <input type="email" id="email" name="email" required>
 
     <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required>
+    <input type="text" id="username" name="username" required disabled>
 
     <label for="address">Address:</label>
     <input type="text" id="address" name="address" required>
@@ -210,7 +210,7 @@
                 firstName: document.getElementById('first_name').value,
                 lastName: document.getElementById('last_name').value,
                 email: document.getElementById('email').value,
-                username: document.getElementById('username').value,
+                username: localStorage.getItem('selectedUser'),
                 address: document.getElementById('address').value,
                 dateOfBirth: document.getElementById('dob').value,
                 phoneNumber: document.getElementById('phone_number').value,

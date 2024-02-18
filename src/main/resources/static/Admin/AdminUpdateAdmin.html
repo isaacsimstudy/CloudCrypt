@@ -175,9 +175,6 @@
     <label for="phone_number">Phone Number:</label>
     <input type="tel" id="phone_number" name="phone_number" required>
 
-    <label for="username">Username:</label>
-    <input type="username" id="username" name="username" required>
-
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
            title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
@@ -239,7 +236,7 @@
                 firstName: document.getElementById('fname').value,
                 lastName: document.getElementById('lname').value,
                 email: document.getElementById('email').value,
-                username: document.getElementById('username').value,
+                username: localStorage.getItem('selectedUser'),
                 address: document.getElementById('address').value,
                 dateOfBirth: document.getElementById('dob').value,
                 phoneNumber: document.getElementById('phone_number').value,

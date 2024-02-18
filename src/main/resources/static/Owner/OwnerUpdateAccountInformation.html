@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -81,6 +82,48 @@
     </style>
 </head>
 <body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
+
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData(username);
+        }
+    };
+    function retrieveData() {
+        const username = localStorage.getItem('username');
+        console.log(username);
+        axios.get('/Account/Read/' + username)
+            .then(function (response) {
+                console.log(response.data);
+                if (Array.isArray(response.data) && response.data.length > 0) {
+                    const userData = response.data[0];
+
+                    document.getElementById('fName').value = userData.firstName;
+                    document.getElementById('lName').value = userData.lastName;
+                    document.getElementById('email').value = userData.email;
+                    document.getElementById('address').value = userData.address;
+                    document.getElementById('phone_number').value = userData.phoneNumber;
+                    document.getElementById('dob').value = userData.dateOfBirth;
+                    document.getElementById('password').value = userData.passwordHash;
+                    document.getElementById('title').value = userData.title;
+                } else {
+                    console.error("No user data found for the provided username");
+                    alert("No user data found for the provided username");
+                }
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+</script>
 
 <nav class="navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">CloudCrypt</a>
@@ -105,7 +148,7 @@
         <button class="logout-btn btn-outline-light ml-auto" onclick="LogOut()">Logout</button>
     </div>
 </nav>
-<form action="/submit" method="post" onsubmit="return validation()">
+<form>
     <header>
         <h1>Update Account Information</h1>
     </header>
@@ -115,16 +158,19 @@
     <label for="lName">Last Name:</label>
     <input type="text" id="lName" name="lName" required>
 
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required>
-
     <label for="address">Address:</label>
     <input type="text" id="address" name="address" required>
+
+    <label for="phone_number">Phone Number:</label>
+    <input type="tel" id="phone_number" name="phone_number" required>
 
     <label for="dob">Date Of Birth:</label>
     <input type="date" id="dob" min="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" required>
 
-    <button id="Update" type="submit" class="defaultButton">Update</button>
+    <input type="hidden" id="title" name="title">
+    <input type="hidden" id="email" name="email">
+    <input type="hidden" id="password" name="password">
+    <button id="Update" type="button" class="defaultButton" onclick="validation()">Update</button>
 </form>
 
 
@@ -155,24 +201,33 @@
         var confirmation = confirm("Are you sure you want to update your account information?");
 
         if (confirmation) {
-            // If "Yes" is clicked, redirect to admin account page and show success message
-            redirectToAccountInformation();
+            // If "Yes" is clicked, submit to the database
+            const userData = {
+                firstName: document.getElementById('fName').value,
+                lastName: document.getElementById('lName').value,
+                email: document.getElementById('email').value,
+                username: localStorage.getItem('username'),
+                address: document.getElementById('address').value,
+                dateOfBirth: document.getElementById('dob').value,
+                phoneNumber: document.getElementById('phone_number').value,
+                title: document.getElementById('title').value,
+                password: document.getElementById('password').value
+            };
+            axios.post('/Account/Update', userData)
+                .then(function (response) {
+                    console.log(response.data);
+                    localStorage.setItem('username', document.getElementById('username').value);
+                    alert("Account updated successfully");
+                    window.location.href = "OwnerSettings.html";
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                });
             return false; // Prevent form submission
         } else {
             // If "No" is clicked, return to the current page
             return false; // Prevent form submission
         }
-    }
-
-
-    function redirectToAccountInformation() {
-        // Show success message
-
-
-        alert("Account Information Successfully Updated!");
-        // Redirect to user profile page
-        window.location.href = 'OwnerUpdateAccountInformation.html';
-
     }
 </script>
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <meta charset="UTF-8">
     <title>CloudCrypt Login</title>
@@ -178,6 +179,9 @@
 
     document.getElementById('LoginButton').addEventListener('click', function(event) {
         event.preventDefault(); // Prevent the default form submission
+        if (localStorage.getItem('loginAttempts') === null) {
+            localStorage.setItem('loginAttempts', '0');
+        }
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const userData = { username, password };
@@ -192,8 +196,40 @@
             .then(function (response) {
                 console.log(response.data);
                     if (role === "Customer") {
-                        localStorage.setItem('username', username);
-                        window.location.href = "Customer/CustomerHomePage.html";
+                        //Check if customer's two-factor authentication is enabled
+                        axios.post('/Customer/ReadLoginSetting', {username: username, param: "twoFactorAuth"})
+                            .then(function (response) {
+                                console.log(response.data);
+                                if (response.data.twoFactorAuth === "active") {
+                                    //if true, redirect to OTP page
+                                    localStorage.setItem('title', "customer");
+                                    localStorage.setItem('username', username);
+                                    window.location.href = "OTPSignUp.html";
+                                } else {
+                                    //if false, update login setting of user for successful login
+                                    const loginData = {
+                                        username: username,
+                                        loginAttempts: localStorage.getItem('loginAttempts'),
+                                        loginStatus: "active",
+                                        loginTime: new Date().toISOString(),
+                                    };
+                                    axios.post('/Customer/UpdateLoginSetting', loginData)
+                                        .then(function (response) {
+                                            alert("Login successful");
+
+                                            localStorage.setItem('username', username);
+                                            localStorage.removeItem('loginAttempts');
+                                            window.location.href = "Customer/CustomerHomePage.html";
+                                        })
+                                        .catch(function (error) {
+                                            console.error("An error occurred:", error);
+                                        });
+                                }
+                            })
+                            .catch(function (error) {
+
+                                console.error("An error occurred:", error);
+                            });
                     } else if (role === "Owner") {
                         localStorage.setItem('username', username);
                         window.location.href = "Owner/OwnerHomePage.html";
@@ -203,6 +239,11 @@
                     }
             })
             .catch(function (error) {
+                // Increment the login attempts
+                const loginAttempts = parseInt(localStorage.getItem('loginAttempts')) + 1;
+                localStorage.setItem('loginAttempts', loginAttempts.toString());
+                console.log('loginAttempts: ', localStorage.getItem('loginAttempts'));
+                console.error("An error occurred:", error);
                 if (error.response && error.response.data) {
                     // Check for specific error messages
                     if (error.response.data === "Account suspended.") {
@@ -214,7 +255,6 @@
                         alert(`Error: ${error.response.data}`);
                     }
                 }
-                console.error("An error occurred:", error);
             });
     }
 </script>

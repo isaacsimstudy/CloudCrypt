@@ -5,6 +5,7 @@
     <title>Customer Feedback Form</title>
     <!-- Bootstrap CSS -->
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -180,8 +181,25 @@
         // Check the user's choice
         if (confirmed) {
             // User clicked "OK" (Yes), proceed with log out
-            localStorage.setItem('username', '');
-            window.location.href = '../index.html';
+            const username = localStorage.getItem('username');
+
+            const userData = {
+                username: username,
+                loginStatus: "inactive"
+            };
+
+            axios.post('/Customer/UpdateLoginSetting', userData)
+                .then(function (response) {
+                    console.log(response.data);
+
+                    localStorage.removeItem('username');
+                    alert("Successfully Logged Out");
+                    window.location.href = '../index.html';
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                    alert(error);
+                });
         } else {
         }
     }

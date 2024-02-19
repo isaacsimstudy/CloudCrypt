@@ -56,18 +56,31 @@
 <script>
     // Retrieve the shared variable from localStorage
     console.log(localStorage.getItem('username'));
-    console.log(localStorage.getItem('email'));
     window.onload = function () {
         //generate otp
         const otp = Math.floor(100000 + Math.random() * 900000);
         localStorage.setItem('otp', otp.toString());
         console.log(otp);
 
+        const username = localStorage.getItem('username');
+
+        axios.get('/Account/Read/' + username)
+            .then(function (response) {
+                console.log(response.data);
+                localStorage.setItem('email', response.data.email);
+                sendOtp(response.data.email, otp);
+            }).catch(function (error) {
+            console.error("An error occurred:", error);
+            alert(error);
+        });
+    }
+    function sendOtp(email, otp)
+    {
         //Initiate emailJS
         emailjs.init("fljmK1Spno-FhP6lQ");
         // Send the OTP via Email.js using the API key
         emailjs.send("service_cloudcrypt", "template_sissasf", {
-            to_email: localStorage.getItem('email'),
+            to_email: email,
             otp: otp.toString()  // Convert OTP to string and put it in email before sending
         })
             .then(function(response) {
@@ -114,12 +127,25 @@
             axios.post('/Account/Verify', userData)
                 .then(function (response) {
                     console.log(response.data);
-                    alert("Success, account activated");
                     localStorage.removeItem('otp');
                     if (localStorage.getItem('title') === "customer")
                     {
-                        localStorage.removeItem('title');
-                        window.location.href = 'Customer/CustomerHomePage.html';
+                        const loginData = {
+                            username: localStorage.getItem('username'),
+                            loginAttempts: localStorage.getItem('loginAttempts'),
+                            loginTime: new Date().toISOString(),
+                            loginStatus: "active",
+                        };
+                        axios.post('/Customer/UpdateLoginSetting', loginData)
+                            .then(function (response) {
+                                alert("Authentication Successful");
+
+                                localStorage.removeItem('title');
+                                window.location.href = 'Customer/CustomerHomePage.html';
+                            }).catch(function (error) {
+                            console.error("An error occurred:", error);
+                            alert(error);
+                        });
                     }
                     else if (localStorage.getItem('title') === "admin")
                     {

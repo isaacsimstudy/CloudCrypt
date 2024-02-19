@@ -34,11 +34,18 @@ public class UpdateLoginSettingController {
             JsonNode jsonNode = objectMapper.readTree(json);
             String username = jsonNode.get("username").asText();
             UserAccount user = userAccountRepository.findUserAccountByUsername(username).orElseThrow();
+
+            // Read optional parameters with null check
+            String loginAttempts = jsonNode.has("loginAttempts") ? jsonNode.get("loginAttempts").asText() : null;
+            String loginStatus = jsonNode.has("loginStatus") ? jsonNode.get("loginStatus").asText() : null;
+            String loginTime = jsonNode.has("loginTime") ? jsonNode.get("loginTime").asText() : null;
+            String twoFactorAuth = jsonNode.has("twoFactorAuth") ? jsonNode.get("twoFactorAuth").asText() : null;
+
             String loginSetting = loginSettingService.updateLoginSetting(user,
-                                                        jsonNode.get("loginAttempts").asText(),
-                                                        jsonNode.get("loginStatus").asText(),
-                                                        jsonNode.get("loginTime").asText(),
-                                                        jsonNode.get("twoFactorAuth").asText());
+                    loginAttempts,
+                    loginStatus,
+                    loginTime,
+                    twoFactorAuth);
             return new ResponseEntity<>(loginSetting, HttpStatus.OK);
         }
         catch (Exception e) {

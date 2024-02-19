@@ -137,19 +137,23 @@ public class UserAccountServiceImpl implements UserAccountService{
         return "Account suspended: " + userAccountRepository.save(userAccount).toString();
     }
 
-    //TODO: Write Test Method
     @Override
-    public String logInAccount(String username, String password) {
-        UserAccount userAccount = userAccountRepository.findUserAccountByUsername(username).orElse(null);
+    public String logInAccount(String username, String password, String privilege) {
+        UserAccount userAccount = userAccountRepository.findUserAccountByUsernameAndPassword(username, password).orElse(null);
         if (userAccount == null)
-            return "User account not found.";
+            return "Invalid username or password.";
         if (!userAccount.getIsActive())
-            return "Account suspended.";
-        if (!userAccount.getPasswordHash().equals(password))
-            return "Incorrect password.";
-        userAccount.setTimeLastLogin(OffsetDateTime.now());
-        userAccountRepository.save(userAccount);
-        return "Success";
+            return "Account is suspended.";
+        if (!privilege.equals(userAccount.getUserProfile().getPrivilege()))
+            return "Invalid privilege.";
+        return switch (privilege) {
+            case "admin", "customer", "owner" -> {
+                userAccount.setTimeLastLogin(OffsetDateTime.now());
+                userAccountRepository.save(userAccount);
+                yield "Success";
+            }
+            default -> "Invalid privilege. Not admin, customer, or owner.";
+        };
     }
 
     @Override

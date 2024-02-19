@@ -13,15 +13,15 @@ import java.util.UUID;
 @Service
 public interface SecurityPolicyService {
 
-    public SecurityPolicy createSecurityPolicy(UserAccount userAccount,
+    public String createSecurityPolicy(UserAccount userAccount,
                                                String policyName,
                                                String description,
                                                String enforcementLevel,
                                                String policyType,
-                                               Map<String, Object> parameters,
+                                               Map<String, String> parameters,
                                                String status);
 
-    public String updateSecurityPolicy(UUID id, Map<String, Object> updates);
+    public String updateSecurityPolicy(UUID id, Map<String, String> updates);
 
     public String deleteSecurityPolicy(UserAccount userAccount);
 

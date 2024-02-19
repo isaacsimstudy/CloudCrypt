@@ -11,9 +11,6 @@ import java.util.UUID;
 
 public interface SecurityPolicyRepository extends JpaRepository<SecurityPolicy, UUID> {
 
-
-    Optional<SecurityPolicy> findById(UUID id);
-
     void deleteAllByUserAccount(UserAccount userAccount);
 
     List<SecurityPolicy> findAllByUserAccount(UserAccount userAccount);

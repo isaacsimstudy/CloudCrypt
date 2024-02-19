@@ -14,8 +14,7 @@ public interface UserAccountService {
 
     String suspendAccount(String username);
 
-    //TODO: Write Test Method
-    String logInAccount(String username, String password);
+    String logInAccount(String username, String password, String privilege);
 
     String verifyOTP(String username, boolean otpPass);
 

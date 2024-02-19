@@ -6,6 +6,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -79,6 +80,50 @@
     </style>
 </head>
 <body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
+
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData(username);
+        }
+    };
+    function retrieveData() {
+        const username = localStorage.getItem('username');
+        const selectedUser = localStorage.getItem('selectedUser');
+        console.log(selectedUser);
+        console.log(username);
+        axios.get('/Account/Read/' + selectedUser)
+            .then(function (response) {
+                console.log(response.data);
+                if (Array.isArray(response.data) && response.data.length > 0) {
+                    const userData = response.data[0];
+
+                    document.getElementById('fname').value = userData.firstName;
+                    document.getElementById('lname').value = userData.lastName;
+                    document.getElementById('email').value = userData.email;
+                    document.getElementById('username').value = userData.username;
+                    document.getElementById('address').value = userData.address;
+                    document.getElementById('phone_number').value = userData.phoneNumber;
+                    document.getElementById('dob').value = userData.dateOfBirth;
+                    document.getElementById('password').value = userData.passwordHash;
+                } else {
+                    console.error("No user data found for the provided username");
+                    alert("No user data found for the provided username");
+                }
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+</script>
 <nav class="navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">CloudCrypt</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,9 +151,8 @@
         <button class="logout-btn btn-outline-light ml-auto" onclick="LogOut()">Logout</button>
     </div>
 </nav>
-<!-- Rest of your HTML content -->
 
-<form id="updateForm" action="/submit" method="post" onsubmit="return validateForm()">
+<form>
     <header>
         <h1>Update Customer Account</h1>
     </header>
@@ -121,20 +165,24 @@
     <label for="email">Email:</label>
     <input type="email" id="email" name="email" required>
 
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+
     <label for="address">Address:</label>
     <input type="text" id="address" name="address" required>
+
+    <label for="phone_number">Phone Number:</label>
+    <input type="tel" id="phone_number" name="phone_number" required>
 
     <label for="dob">Date Of Birth:</label>
     <input type="date" id="dob" min="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" required>
 
-    <label for="username">Username:</label>
-    <input type="username" id="username" name="username" required>
 
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
            title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
 
-    <button id="SubmitButton" type="submit" class="defaultButton">Update</button>
+    <button id="SubmitButton" type="button" class="defaultButton" onclick="validation()">Update</button>
 </form>
 
 
@@ -164,7 +212,7 @@
         disableFields();
     });
 
-    function validateForm() {
+    function validation() {
         var dobInput = document.getElementById('dob');
         var selectedDate = new Date(dobInput.value);
         var currentDate = new Date();
@@ -183,12 +231,30 @@
         }
 
         // Show the confirmation dialog
-        var confirmation = confirm("Are you sure you want to update the customer account?");
+        var confirmation = confirm("Are you sure you want to update this customer account?");
 
         if (confirmation) {
-            // If "Yes" is clicked, redirect to admin account page and show success message
-            redirectToAdminAdminAcc();
-            return false; // Prevent form submission
+            const userData = {
+                firstName: document.getElementById('fname').value,
+                lastName: document.getElementById('lname').value,
+                email: document.getElementById('email').value,
+                username: localStorage.getItem('selectedUser'),
+                address: document.getElementById('address').value,
+                dateOfBirth: document.getElementById('dob').value,
+                phoneNumber: document.getElementById('phone_number').value,
+                title: "customer",
+                password: document.getElementById('password').value
+            };
+            axios.post('/Account/Update', userData)
+                .then(function (response) {
+                    console.log(response.data);
+                    alert("Account Successfully Updated");
+                    localStorage.removeItem('selectedUser');
+                    window.location.href = "AdminCustomerAccount.html";
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                });
         } else {
             // If "No" is clicked, return to the current page
             return false; // Prevent form submission

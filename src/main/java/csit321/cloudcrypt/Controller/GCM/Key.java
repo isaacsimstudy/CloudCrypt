@@ -1,4 +1,4 @@
-package Controller.GCM;
+package csit321.cloudcrypt.Controller.GCM;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -8,9 +8,19 @@ import java.util.Base64;
 import java.io.FileInputStream;
 import javax.crypto.spec.SecretKeySpec;
 
-public class Key{
+public class Key {
 
     public static void main(String[] args) {
+        try {
+
+            SecretKey secretKey = generateAESKey();
+            String base64Key = convertKeyToBase64(secretKey);
+            writeKeyToFile(base64Key, "aes_key.txt");
+
+            System.out.println("AES key generated and saved to aes_key.txt");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

@@ -1,6 +1,6 @@
 package csit321.cloudcrypt.Controller.GCM;
 
-import Controller.GCM.Key;
+import jakarta.persistence.Table;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
@@ -10,10 +10,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
-public class FileEncryption {
+
+@Table(name = "key")
+public class FileEncryptionController {
 
     public static void main(String[] args) throws IOException {
-        encryptFiles(); // call this from html
+
     }
 
     public static void encryptFiles() {
@@ -22,15 +24,13 @@ public class FileEncryption {
 
         try {
             secretKeyBase64 = Key.readKeyFromFile("aes_key.txt"); // change to get from database
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return; // Exit the method if reading the key fails
         }
         byte[] secretKeyBytes = Base64.getDecoder().decode(secretKeyBase64);
         try {
-            // to read all file type
-            // Depending on how dropbox API works, need to modify this codes
-            // File[] files = new File(".").listFiles();
+            //File[] files = new File(".").listFiles();
             File[] files = new File(".").listFiles((dir, name) ->
                     name.toLowerCase().endsWith(".docx") || name.toLowerCase().endsWith(".pdf") ||
                             name.toLowerCase().endsWith(".mp4"));
@@ -41,6 +41,8 @@ public class FileEncryption {
                     encryptFile(file, secretKeyBytes, fixedIV);
                 }
             }
+
+            System.out.println("Files encrypted successfully.");
 
         } catch (Exception e) {
             e.printStackTrace();

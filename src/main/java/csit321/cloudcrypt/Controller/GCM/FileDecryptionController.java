@@ -1,6 +1,6 @@
 package csit321.cloudcrypt.Controller.GCM;
 
-import Controller.GCM.Key;
+import jakarta.persistence.Table;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
@@ -11,22 +11,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 
-public class FileDecryption {
+@Table(name = "key")
+public class FileDecryptionController {
 
     public static void main(String[] args) {
         // Depending on how dropbox API works, need to modify this codes
         // Get the current directory
-        File directory = new File(".");
+        //File directory = new File(".");
 
         // List all files in the directory
-        File[] files = directory.listFiles();
+       // File[] files = directory.listFiles();
 
         // Loop through the files and decrypt those with "_encrypted" in the name
-        for (File file : files) {
-            if (file.isFile() && file.getName().contains("_encrypted")) {
-                decryptFiles(file.getAbsolutePath());
-            }
-        }
+        //for (File file : files) {
+          //  if (file.isFile() && file.getName().contains("_encrypted")) {
+               // decryptFiles(file.getAbsolutePath());
+            //}
+        //}
     }
 
     public static void decryptFiles(String encryptedFileName) {

@@ -36,7 +36,7 @@ public class SecurityPolicy {
 
     @Column(name = "parameters")
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> parameters;
+    private Map<String, String> parameters;
 
     @Column(name = "status", length = 50)
     private String status;

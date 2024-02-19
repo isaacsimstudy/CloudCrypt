@@ -1,3 +1,21 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE OR REPLACE FUNCTION password_crypt()
+    RETURNS TRIGGER
+    LANGUAGE plpgsql
+AS
+$$
+BEGIN
+    IF (tg_op = 'INSERT') OR (old.password_hash != new.password_hash) THEN
+        new.password_hash = crypt(new.password_hash, gen_salt('bf'));
+    END IF;
+    RETURN new;
+END;
+$$;
+CREATE OR REPLACE TRIGGER password_crypt
+    BEFORE INSERT OR UPDATE ON user_account FOR EACH ROW
+EXECUTE PROCEDURE password_crypt();
+
 INSERT INTO user_profile
     (privilege, title)
 VALUES
@@ -36,7 +54,7 @@ VALUES
     ((SELECT uuid FROM user_account WHERE username = 'customer5'), 'free'),
     ((SELECT uuid FROM user_account WHERE username = 'customer6'), 'free');
 
--- Insert notification_settings: (customer 1 upload, customer 2 download, customer 3 logins twice - to share/unshare separately
+
 INSERT INTO notification_settings
     (user_account, notification_type, notification_method, status, notification_frequency)
 VALUES

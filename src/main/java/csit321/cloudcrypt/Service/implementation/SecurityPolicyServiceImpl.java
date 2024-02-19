@@ -15,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -33,12 +31,12 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
     }
 
     @Override
-    public SecurityPolicy createSecurityPolicy(UserAccount userAccount,
+    public String createSecurityPolicy(UserAccount userAccount,
                                      String policyName,
                                      String description,
                                      String enforcementLevel,
                                      String policyType,
-                                     Map<String, Object> parameters,
+                                     Map<String, String> parameters,
                                      String status) {
         SecurityPolicy securityPolicy = new SecurityPolicy();
         securityPolicy.setUserAccount(userAccount);
@@ -49,13 +47,16 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         securityPolicy.setPolicyType(policyType);
         securityPolicy.setParameters(parameters);
         securityPolicy.setStatus(status);
-        return securityPolicyRepository.save(securityPolicy);
+        securityPolicyRepository.save(securityPolicy);
+        return "Success";
     }
 
     @Override
-    public String updateSecurityPolicy(UUID id, Map<String, Object> updates) {
-        SecurityPolicy policy = securityPolicyRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("SecurityPolicy not found"));
+    public String updateSecurityPolicy(UUID id, Map<String, String> updates) {
+        SecurityPolicy policy = securityPolicyRepository.findById(id).orElse(null);
+        if (policy == null) {
+            return "SecurityPolicy not found";
+        }
 
         // Iterate over the map and apply updates
         updates.forEach((key, value) -> {
@@ -63,12 +64,12 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
                 case "policyName" -> policy.setPolicyName((String) value);
                 case "description" -> policy.setDescription((String) value);
                 case "parameters" -> {
-                    if (value instanceof Map) {
-                        // Assuming parameters is a Map<String, Object>
-                        policy.setParameters((Map<String, Object>) value);
-                    }
+                    //convert value to Map<String, String>
+                    Map<String, String> parameters = convertStringToMap((String) value);
+                    policy.setParameters(parameters);
                 }
                 // Add more cases as needed for other fields
+                default -> { }
             }
         });
 
@@ -76,10 +77,23 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         return "SecurityPolicy updated";
     }
 
+    public Map<String, String> convertStringToMap(String str) {
+        // Convert a string to a map
+        Map<String, String> map = new HashMap<>();
+        StringTokenizer st = new StringTokenizer(str, ",");
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            String[] keyValue = token.split(":");
+            map.put(keyValue[0], keyValue[1]);
+        }
+        return map;
+    }
+
     @Override
     public String deleteSecurityPolicy(UserAccount userAccount) {
         // Delete all security policies related to a user account
-        securityPolicyRepository.deleteAllByUserAccount(userAccount);
+        List<SecurityPolicy> securityPolicies = securityPolicyRepository.findAllByUserAccount(userAccount);
+        securityPolicyRepository.deleteAll(securityPolicies);
         return "SecurityPolicy deleted";
     }
 

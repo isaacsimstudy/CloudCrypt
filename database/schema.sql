@@ -70,7 +70,7 @@ CREATE TABLE notification_settings
 CREATE TABLE key
 (
     key_id        uuid        NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
-    uuid           uuid        NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
+    user_account  uuid        NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
     name         varchar(255) NOT NULL UNIQUE,
     password_hash   VARCHAR(72) NOT NULL CHECK (length(password_hash) <= 72)
 );

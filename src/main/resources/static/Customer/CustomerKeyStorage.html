@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -138,7 +139,88 @@
     </style>
 </head>
 <body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
 
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData(username);
+        }
+    };
+
+    function retrieveData() {
+        const username = localStorage.getItem('username');
+        console.log(username);
+        axios.post('/Customer/ReadKey', {username: username, key: ""})
+            .then(function (response) {
+                console.log(response.data);
+                if (Array.isArray(response.data) && response.data.length > 0) {
+                    appendToCustomerKeyTable(response.data);
+                } else {
+                    console.error("No keys found for the provided username");
+                    alert("No keys for the provided username");
+                }
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+
+    function appendToCustomerKeyTable(keyList) {
+        const tableBody = document.getElementById('CustomerKeyTableBody');
+
+        // Clear existing rows in the table body
+        tableBody.innerHTML = '';
+
+        // Iterate through the list of users and append each to the table
+        keyList.forEach((keyList, index) => {
+            // Create a new row
+
+            const newRow = tableBody.insertRow();
+
+            // Populate cells with key data
+            const serialNumberCell = newRow.insertCell(0);
+            const keyNameCell = newRow.insertCell(1);
+            const keyHash = newRow.insertCell(2);
+            const actionCell = newRow.insertCell(3);
+
+
+            // serial number is incremental for table
+            serialNumberCell.textContent = (index + 1).toString();
+            keyNameCell.textContent = keyList.name;
+            keyHash.textContent = keyList.password_hash;
+
+
+            const selectButton = document.createElement('button');
+            selectButton.textContent = 'Select';
+            selectButton.className = 'defaultButton';
+            selectButton.addEventListener('click', function() {
+                localStorage.setItem('selectedKey', keyList.name);
+                console.log(localStorage.getItem('selectedKey'));
+                // Toggle the classes when the button is clicked
+                $(this).toggleClass('defaultButton alternateButton');
+
+                // Change the text content based on the current class
+                var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
+                $(this).text(newText);
+
+                // Enable or disable the "Suspend" and "Update" button based on the class of the "Select" button
+                var isDefaultButton = $(this).hasClass('defaultButton');
+                $('#SuspendButton').prop('disabled', isDefaultButton);
+                $('#updateButton').prop('disabled', isDefaultButton);
+            });
+
+            actionCell.appendChild(selectButton);
+        });
+    }
+</script>
 <nav>
     <div class="nav-links">CloudCrypt</div>
     <div class="nav-links" onclick="Home()">Home</div>
@@ -165,12 +247,14 @@
 
 <table id="CustomerKeyTable">
     <tr>
-        <th>S/N</th>
-        <th>Name</th>
+        <th onclick="sortTable(0)">S/N</th>
+        <th onclick="sortTable(1)">Key Name</th>
+        <th>Key Hash</th>
         <th>Action</th>
     </tr>
-    <tbody id="CustomerFileTableBody">
+    <tbody id="CustomerKeyTableBody">
     <tr>
+        <td></td>
         <td></td>
         <td></td>
         <td><button id="SelectButton" class="defaultButton">Select</button></td>
@@ -201,6 +285,7 @@
 <!--        <button onclick="CancelAddNewKey()">Cancel</button>-->
 <!--    </div>-->
 <!--</div>-->
+
 <script>
     function Home() {
         window.location.href = 'CustomerHomePage.html';
@@ -262,6 +347,34 @@
         } else {
         }
     }
+
+    function sortTable(columnIndex) {
+        var table, rows, switching, i, x, y, shouldSwitch;
+        table = document.getElementById("CustomerKeyTable");
+        switching = true;
+
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+
+            for (i = 1; i < rows.length - 1; i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("td")[columnIndex];
+                y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+    }
+
 </script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>

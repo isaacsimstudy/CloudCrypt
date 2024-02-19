@@ -55,7 +55,7 @@ VALUES
 
 -- Insert key (sample 1-9 are randomly generated and not to be used for actual encryption)
 INSERT INTO key
-    (uuid, name, password_hash)
+    (user_account, name, password_hash)
 VALUES
     ((SELECT uuid FROM user_account WHERE username = 'customer1'), 'sample-1', 'G3p6N9w2R5n9w6hz8T1q7'),
     ((SELECT uuid FROM user_account WHERE username = 'customer1'), 'sample-2', 's5Z8b3N6x1R9v4E7q2C5h8M'),

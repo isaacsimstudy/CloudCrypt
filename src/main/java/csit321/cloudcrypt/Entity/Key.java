@@ -12,13 +12,18 @@ import java.util.UUID;
 @Table(name = "key")
 public class Key {
     @Id
-    @Column(name = "uuid", nullable = false)
+    @Column(name = "key_id", nullable = false)
     private UUID id;
 
-    @Column(name = "keyname", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_account", nullable = false)
+    private UserAccount userAccount;
+
+    @Column(name = "name", nullable = false)
     private String keyname;
 
     @Column(name = "password_hash", nullable = false, length = 72)
     private String passwordHash;
+
 
 }

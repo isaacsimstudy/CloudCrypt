@@ -6,22 +6,15 @@ CREATE OR REPLACE FUNCTION password_crypt()
 AS
 $$
 BEGIN
-    IF (TG_TABLE_NAME = 'user_account' AND (TG_OP = 'INSERT' OR OLD.password_hash != NEW.password_hash)) OR
-       (TG_TABLE_NAME = 'key' AND (TG_OP = 'INSERT' OR OLD.password_hash != NEW.password_hash)) THEN
-        NEW.password_hash = crypt(NEW.password_hash, gen_salt('bf'));
+    IF (tg_op = 'INSERT') OR (old.password_hash != new.password_hash) THEN
+        new.password_hash = crypt(new.password_hash, gen_salt('bf'));
     END IF;
-    RETURN NEW;
+    RETURN new;
 END;
 $$;
-CREATE TRIGGER password_crypt_user_account
-    BEFORE INSERT OR UPDATE ON user_account
-    FOR EACH ROW
-EXECUTE FUNCTION password_crypt();
-
-CREATE TRIGGER password_crypt_key
-    BEFORE INSERT OR UPDATE ON key
-    FOR EACH ROW
-EXECUTE FUNCTION password_crypt();
+CREATE OR REPLACE TRIGGER password_crypt
+    BEFORE INSERT OR UPDATE ON user_account FOR EACH ROW
+EXECUTE PROCEDURE password_crypt();
 
 INSERT INTO user_profile
     (privilege, title)

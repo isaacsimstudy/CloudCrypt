@@ -19,10 +19,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.SecureRandom;
-import java.util.Base64;
+import javax.crypto.*;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.SecretKey;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.util.Base64;
 
 
 @RestController
@@ -34,6 +39,9 @@ public class GenerateKeyController {
     private final ObjectMapper objectMapper;
 
     private final UserAccountRepository userAccountRepository;
+
+    private static final String SECRET_KEY = "the_secret_key";
+    private static final String SALT = "the_salt";
     @Autowired
     public GenerateKeyController(KeyService keyService, UserAccountService userAccountService, UserAccountRepository userAccountRepository) {
         this.keyService = keyService;
@@ -73,14 +81,32 @@ public class GenerateKeyController {
 
     }
     private String generateRandomKey(){
-        // Generate random bytes
-        byte[] randomBytes = new byte[32];
-        new SecureRandom().nextBytes(randomBytes);
+        try {
+            // Generate random bytes
+            byte[] randomBytes = new byte[32];
+            new SecureRandom().nextBytes(randomBytes);
 
-        // Encode bytes to base64
-        String base64Key = Base64.getEncoder().encodeToString(randomBytes);
+            byte[] encryptedBytes = encrypt(randomBytes);
 
-        // Truncate to fit into VARCHAR(72) column
-        return base64Key.substring(0, Math.min(base64Key.length(), 72));
+            // Encode bytes to base64
+            String base64Key = Base64.getEncoder().encodeToString(encryptedBytes);
+
+            // Truncate to fit into VARCHAR(72) column
+            return base64Key.substring(0, Math.min(base64Key.length(), 72));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private byte[] encrypt(byte[] input) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
+        SecretKey tmp = factory.generateSecret(spec);
+        SecretKey secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        return cipher.doFinal(input);
     }
 }

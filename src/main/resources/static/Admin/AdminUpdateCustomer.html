@@ -113,6 +113,16 @@
                     document.getElementById('phone_number').value = userData.phoneNumber;
                     document.getElementById('dob').value = userData.dateOfBirth;
                     document.getElementById('password').value = userData.passwordHash;
+
+                    axios.post('/Customer/Read', { username: userData.username })
+                        .then(function (response) {
+                            console.log(response.data);
+                            document.getElementById('custDetails').value = response.data;
+                        })
+                        .catch(function (error) {
+                            console.error("Customer Details error:", error);
+                            alert(error);
+                        });
                 } else {
                     console.error("No user data found for the provided username");
                     alert("No user data found for the provided username");
@@ -182,6 +192,12 @@
     <input type="password" id="password" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required
            title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.">
 
+    <label for="custDetails">Sub Tier:</label>
+    <select id="custDetails" name="custDetails" required>
+        <option value="free">Free</option>
+        <option value="premium">Premium</option>
+    </select>
+
     <button id="SubmitButton" type="button" class="defaultButton" onclick="validation()">Update</button>
 </form>
 
@@ -248,9 +264,16 @@
             axios.post('/Account/Update', userData)
                 .then(function (response) {
                     console.log(response.data);
-                    alert("Account Successfully Updated");
-                    localStorage.removeItem('selectedUser');
-                    window.location.href = "AdminCustomerAccount.html";
+                    axios.post('/Customer/Update', {username: localStorage.getItem('selectedUser'), subTier: document.getElementById('custDetails').value})
+                        .then(function (response) {
+                            alert("Account Successfully Updated");
+                            localStorage.removeItem('selectedUser');
+                            window.location.href = "AdminCustomerAccount.html";
+                        })
+                        .catch(function (error) {
+                            console.error("An error occurred:", error);
+                            alert(error);
+                        });
                 })
                 .catch(function (error) {
                     console.error("An error occurred:", error);

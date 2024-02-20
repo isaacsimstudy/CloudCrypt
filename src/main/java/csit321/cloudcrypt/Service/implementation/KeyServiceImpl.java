@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import csit321.cloudcrypt.Entity.ActivityLog;
 import csit321.cloudcrypt.Entity.Key;
+import csit321.cloudcrypt.Entity.NotificationSetting;
 import csit321.cloudcrypt.Entity.UserAccount;
 import csit321.cloudcrypt.Repository.KeyRepository;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
@@ -33,6 +35,7 @@ public class KeyServiceImpl implements KeyService {
         ArrayNode an = objectMapper.createArrayNode();
         for (Key Key : KeyList) {
             ObjectNode on = objectMapper.createObjectNode();
+            on.put("key_id", String.valueOf(Key.getId()));
             on.put("name", Key.getName());
             on.put("password_hash", Key.getPassword_hash());
             an.add(on);
@@ -51,5 +54,11 @@ public class KeyServiceImpl implements KeyService {
         key.setPassword_hash(password);
         KeyRepository.save(key);
         return "New Key Generated.";
+    }
+
+    @Override
+    public String deleteKey(Key key) {
+        KeyRepository.delete(key);
+        return "Key deleted.";
     }
 }

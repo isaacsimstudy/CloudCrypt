@@ -12,4 +12,5 @@ public interface KeyRepository extends JpaRepository<Key, UUID> {
 
     List<Key> findAllByUserAccount(UserAccount userAccount);
 
+    Key findKeyById(UUID KeyID);
 }

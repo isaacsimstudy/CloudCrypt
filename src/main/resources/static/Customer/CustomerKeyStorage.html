@@ -188,12 +188,14 @@
             // Populate cells with key data
             const serialNumberCell = newRow.insertCell(0);
             const keyNameCell = newRow.insertCell(1);
-            const keyHash = newRow.insertCell(2);
-            const actionCell = newRow.insertCell(3);
+            const keyIDCell =  newRow.insertCell(2);
+            const keyHash = newRow.insertCell(3);
+            const actionCell = newRow.insertCell(4);
 
 
             // serial number is incremental for table
             serialNumberCell.textContent = (index + 1).toString();
+            keyIDCell.textContent =  keyList.key_id;
             keyNameCell.textContent = keyList.name;
             keyHash.textContent = keyList.password_hash;
 
@@ -202,8 +204,8 @@
             selectButton.textContent = 'Select';
             selectButton.className = 'defaultButton';
             selectButton.addEventListener('click', function() {
-                localStorage.setItem('selectedKey', keyList.name);
-                console.log(localStorage.getItem('selectedKey'));
+                localStorage.setItem('selectedItem', keyList.key_id);
+                console.log(localStorage.getItem('selectedItem'));
                 // Toggle the classes when the button is clicked
                 $(this).toggleClass('defaultButton alternateButton');
 
@@ -211,10 +213,10 @@
                 var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
                 $(this).text(newText);
 
-                // Enable or disable the "Suspend" and "Update" button based on the class of the "Select" button
+                // Enable or disable the "Download" and "Delete" button based on the class of the "Select" button
                 var isDefaultButton = $(this).hasClass('defaultButton');
-                $('#SuspendButton').prop('disabled', isDefaultButton);
-                $('#updateButton').prop('disabled', isDefaultButton);
+                $('#DownloadButton').prop('disabled', isDefaultButton);
+                $('#DeleteButton').prop('disabled', isDefaultButton);
             });
 
             actionCell.appendChild(selectButton);
@@ -240,7 +242,7 @@
             </header>
         </td>
         <td>
-            <button id ="AddButton" class="defaultButton" class="nav-links" onclick="CustomerAddKey()">Add New Key</button> <button id ="DownloadButton" class="defaultButton" onclick="DownloadKey()">Download</button> <button id ="DeleteButton" class="defaultButton" onclick="DeleteKey()">Delete</button>
+            <button id ="AddButton" class="defaultButton" class="nav-links" onclick="CustomerAddKey()">Add New Key</button> <button id ="DownloadButton" class="defaultButton" onclick="DownloadKey()">Download</button> <button id ="DeleteButton" class="defaultButton" onclick="deleteKey()">Delete</button>
         </td>
     </tr>
 </table>
@@ -249,15 +251,12 @@
     <tr>
         <th onclick="sortTable(0)">S/N</th>
         <th onclick="sortTable(1)">Key Name</th>
+        <th onclick="sortTable(2)">Key ID</th>
         <th>Key Hash</th>
         <th>Action</th>
     </tr>
     <tbody id="CustomerKeyTableBody">
     <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td><button id="SelectButton" class="defaultButton">Select</button></td>
     </tr>
     </tbody>
 </table>
@@ -314,18 +313,6 @@
     function CancelAddNewKey() {
         var addNewKey = document.getElementById("addNewKey");
         addNewKey.style.display = "none";
-    }
-
-    function CurrentUpload() {
-        var fileInput = document.getElementById("fileInput");
-        fileInput.click()
-
-        fileInput.addEventListener("change", function(event) {
-            var selectedFiles = event.target.files;
-            // process selected files
-
-            console.log(selectedFiles);
-        });
     }
 
     function LogOut() {
@@ -421,19 +408,41 @@
             .catch(error => console.error('Error generating key:', error));
     }
 
-    function generateRandomPassword() {
-        const length = 16;
-        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
-        let password = "";
-        for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * charset.length);
-            password += charset[randomIndex];
+    function deleteKey(){
+        var selectButton = $('#SelectButton');
+
+        var confirmation = confirm("Are you sure you want to delete this key?");
+
+        if (confirmation) {
+            var deleteItem = localStorage.getItem('selectedItem');
+
+            axios.post('/Customer/DeleteKey', deleteItem)
+                .then(function (response) {
+                    console.log(response.data);
+                    alert("Key Successfully Deleted");
+                    // Reset the state of the "Select" button
+                    selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
+                    $('#DeleteButton').prop('disabled', true);
+                    localStorage.removeItem('selectedItem');
+                    // Refresh the page
+                    window.location.href = 'CustomerKeyStorage.html';
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                    alert(error);
+                });
         }
-        return password;
-        //document.getElementById("key").value = password;
     }
-
-
+    function stringToUUID(uuidString) {
+        const pattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        if (!pattern.test(uuidString)) {
+            throw new Error("Invalid UUID string");
+        }
+        return {
+            toString: () => uuidString,
+            toJSON: () => uuidString,
+        };
+    }
 
     function DownloadKey() {
         var selectButton = $('#SelectButton');
@@ -452,24 +461,9 @@
     }
 
     $(function () {
-        // Disable the "Suspend" button by default
+        // Disable the "Delete" button by default
         $('#DownloadButton').prop('disabled', true);
         $('#DeleteButton').prop('disabled', true);
-
-        // Attach a click event handler to the "Select" button
-        $('#SelectButton').on('click', function () {
-            // Toggle the classes when the button is clicked
-            $(this).toggleClass('defaultButton alternateButton');
-
-            // Change the text content based on the current class
-            var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
-            $(this).text(newText);
-
-            // Enable or disable the "Suspend" button based on the class of the "Select" button
-            var isDefaultButton = $(this).hasClass('defaultButton');
-            $('#DownloadButton').prop('disabled', isDefaultButton);
-            $('#DeleteButton').prop('disabled', isDefaultButton);
-        });
     });
 </script>
 </body>

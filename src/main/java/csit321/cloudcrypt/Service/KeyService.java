@@ -1,5 +1,6 @@
 package csit321.cloudcrypt.Service;
 import csit321.cloudcrypt.Entity.UserAccount;
+import csit321.cloudcrypt.Entity.Key;
 import org.springframework.stereotype.Service;
 @Service
 public interface KeyService {
@@ -8,4 +9,6 @@ public interface KeyService {
     public String generateKey(UserAccount userAccount,
                                      String name,
                                      String password);
+
+    String deleteKey(Key key);
 }

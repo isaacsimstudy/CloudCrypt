@@ -214,13 +214,58 @@
                                         loginStatus: "active",
                                         loginTime: new Date().toISOString(),
                                     };
+
                                     axios.post('/Customer/UpdateLoginSetting', loginData)
                                         .then(function (response) {
-                                            alert("Login successful");
+                                            axios.post('/Customer/ReadNotificationSetting', {username: username, notificationType: "login"})
+                                                .then(function (response) {
+                                                    const notifData = response.data[0];
+                                                    console.log(notifData);
 
-                                            localStorage.setItem('username', username);
-                                            localStorage.removeItem('loginAttempts');
-                                            window.location.href = "Customer/CustomerHomePage.html";
+                                                    if (notifData.notification_frequency === "immediate" && notifData.status === "active") {
+                                                        axios.get('/Account/Read/' + username)
+                                                            .then(function (response) {
+                                                                console.log(response.data);
+                                                                const email = response.data[0].email;
+                                                                //Initiate emailJS
+                                                                emailjs.init("AYShqMg5Od2zO3yuv");
+                                                                // Send the notification email for login to the user
+                                                                emailjs.send("service_CloudCrypt2", "template_fjebtm1", {
+                                                                    to_email: email,
+                                                                    username: username,
+                                                                    action: "login",
+                                                                    currentTime: new Date().toISOString()
+                                                                })
+                                                                    .then(function(response) {
+                                                                        console.log("Email sent successfully", response.status, response.text);
+
+                                                                        alert("Login successful");
+
+                                                                        localStorage.setItem('username', username);
+                                                                        localStorage.removeItem('loginAttempts');
+                                                                        window.location.href = "Customer/CustomerHomePage.html";
+                                                                    })
+                                                                    .catch(function(error) {
+                                                                        console.error("Error sending email:", error);
+                                                                    });
+                                                            })
+                                                            .catch(function (error) {
+                                                                console.error("An error occurred:", error);
+                                                            });
+                                                    }
+                                                    else
+                                                    {
+                                                        console.log("Notification email didn't trigger");
+                                                        alert("Login successful");
+
+                                                        localStorage.setItem('username', username);
+                                                        localStorage.removeItem('loginAttempts');
+                                                        window.location.href = "Customer/CustomerHomePage.html";
+                                                    }
+                                                })
+                                                .catch(function (error) {
+                                                    console.error("An error occurred:", error);
+                                                });
                                         })
                                         .catch(function (error) {
                                             console.error("An error occurred:", error);

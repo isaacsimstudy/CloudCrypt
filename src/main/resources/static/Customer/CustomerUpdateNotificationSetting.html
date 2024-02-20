@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create User Account</title>
+    <title>Update Notification Settings</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
@@ -108,6 +108,7 @@
                     const userData = response.data[0];
 
                     // Set the form fields with the retrieved data
+                    localStorage.setItem('oldNotifType', userData.notification_type);
                     document.getElementById('notifType').value = userData.notification_type;
                     document.getElementById('status').value = userData.status;
                     document.getElementById('freq').value = userData.notification_frequency;
@@ -181,7 +182,7 @@
         <option value="monthly">Monthly</option>
     </select>
 
-    <button id="CreateButton" type="button" onclick="validation()" class="defaultButton">Create</button>
+    <button id="CreateButton" type="button" onclick="validation()" class="defaultButton">Update</button>
 </form>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
@@ -192,15 +193,16 @@
         if (confirmation) {
             const userData = {
                 username: localStorage.getItem('username'),
-                notificationType: document.getElementById('notifType').value,
-                notificationMethod: document.getElementById('notification_method').value,
+                notificationType: localStorage.getItem('oldNotifType'),
+                newNotificationType: document.getElementById('notifType').value,
                 status: document.getElementById('status').value,
+                notificationMethod: "email",
                 notificationFrequency: document.getElementById('freq').value
             };
             axios.post('/Customer/UpdateNotificationSetting', userData)
                 .then(function (response) {
                     console.log(response.data);
-                    alert("Notification setting created successfully");
+                    alert("Notification setting updated successfully");
                     window.location.href = "CustomerNotificationSettings.html";
                 })
                 .catch(function (error) {

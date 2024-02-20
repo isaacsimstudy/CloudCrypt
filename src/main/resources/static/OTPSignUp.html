@@ -54,8 +54,6 @@
 </style>
 <body>
 <script>
-    // Retrieve the shared variable from localStorage
-    console.log(localStorage.getItem('username'));
     window.onload = function () {
         //generate otp
         const otp = Math.floor(100000 + Math.random() * 900000);
@@ -63,19 +61,9 @@
         console.log(otp);
 
         const username = localStorage.getItem('username');
+        const email = localStorage.getItem('email');
 
-        axios.get('/Account/Read/' + username)
-            .then(function (response) {
-                console.log(response.data);
-                localStorage.setItem('email', response.data.email);
-                sendOtp(response.data.email, otp);
-            }).catch(function (error) {
-            console.error("An error occurred:", error);
-            alert(error);
-        });
-    }
-    function sendOtp(email, otp)
-    {
+
         //Initiate emailJS
         emailjs.init("fljmK1Spno-FhP6lQ");
         // Send the OTP via Email.js using the API key
@@ -117,6 +105,7 @@
     }
     function verifyOTP()
     {
+        const username = localStorage.getItem('username');
         var otp = document.getElementById("otp").value;
         if(otp === localStorage.getItem('otp'))
         {
@@ -128,8 +117,6 @@
                 .then(function (response) {
                     console.log(response.data);
                     localStorage.removeItem('otp');
-                    if (localStorage.getItem('title') === "customer")
-                    {
                         const loginData = {
                             username: localStorage.getItem('username'),
                             loginAttempts: localStorage.getItem('loginAttempts'),
@@ -141,17 +128,65 @@
                                 alert("Authentication Successful");
 
                                 localStorage.removeItem('title');
-                                window.location.href = 'Customer/CustomerHomePage.html';
+                                axios.post('/Customer/UpdateLoginSetting', loginData)
+                                    .then(function (response) {
+                                        axios.post('/Customer/ReadNotificationSetting', {username: username, notificationType: "login"})
+                                            .then(function (response) {
+                                                const notifData = response.data[0];
+                                                console.log(notifData);
+
+                                                if (notifData.notification_frequency === "immediate" && notifData.status === "active") {
+                                                    axios.get('/Account/Read/' + username)
+                                                        .then(function (response) {
+                                                            console.log(response.data);
+                                                            const email = response.data[0].email;
+                                                            //Initiate emailJS
+                                                            emailjs.init("AYShqMg5Od2zO3yuv");
+                                                            // Send the notification email for login to the user
+                                                            emailjs.send("service_CloudCrypt2", "template_fjebtm1", {
+                                                                to_email: email,
+                                                                username: username,
+                                                                action: "login",
+                                                                currentTime: new Date().toISOString()
+                                                            })
+                                                                .then(function(response) {
+                                                                    console.log("Email sent successfully", response.status, response.text);
+
+                                                                    alert("Login successful");
+
+                                                                    localStorage.setItem('username', username);
+                                                                    localStorage.removeItem('loginAttempts');
+                                                                    window.location.href = "Customer/CustomerHomePage.html";
+                                                                })
+                                                                .catch(function(error) {
+                                                                    console.error("Error sending email:", error);
+                                                                });
+                                                        })
+                                                        .catch(function (error) {
+                                                            console.error("An error occurred:", error);
+                                                        });
+                                                }
+                                                else
+                                                {
+                                                    console.log("Notification email didn't trigger");
+                                                    alert("Login successful");
+
+                                                    localStorage.setItem('username', username);
+                                                    localStorage.removeItem('loginAttempts');
+                                                    window.location.href = "Customer/CustomerHomePage.html";
+                                                }
+                                            })
+                                            .catch(function (error) {
+                                                console.error("An error occurred:", error);
+                                            });
+                                    })
+                                    .catch(function (error) {
+                                        console.error("An error occurred:", error);
+                                    });
                             }).catch(function (error) {
                             console.error("An error occurred:", error);
                             alert(error);
                         });
-                    }
-                    else if (localStorage.getItem('title') === "admin")
-                    {
-                        localStorage.removeItem('title');
-                        window.location.href = 'Admin/AdminHomePage.html';
-                    }
                 }).catch(function (error) {
                     console.error("An error occurred:", error);
                     alert(error);

@@ -5,6 +5,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -121,6 +122,39 @@
     </style>
 </head>
 <body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
+
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData(username);
+        }
+    };
+    function retrieveData() {
+        const username = localStorage.getItem('username');
+        console.log(username);
+        axios.post('/Customer/ReadLoginSetting', {username: username, param: "twoFactorAuth"})
+            .then(function (response) {
+                console.log(response.data);
+
+                if (response.data.twoFactorAuth === "active") {
+                    document.getElementById('authLogin').value = "active";
+                } else {
+                    document.getElementById('authLogin').value = "inactive";
+                }
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+</script>
 <nav class="navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">CloudCrypt</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -173,27 +207,43 @@
         </td>
         <td>
             <div id="mfaToggleBar">
-                <button id="enableMFABtn" class="enableMFA" onclick="toggleMFA()">Enable</button>
+                <select class="switchStatus" id="authLogin">
+                    <option value="active">Enabled</option>
+                    <option value="inactive">Disabled</option>
+                </select>
             </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <button type="button" class="UpdateButton" onclick="applyChanges()">Apply Changes</button>
+        </td>
+        <td>
         </td>
     </tr>
 </table>
 <script>
-    function toggleMFA() {
-        var mfaStatus = document.getElementById("mfaStatusLabel");
-        var enableMFABtn = document.getElementById("enableMFABtn");
 
-        if (enableMFABtn.textContent === "Enable") {
-            mfaStatus.classList.add("enabled");
-            mfaStatus.classList.remove("disabled");
-            enableMFABtn.textContent = "Disable";
-        } else {
-            mfaStatus.classList.remove("enabled");
-            mfaStatus.classList.add("disabled");
-            enableMFABtn.textContent = "Enable";
-        }
+    function applyChanges() {
+        const username = localStorage.getItem('username');
+        const authLogin = document.getElementById('authLogin').value;
+
+        const userData = {
+            username: username,
+            twoFactorAuth: authLogin
+        };
+
+        axios.post('/Customer/UpdateLoginSetting', userData)
+            .then(function (response) {
+                console.log(response.data);
+                alert("Settings updated successfully");
+                window.location.href = "AdminSettings.html";
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
     }
-
     function UpdateAccountInformation() {
         window.location.href = 'AdminUpdateAccountInfo.html'
     }
@@ -224,8 +274,25 @@
         // Check the user's choice
         if (confirmed) {
             // User clicked "OK" (Yes), proceed with log out
-            localStorage.setItem('username', '');
-            window.location.href = '../index.html';
+            const username = localStorage.getItem('username');
+
+            const userData = {
+                username: username,
+                loginStatus: "inactive"
+            };
+
+            axios.post('/Customer/UpdateLoginSetting', userData)
+                .then(function (response) {
+                    console.log(response.data);
+
+                    localStorage.removeItem('username');
+                    alert("Successfully Logged Out");
+                    window.location.href = '../index.html';
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                    alert(error);
+                });
         } else {
         }
     }

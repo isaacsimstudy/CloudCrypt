@@ -76,10 +76,10 @@ public class CreateAccountController {
                 if (createCustomerDetailController.createDetail(json).getStatusCode() != HttpStatus.OK) {
                     return new ResponseEntity<>("Failed to create customer detail", HttpStatus.BAD_REQUEST);
                 }
+            }
                 if (createLoginSettingController.createLoginSetting(json).getStatusCode() != HttpStatus.OK) {
                     return new ResponseEntity<>("Failed to create login setting", HttpStatus.BAD_REQUEST);
                 }
-            }
             return new ResponseEntity<>("Success",HttpStatus.OK);
         }
         catch (Exception e) {

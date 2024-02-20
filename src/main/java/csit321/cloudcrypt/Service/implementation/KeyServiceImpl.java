@@ -33,10 +33,23 @@ public class KeyServiceImpl implements KeyService {
         ArrayNode an = objectMapper.createArrayNode();
         for (Key Key : KeyList) {
             ObjectNode on = objectMapper.createObjectNode();
-            on.put("name", Key.getKeyname());
-            on.put("password_hash", Key.getPasswordHash());
+            on.put("name", Key.getName());
+            on.put("password_hash", Key.getPassword_hash());
             an.add(on);
         }
         return an.toString();
+    }
+
+    @Override
+    public String generateKey(UserAccount userAccount,
+                              String name,
+                              String password) {
+        Key key = new Key();
+        key.setId(UUID.randomUUID());
+        key.setUserAccount(userAccount);
+        key.setName(name);
+        key.setPassword_hash(password);
+        KeyRepository.save(key);
+        return "New Key Generated.";
     }
 }

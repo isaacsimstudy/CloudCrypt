@@ -269,8 +269,9 @@
         <input type="text" id="keyName" name="keyName" required><br/>
 
         <label for="key">Key:</label>
-        <input type="text" id="key" name="key" required><br/>
+        <input type="text" id="key" name="key" /><br/>
         <button onclick="addNewKey()">Add New Key</button><br/>
+        <button onclick="generateKey()">Generate New Key</button>
         <button onclick="CancelAddNewKey()">Cancel</button>
     </div>
 </div>
@@ -315,9 +316,6 @@
         addNewKey.style.display = "none";
     }
 
-    function KeyManagement() {
-        // route to database/ key storage
-    }
     function CurrentUpload() {
         var fileInput = document.getElementById("fileInput");
         fileInput.click()
@@ -328,10 +326,6 @@
 
             console.log(selectedFiles);
         });
-    }
-
-    function AutoGenerate() {
-        // code to generate key automatically
     }
 
     function LogOut() {
@@ -394,34 +388,52 @@
 </script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    function addNewKey()
-    {
-        var keyName = document.getElementById("keyName").value;
-        var key = document.getElementById("key").value;
-
+    function addNewKey() {
         var confirmation = confirm("Are you sure you want to add this Key?");
+
         if (confirmation) {
-            // axios.put('/Owner/Profile/Suspend/' + suspendTitle)
-            //     .then(function (response) {
-            //         console.log(response.data);
-            //         alert("User Profile Successfully Suspended");
-            //         // Reset the state of the "Select" button
-            //         selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
-            //         $('#SuspendButton').prop('disabled', true);
-            //         localStorage.removeItem('selectedTitle');
-            //         // Return to the page
-            //     })
-            //     .catch(function (error) {
-            //         console.error("An error occurred:", error);
-            //         alert(error);
-            //     });
-            //Verify codes for
-            //Multi Authentication
-            alert("Key added successfully");
-            // Perform any additional actions upon suspension if needed
-            // Return to the page
+            const userData = {
+                username: localStorage.getItem('username'),
+                name: document.getElementById('keyName').value,
+                password_hash: document.getElementById('key').value
+            };
+            axios.post('/Customer/GenerateKey', userData)
+                .then(function (response) {
+                    console.log(response.data);
+                    alert("Key created successfully");
+                    window.location.href = "CustomerKeyStorage.html";
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                });
+        } else {
+            // If "No" is clicked, return to the current page
+            return false; // Prevent form submission
         }
     }
+
+    function generateKey() {
+        axios.post('/Customer/GenerateRandomKey')
+            .then(response => {
+                console.log('Generated Key:', response.data);
+                document.getElementById("key").value = response.data;
+            })
+            .catch(error => console.error('Error generating key:', error));
+    }
+
+    function generateRandomPassword() {
+        const length = 16;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+        let password = "";
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * charset.length);
+            password += charset[randomIndex];
+        }
+        return password;
+        //document.getElementById("key").value = password;
+    }
+
+
 
     function DownloadKey() {
         var selectButton = $('#SelectButton');

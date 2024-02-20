@@ -5,4 +5,7 @@ import org.springframework.stereotype.Service;
 public interface KeyService {
     public String getKey(UserAccount userAccount);
 
+    public String generateKey(UserAccount userAccount,
+                                     String name,
+                                     String password);
 }

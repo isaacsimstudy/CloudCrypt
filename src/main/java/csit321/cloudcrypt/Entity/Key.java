@@ -20,10 +20,10 @@ public class Key {
     private UserAccount userAccount;
 
     @Column(name = "name", nullable = false)
-    private String keyname;
+    private String name;
 
     @Column(name = "password_hash", nullable = false, length = 72)
-    private String passwordHash;
+    private String password_hash;
 
 
 }

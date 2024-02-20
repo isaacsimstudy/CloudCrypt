@@ -205,6 +205,7 @@
             selectButton.className = 'defaultButton';
             selectButton.addEventListener('click', function() {
                 localStorage.setItem('selectedItem', keyList.key_id);
+                localStorage.setItem('selectedHash', keyList.password_hash);
                 console.log(localStorage.getItem('selectedItem'));
                 // Toggle the classes when the button is clicked
                 $(this).toggleClass('defaultButton alternateButton');
@@ -449,14 +450,36 @@
 
         var confirmation = confirm("Are you sure you want to download this Key?");
         if (confirmation) {
-            //Verify codes for
-            //Multi Authentication
-            alert("Download started successfully");
-            // Reset the state of the "Select" button
-            selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
-            $('#DownloadButton').prop('disabled', true);
-            // Perform any additional actions upon suspension if needed
-            // Return to the page
+            var downloadItem = localStorage.getItem('selectedItem');
+            axios.post('/Customer/DownloadKey', downloadItem, { responseType: 'blob' }) // Set the responseType to 'blob'
+                .then(function (response) {
+                    console.log(response.data);
+                    // Create a Blob object from the response data
+                    const blob = new Blob([response.data], { type: 'text/plain' });
+                    // Create a temporary anchor element
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'key_info.txt'; // Set the download attribute
+                    // Append the anchor element to the document body and simulate a click
+                    document.body.appendChild(a);
+                    a.click();
+                    // Remove the anchor element
+                    document.body.removeChild(a);
+                    // Revoke the Blob URL to release the resources
+                    window.URL.revokeObjectURL(url);
+                    alert("Key Successfully Downloaded");
+                    // Reset the state of the "Select" button
+                    selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');
+                    $('#DownloadButton').prop('disabled', true);
+                    localStorage.removeItem('selectedItem');
+                    // Refresh the page
+                    window.location.href = 'CustomerKeyStorage.html';
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                    alert(error);
+                });
         }
     }
 

@@ -4,15 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import csit321.cloudcrypt.Entity.ActivityLog;
+
 import csit321.cloudcrypt.Entity.Key;
-import csit321.cloudcrypt.Entity.NotificationSetting;
 import csit321.cloudcrypt.Entity.UserAccount;
 import csit321.cloudcrypt.Repository.KeyRepository;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Service.KeyService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.List;
 import java.util.UUID;
 @Service
@@ -60,5 +60,23 @@ public class KeyServiceImpl implements KeyService {
     public String deleteKey(Key key) {
         KeyRepository.delete(key);
         return "Key deleted.";
+    }
+
+    @Override
+    public String downloadKey(Key key ) {
+        Optional<Key> keyID = Optional.ofNullable(KeyRepository.findKeyById(key.getId()));
+        if (keyID.isPresent()) {
+            Key key_id = KeyRepository.findKeyById(key.getId());
+            ObjectNode on = objectMapper.createObjectNode();
+            on.put("key_id", String.valueOf(key_id.getId()));
+            on.put("name", key_id.getName());
+            on.put("password_hash", key_id.getPassword_hash());
+
+
+            return on.toString();
+        } else {
+            // Handle the case where the key with the provided UUID does not exist
+            return "Key not found";
+        }
     }
 }

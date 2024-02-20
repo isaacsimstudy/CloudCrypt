@@ -200,11 +200,20 @@
                         axios.post('/Customer/ReadLoginSetting', {username: username, param: "twoFactorAuth"})
                             .then(function (response) {
                                 console.log(response.data);
+
                                 if (response.data.twoFactorAuth === "active") {
                                     //if true, redirect to OTP page
                                     localStorage.setItem('title', document.getElementById('SelectUser').value);
-                                    localStorage.setItem('username', username);
-                                    window.location.href = "OTPSignUp.html";
+                                    axios.get('/Account/Read/' + username)
+                                        .then(function (response) {
+                                            console.log(response.data);
+                                            localStorage.setItem('email', response.data[0].email);
+                                            localStorage.setItem('username', username);
+                                            window.location.href = "OTPSignUp.html";
+                                        })
+                                        .catch(function (error) {
+                                            console.error("An error occurred:", error);
+                                        });
                                 } else {
                                     //if false, update login setting of user for successful login
                                     const loginData = {

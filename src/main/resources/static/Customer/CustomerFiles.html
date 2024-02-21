@@ -302,53 +302,20 @@
 
     function CustomerCreateFile() {
         const fileInput = document.getElementById("fileInput");
-        const accessToken = localStorage.getItem('access_token');
         fileInput.click()
 
         fileInput.addEventListener("change", function(event) {
             let selectedFiles = event.target.files;
-
             // process selected files
+
+
+            console.log(selectedFiles);
             if (selectedFiles.length > 0) {
                 const file = selectedFiles[0];
-                const fileName = file.name;
-                const fileType = file.type;
-                console.log("File Name:", fileName);
-                console.log("File Type:", fileType);
-
-                // create a file reader to read the file content
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const fileContent = event.target.result;
-                    // log the metadata and content of the file
-                    console.log("File Content:", fileContent);
-                    // header arguments for upload
-                    const dropboxApiArg = {
-                        autorename: false,
-                        mode: 'add',
-                        mute: false,
-                        path: '/' + fileName,
-                        strict_conflict: false
-                    };
-
-                    // perform Axios POST request here
-                    axios.post('https://content.dropboxapi.com/2/files/upload',fileContent, {
-                        headers: {
-                            'Authorization': 'Bearer ' + accessToken,
-                            'Content-Type': 'application/octet-stream',
-                            'Dropbox-API-Arg': JSON.stringify(dropboxApiArg)
-                        }})
-                        .then(response => {
-                            console.log('Upload Successful', response.data);
-                        })
-                        .catch(error => {
-                            // Handle errors
-                            console.error('Error uploading file:', error.response.data);
-                        });
-
-                };
-                reader.readAsArrayBuffer(file);
-                //reader.readAsText(file);
+                const filePath = file
+                // Create a FormData object and append the file to it
+                const formData = new FormData();
+                formData.append('file', file);
 
 
                 // Make the POST request with the custom headers
@@ -368,7 +335,7 @@
                 //     });
             }
         });
-        //});
+        });
     }
     function SearchFiles() {
         const searchInput = document.getElementById('searchInput');

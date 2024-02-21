@@ -467,10 +467,28 @@
 
     function CustomerCreateFile() {
         fileInput.click()
+
     }
     function handleFileChange(event) {
         const accessToken = localStorage.getItem('access_token');
         let selectedFiles = event.target.files;
+        // const uponSelectFileContainer = document.getElementById("uponSelectFile");
+        // const selectedFileContainer = document.getElementById("selectedFileContainer");
+        // const selectedFileNameElement = document.getElementById("selectedFileName");
+        //
+        // if (selectedFiles.length > 0) {
+        //     const file = selectedFiles[0];
+        //     const filePath = file;
+        //
+        //     // Update the selected file name
+        //     selectedFileNameElement.textContent = file.name;
+        //
+        //     // Show the container containing the selected file information
+        //     uponSelectFileContainer.style.display = "block";
+        //     selectedFileContainer.classList.remove("hidden");
+        //
+        //     // You can perform additional actions related to the selected file here
+        // }
         if (selectedFiles.length > 0) {
             const file = selectedFiles[0];
             const fileName = file.name;

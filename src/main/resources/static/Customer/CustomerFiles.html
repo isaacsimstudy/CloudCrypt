@@ -186,30 +186,65 @@
         if (localStorage.getItem('access_token') !== null) {
             const accessToken = localStorage.getItem('access_token');
 
-            const data = {
-                "path": "",
-                "recursive": false,
-                "include_media_info": false,
-                "include_deleted": false,
-                "include_has_explicit_shared_members": false,
-                "include_mounted_folders": true,
-                "include_non_downloadable_files": true
-            }
 
-            axios.post('https://api.dropboxapi.com/2/files/list_folder', data, {
-                headers: {
-                    "Authorization": "Bearer " + accessToken,
-                    'Content-Type': 'application/json'
-                }})
-                .then(response => {
-                    console.log('Access Token:', response.data);
-                    appendToFileTable(response.data.entries);
-                })
-                .catch(function (error) {
-                    console.error("An error occurred:", error);
-                });
+            console.log(localStorage.getItem('selectedFolder'));
+            if (localStorage.getItem('selectedFolder') !== '')
+            {
+                document.getElementById('backFolder').hidden = false;
+                const selectedFolder = localStorage.getItem('selectedFolder');
+                const data = {
+                    "path": selectedFolder,
+                    "recursive": false,
+                    "include_media_info": false,
+                    "include_deleted": false,
+                    "include_has_explicit_shared_members": false,
+                    "include_mounted_folders": true,
+                    "include_non_downloadable_files": true
+                }
+
+                axios.post('https://api.dropboxapi.com/2/files/list_folder', data, {
+                    headers: {
+                        "Authorization": "Bearer " + accessToken,
+                        'Content-Type': 'application/json'
+                    }})
+                    .then(response => {
+                        console.log('Access Token:', response.data);
+                        appendToFileTable(response.data.entries);
+                    })
+                    .catch(function (error) {
+                        console.error("An error occurred:", error);
+                    });
+            }
+            else
+            {
+                const data = {
+                    "path": "",
+                    "recursive": false,
+                    "include_media_info": false,
+                    "include_deleted": false,
+                    "include_has_explicit_shared_members": false,
+                    "include_mounted_folders": true,
+                    "include_non_downloadable_files": true
+                }
+
+                axios.post('https://api.dropboxapi.com/2/files/list_folder', data, {
+                    headers: {
+                        "Authorization": "Bearer " + accessToken,
+                        'Content-Type': 'application/json'
+                    }})
+                    .then(response => {
+                        console.log('Access Token:', response.data);
+                        appendToFileTable(response.data.entries);
+                    })
+                    .catch(function (error) {
+                        console.error("An error occurred:", error);
+                    });
+            }
         }
     }
+
+
+
     function appendToFileTable(fileList) {
         const tableBody = document.getElementById('CustomerFileTableBody');
 
@@ -255,7 +290,13 @@
             selectButton.addEventListener('click', function () {
                 // Store the entire array associated with the selected row in localStorage
                 localStorage.setItem('selectedItem', JSON.stringify(fileList));
-                console.log(JSON.parse(localStorage.getItem('selectedItem')));
+                const selectedItem = JSON.parse(localStorage.getItem('selectedItem'));
+                console.log(selectedItem);
+                if (fileList[".tag"] === "folder")
+                {
+                    localStorage.setItem('selectedFolder', fileList["path_display"]);
+                    window.location.href = 'CustomerFiles.html';
+                }
                 // Toggle the classes when the button is clicked
                 $(this).toggleClass('defaultButton alternateButton');
 
@@ -313,6 +354,8 @@
 
 <label for="searchInput">Search: </label>
 <input type="text" id="searchInput" oninput="SearchFiles()">
+<br/>
+<button type="button" id="backFolder" class="defaultButton" hidden>Back</button>
 <br/>
 
 <table id="CustomerFiles" class="CustomerFileTable">
@@ -396,6 +439,27 @@
     function CloseChooseKeyPopup() {
         document.getElementById('chooseKeyPopup').classList.add('hidden');
     }
+
+    const backButton = document.getElementById('backFolder');
+    backButton.addEventListener('click', function () {
+        // Get the current selected folder from localStorage
+        const selectedFolder = localStorage.getItem('selectedFolder');
+
+        // Split the path by '/'
+        const pathParts = selectedFolder.split('/');
+
+        // Remove the last part (current folder) to go back to the outer directory
+        pathParts.pop();
+
+        // Construct the new path
+        const newPath = pathParts.join('/');
+
+        // Update the selectedFolder in localStorage
+        localStorage.setItem('selectedFolder', newPath);
+
+        // Redirect to the new path
+        window.location.href = 'CustomerFiles.html';
+    });
 
     // Example function to populate the key table with dynamic data (replace with your actual data)
     function PopulateKeyTable() {
@@ -522,6 +586,7 @@
                 })
                     .then(response => {
                         console.log('Upload Successful', response.data);
+                        //window.location.href = 'CustomerFiles.html';
                     })
                     .catch(error => {
                         // Handle errors

@@ -17,4 +17,5 @@ public interface KeyRepository extends JpaRepository<Key, UUID> {
 
     Key findKeyById(UUID KeyID);
 
+    Key findKeyByName(String keyName);
 }

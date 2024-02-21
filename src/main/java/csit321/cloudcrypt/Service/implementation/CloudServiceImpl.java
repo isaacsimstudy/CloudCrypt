@@ -37,8 +37,9 @@ public class CloudServiceImpl implements CloudService {
 
 
     @Override
-    public String createCloud(String cloudName, String cloudFilePath, Key key, String cloudPath, String status) {
+    public String createCloud(UserAccount userAccount, String cloudName, String cloudFilePath, Key key, String cloudPath, String status) {
         Cloud cloud = new Cloud();
+        cloud.setUserAccount(userAccount);
         cloud.setId(java.util.UUID.randomUUID());
         cloud.setFileName(cloudName);
         cloud.setFilePath(cloudFilePath);

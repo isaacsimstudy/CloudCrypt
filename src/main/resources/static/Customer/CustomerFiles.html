@@ -411,32 +411,49 @@
                 // You can perform additional actions related to the selected file here
             }
 
-
-            console.log(selectedFiles);
+            // this statement is to UPLOAD file to dropbox (without encryption)
             if (selectedFiles.length > 0) {
                 const file = selectedFiles[0];
-                const filePath = file
-                // Create a FormData object and append the file to it
-                const formData = new FormData();
-                formData.append('file', file);
+                const fileName = file.name;
+                const fileType = file.type;
+                console.log("File Name:", fileName);
+                console.log("File Type:", fileType);
 
+                // Create a file reader to read the file content
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const fileContent = event.target.result;
+                    // Log the metadata and content of the file
+                    console.log("File Content:", fileContent);
 
-                // Make the POST request with the custom headers
-                // axios.post('https://example.com/api/upload', formData, {
-                //     headers: {
-                //         'Content-Type': 'application/octet-stream',
-                //         // Add any other headers as needed
-                //     },
-                // })
-                //     .then(response => {
-                //         // Handle the response
-                //         console.log(response.data);
-                //     })
-                //     .catch(error => {
-                //         // Handle errors
-                //         console.error('Error:', error);
-                //     });
+                    // Header arguments for upload
+                    const dropboxApiArg = {
+                        autorename: false,
+                        mode: 'add',
+                        mute: false,
+                        path: '/' + fileName, // Ensure the path starts with a forward slash (/)
+                        strict_conflict: false
+                    };
+
+                    // Perform Axios POST request here
+                    axios.post('https://content.dropboxapi.com/2/files/upload', fileContent, {
+                        headers: {
+                            'Authorization': 'Bearer ' + accessToken,
+                            'Content-Type': 'application/octet-stream',
+                            'Dropbox-API-Arg': JSON.stringify(dropboxApiArg)
+                        }
+                    })
+                        .then(response => {
+                            console.log('Upload Successful', response.data);
+                        })
+                        .catch(error => {
+                            // Handle errors
+                            console.error('Error uploading file:', error.response.data);
+                        });
+                };
+                reader.readAsArrayBuffer(file);
             }
+
         });
     }
     function GoBack() {

@@ -114,6 +114,11 @@
             cursor: not-allowed; /* Change cursor to indicate non-clickable */
             /* Add any additional styles for the disabled state */
         }
+        #EncryptButton:disabled {
+            background-color: #999; /* Change to the desired color for disabled state */
+            cursor: not-allowed; /* Change cursor to indicate non-clickable */
+            /* Add any additional styles for the disabled state */
+        }
         .hidden {
             display: none;
         }
@@ -188,7 +193,7 @@
 
 
             console.log(localStorage.getItem('selectedFolder'));
-            if (localStorage.getItem('selectedFolder') !== '')
+            if (localStorage.getItem('selectedFolder') !== '' && localStorage.getItem('selectedFolder') !== null)
             {
                 document.getElementById('backFolder').hidden = false;
                 const selectedFolder = localStorage.getItem('selectedFolder');
@@ -215,7 +220,7 @@
                         console.error("An error occurred:", error);
                     });
             }
-            else if (localStorage.getItem('selectedFolder') === '' || localStorage.getItem('selectedFolder') === null)
+            else
             {
                 const data = {
                     "path": "",
@@ -241,6 +246,9 @@
                     });
             }
         }
+
+        //retrieve key on windows load
+        retrieveKeyData();
     }
 
 
@@ -307,6 +315,7 @@
                 // Enable or disable the "Suspend" and "Update" button based on the class of the "Select" button
                 var isDefaultButton = $(this).hasClass('defaultButton');
                 $('#DownloadButton').prop('disabled', isDefaultButton);
+                $('#EncryptButton').prop('disabled', isDefaultButton);
 
             });
             actionCell.appendChild(selectButton);
@@ -348,6 +357,7 @@
             <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="CustomerCreateFile()">Create</button>
             <input type="file" id="fileInput" style="display: none;" multiple>
             <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
+            <button id ="EncryptButton" class="defaultButton" class="nav-links" onclick="CustomerEncryptFile()">Encrypt</button>
         </td>
     </tr>
 </table>
@@ -357,7 +367,41 @@
 <br/>
 <button type="button" id="backFolder" class="defaultButton" hidden>Back</button>
 <br/>
+<div id ="uponSelectFile" style="display: none;">
+    <div id="selectedFileContainer" class="hidden">
+        <h2 id="EP" class="hidden">Encryption Process:</h2>
+        <h2 id="UP" class="hidden">Upload Process:</h2 >
+        <p id="selectedFileName"></p>
+        <button id="chooseKeyButton" class="hidden" class="defaultButton" onclick="ChooseKey()">Choose Key</button>
+        <button id="backButton" class="defaultButton" onclick="GoBack()">Delete</button>
+    </div>
+    <p></p>
+    <div class="progressBarContainer">
+        <div id="progressBar"></div>
+    </div>
+    <input type="file" id="fileInputEncryption" onchange="EncryptFile()">
+    <button id="confirmEncrypt" onclick ="handleSecondEncryptButton()">Encrypt</button>
+    <button id="uploadButton" onclick="StartUpload()">Upload</button>
+</div>
 
+<div id="chooseKeyPopup" class="hidden">
+    <div class="popup-content">
+        <button id="closeChooseKeyPopup" onclick="CloseChooseKeyPopup()">X</button> <!-- Close button -->
+        <h2>Select Key</h2>
+        <table id="keyTable" class="CustomerFileTable">
+            <thead>
+            <tr>
+                <th>S/N</th>
+                <th>Key Name</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id = "keyTableBody">
+            <!-- Insert key data dynamically using JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
 <table id="CustomerFiles" class="CustomerFileTable">
     <tr>
         <th onclick="SortTable(0)">S/N</th>
@@ -377,39 +421,6 @@
     </tr>
     </tbody>
 </table>
-
-<div id ="uponSelectFile" style="display: none;">
-    <div id="selectedFileContainer" class="hidden">
-        <h2>Selected File:</h2>
-        <p id="selectedFileName"></p>
-        <button id="chooseKeyButton" class="defaultButton" onclick="ChooseKey()">Choose Key</button>
-        <button id="backButton" class="defaultButton" onclick="GoBack()">Delete</button>
-    </div>
-    <p></p>
-    <div class="progressBarContainer">
-        <div id="progressBar"></div>
-    </div>
-    <button id="uploadButton" onclick="StartUpload()">Upload</button>
-</div>
-
-<div id="chooseKeyPopup" class="hidden">
-    <div class="popup-content">
-        <button id="closeChooseKeyPopup" onclick="CloseChooseKeyPopup()">X</button> <!-- Close button -->
-        <h2>Select Key</h2>
-        <table id="keyTable" class="CustomerFileTable">
-            <thead>
-            <tr>
-                <th>Key Name</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- Insert key data dynamically using JavaScript -->
-            </tbody>
-        </table>
-    </div>
-</div>
-
 
 <script>
     function Home() {
@@ -461,41 +472,76 @@
         window.location.href = 'CustomerFiles.html';
     });
 
+
     // Example function to populate the key table with dynamic data (replace with your actual data)
-    function PopulateKeyTable() {
-        const keyTableBody = document.querySelector('#keyTable tbody');
-        // Example data (replace with actual data)
-        const keys = [
-            { name: 'Key 1' },
-            { name: 'Key 2' },
-            { name: 'Key 3' }
-        ];
+    function retrieveKeyData() {
+        const username = localStorage.getItem('username');
+        console.log(username);
+        axios.post('/Customer/ReadKey', {username: username, key: ""})
+            .then(function (response) {
+                console.log(response.data);
+                if (Array.isArray(response.data) && response.data.length > 0) {
+                    appendToKeyTableBody(response.data);
+                } else {
+                    console.error("No keys found for the provided username");
+                    alert("No keys for the provided username");
+                }
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
 
-        // Clear existing rows
-        keyTableBody.innerHTML = '';
+    function appendToKeyTableBody(keyList) {
+        const tableBody = document.getElementById('keyTableBody');
 
-        // Populate table with keys
-        keys.forEach((key, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-            <td>${key.name}</td>
-            <td><button onclick="SelectKey(${index})">Select</button></td>
-        `;
-            keyTableBody.appendChild(row);
+        // Clear existing rows in the table body
+        tableBody.innerHTML = '';
+
+        // Iterate through the list of users and append each to the table
+        keyList.forEach((keyList, index) => {
+            // Create a new row
+
+            const newRow = tableBody.insertRow();
+
+            // Populate cells with key data
+            const serialNumberCell = newRow.insertCell(0);
+            const keyNameCell = newRow.insertCell(1)
+            const actionCell = newRow.insertCell(2);
+
+
+            // serial number is incremental for table
+            serialNumberCell.textContent = (index + 1).toString();
+            keyNameCell.textContent = keyList.name;
+
+            const selectButton = document.createElement('button');
+            selectButton.textContent = 'Select';
+            selectButton.className = 'defaultButton';
+
+            selectButton.addEventListener('click', function() {
+                localStorage.setItem('selectedKey', keyList.key_id);
+                localStorage.setItem('selectedKeyName', keyList.name);
+                localStorage.setItem('selectedHash', keyList.password_hash);
+
+                let selectedKeyNameEle = document.getElementById('selectedKeyNameEle');
+                if (!selectedKeyNameEle) {
+                    selectedKeyNameEle = document.createElement('div');
+                    selectedKeyNameEle.id = 'selectedKeyNameEle';
+                    document.getElementById('selectedFileContainer').appendChild(selectedKeyNameEle);
+                }
+
+                // Trigger the change in ID in the CustomerCreateFile function
+                document.getElementById('selectedKeyNameEle').textContent = "Selected Key: "+ keyList.name;
+
+                console.log(localStorage.getItem('selectedKey'));
+                CloseChooseKeyPopup();
+            });
+
+            actionCell.appendChild(selectButton);
         });
     }
 
-    // Function to handle key selection (replace with your logic)
-    function SelectKey(index) {
-        const selectedKey = keys[index]; // Get selected key
-        console.log('Selected Key:', selectedKey);
-        // Add your logic to handle the selected key
-        // Close the pop-up table
-        CloseChooseKeyPopup();
-    }
-
-    // Call PopulateKeyTable() to populate the key table with data when the page loads
-    document.addEventListener('DOMContentLoaded', PopulateKeyTable);
     function LogOut() {
         // Display a confirmation dialog
         var confirmed = window.confirm("Are you sure you want to log out?");
@@ -529,30 +575,160 @@
     const fileInput = document.getElementById("fileInput");
     fileInput.addEventListener("change", handleFileChange);
 
+
     function CustomerCreateFile() {
         fileInput.click()
-
+        document.getElementById('UP').classList.remove('hidden');
     }
+
+    const clickEncrypt = document.getElementById("EncryptButton");
+    clickEncrypt.addEventListener("click", handleFirstEncryptButton);
+
+    function CustomerEncryptFile() {
+        clickEncrypt.click()
+        document.getElementById('EP').classList.remove('hidden');
+    }
+
+    function handleFirstEncryptButton(){
+
+        const storedFileData = localStorage.getItem('selectedItem');
+        const file = JSON.parse(storedFileData);
+
+        //Confirm File Selection and Confirm Key Container
+        const uponSelectFileContainer = document.getElementById("uponSelectFile");
+        const selectedFileContainer = document.getElementById("selectedFileContainer");
+        const selectedFileNameElement = document.getElementById('selectedFileName');
+
+        if (file) {
+            // Update the selected file name
+            selectedFileNameElement.textContent = "Selected File: " + file.name;
+
+            // Show the container containing the selected file information
+            uponSelectFileContainer.style.display = "block";
+            selectedFileContainer.classList.remove("hidden");
+
+            //Handle select Key
+            document.getElementById('chooseKeyButton').classList.remove('hidden');
+
+        }
+    }
+
+    function handleSecondEncryptButton() {
+        const keyId = localStorage.getItem('selectedKey');
+        const storedFileData = localStorage.getItem('selectedItem');
+
+        if (keyId && storedFileData) {
+            const formData = new FormData();
+            formData.append('keyId', keyId);
+
+            // Create a Blob from the stored file data string
+            const fileBlob = new Blob([storedFileData], { type: 'application/octet-stream' });
+
+            // Append the Blob to the FormData object
+            formData.append('file', fileBlob, 'filename.txt');
+
+            axios.post('/Customer/EncryptFiles', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+                .then(response => {
+                    console.log("Encrypted file:", response.data);
+                    // Handle response
+                    handleEncryptionFileUpload(response.data)
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    // Handle error
+                });
+        } else {
+            console.error("Key ID or file not found.");
+        }
+    }
+
+
+    function handleEncryptionFileUpload(encryptedFile){
+        const accessToken = localStorage.getItem('access_token');
+
+        //Confirm File Selection and Confirm Key Container
+        const uponSelectFileContainer = document.getElementById("uponSelectFile");
+        const selectedFileContainer = document.getElementById("selectedFileContainer");
+        const selectedFileNameElement = document.getElementById('selectedFileName');
+
+
+        if (encryptedFile) {
+            // Update the selected file name
+            selectedFileNameElement.textContent = "Encrypted File: " + encryptedFile.name;
+
+            // Show the container containing the selected file information
+            uponSelectFileContainer.style.display = "block";
+            selectedFileContainer.classList.remove("hidden");
+
+            const fileName = encryptedFile.name;
+            const fileType = encryptedFile.type;
+            console.log("File Name:", fileName);
+            console.log("File Type:", fileType);
+
+            // Create a file reader to read the file content
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const fileContent = event.target.result;
+                // Log the metadata and content of the file
+                console.log("File Content:", fileContent);
+
+                // Header arguments for upload
+                const dropboxApiArg = {
+                    autorename: false,
+                    mode: 'add',
+                    mute: false,
+                    path: '/' + fileName, // Ensure the path starts with a forward slash (/)
+                    strict_conflict: false
+                };
+
+                // Perform Axios POST request here
+                axios.post('https://content.dropboxapi.com/2/files/upload', fileContent, {
+                    headers: {
+                        'Authorization': 'Bearer ' + accessToken,
+                        'Content-Type': 'application/octet-stream',
+                        'Dropbox-API-Arg': JSON.stringify(dropboxApiArg)
+                    }
+                })
+                    .then(response => {
+                        console.log('Upload Successful', response.data);
+                        // window.location.href = 'CustomerFiles.html';
+                    })
+                    .catch(error => {
+                        // Handle errors
+                        console.error('Error uploading file:', error.response.data);
+                    });
+            };
+            reader.readAsArrayBuffer(encryptedFile);
+        }
+    }
+
     function handleFileChange(event) {
         const accessToken = localStorage.getItem('access_token');
+
         let selectedFiles = event.target.files;
-        // const uponSelectFileContainer = document.getElementById("uponSelectFile");
-        // const selectedFileContainer = document.getElementById("selectedFileContainer");
-        // const selectedFileNameElement = document.getElementById("selectedFileName");
-        //
-        // if (selectedFiles.length > 0) {
-        //     const file = selectedFiles[0];
-        //     const filePath = file;
-        //
-        //     // Update the selected file name
-        //     selectedFileNameElement.textContent = file.name;
-        //
-        //     // Show the container containing the selected file information
-        //     uponSelectFileContainer.style.display = "block";
-        //     selectedFileContainer.classList.remove("hidden");
-        //
-        //     // You can perform additional actions related to the selected file here
-        // }
+
+        //Confirm File Selection and Confirm Key Container
+        const uponSelectFileContainer = document.getElementById("uponSelectFile");
+        const selectedFileContainer = document.getElementById("selectedFileContainer");
+        const selectedFileNameElement = document.getElementById('selectedFileName');
+
+        if (selectedFiles.length > 0) {
+            const file = selectedFiles[0];
+            const filePath = file;
+
+            // Update the selected file name
+            selectedFileNameElement.textContent = "Selected File: " + file.name;
+
+            // Show the container containing the selected file information
+            uponSelectFileContainer.style.display = "block";
+            selectedFileContainer.classList.remove("hidden");
+
+        }
+
         if (selectedFiles.length > 0) {
             const file = selectedFiles[0];
             const fileName = file.name;
@@ -728,6 +904,9 @@
         // Disable the "Suspend" button by default
         $('#DownloadButton').prop('disabled', true);
 
+        // Disable the "Suspend" button by default
+        $('#EncryptButton').prop('disabled', true);
+
         // Attach a click event handler to the "Select" button
         $('#SelectButton').on('click', function () {
             // Toggle the classes when the button is clicked
@@ -740,6 +919,7 @@
             // Enable or disable the "Suspend" button based on the class of the "Select" button
             var isDefaultButton = $(this).hasClass('defaultButton');
             $('#DownloadButton').prop('disabled', isDefaultButton);
+            $('#EncryptButton').prop('disabled', isDefaultButton);
         });
     });
 </script>

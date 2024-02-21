@@ -61,22 +61,4 @@ public class KeyServiceImpl implements KeyService {
         KeyRepository.delete(key);
         return "Key deleted.";
     }
-
-    @Override
-    public String downloadKey(Key key ) {
-        Optional<Key> keyID = Optional.ofNullable(KeyRepository.findKeyById(key.getId()));
-        if (keyID.isPresent()) {
-            Key key_id = KeyRepository.findKeyById(key.getId());
-            ObjectNode on = objectMapper.createObjectNode();
-            on.put("key_id", String.valueOf(key_id.getId()));
-            on.put("name", key_id.getName());
-            on.put("password_hash", key_id.getPassword_hash());
-
-
-            return on.toString();
-        } else {
-            // Handle the case where the key with the provided UUID does not exist
-            return "Key not found";
-        }
-    }
 }

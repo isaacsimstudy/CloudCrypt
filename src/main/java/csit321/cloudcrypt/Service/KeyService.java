@@ -15,5 +15,4 @@ public interface KeyService {
 
     String deleteKey(Key key);
 
-    String downloadKey(Key key);
 }

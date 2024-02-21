@@ -27,7 +27,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.logging.*;
 
 
 @RestController
@@ -35,6 +37,7 @@ import java.util.Base64;
 @RequestMapping(path = "/Customer")
 
 public class GenerateKeyController {
+    private static final Logger LOGGER = Logger.getLogger(DownloadKeyController.class.getName());
     private final KeyService keyService;
     private final ObjectMapper objectMapper;
 
@@ -52,24 +55,33 @@ public class GenerateKeyController {
     @PostMapping(path = "/GenerateKey")
     public ResponseEntity<String> generateKey(@RequestBody String json) {
         try {
+            LOGGER.info("Received request to generate key");
             JsonNode jsonNode = objectMapper.readTree(json);
             String username = jsonNode.get("username").asText();
+            LOGGER.info("Username: " + username);
             UserAccount userAccount = userAccountRepository.findUserAccountByUsername(username).orElseThrow();
+            LOGGER.info("User account found: " + userAccount.getId());
             try {
                 String name = jsonNode.get("name").asText();
                 String password_hash = jsonNode.get("password_hash").asText();
+
+                LOGGER.info("Name: " + name);
+                LOGGER.info("Password hash: " + password_hash);
 
                 String Key = keyService.generateKey(userAccount,
                                 name,
                         password_hash
                                 );
+                LOGGER.info("Key generated: " + Key);
                 return new ResponseEntity<>(Key, HttpStatus.OK);
             }
             catch (Exception e) {
+                LOGGER.warning("Invalid input: " + e.getMessage());
                 return new ResponseEntity<>("Invalid input", HttpStatus.BAD_REQUEST);
             }
         }
         catch (Exception e) {
+            LOGGER.severe("Error generating key: " + e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -77,6 +89,7 @@ public class GenerateKeyController {
     public ResponseEntity<String> genRandomKey() {
 
         String key = generateRandomKey();
+
         return new ResponseEntity<>(key, HttpStatus.OK);
 
     }
@@ -86,27 +99,51 @@ public class GenerateKeyController {
             byte[] randomBytes = new byte[32];
             new SecureRandom().nextBytes(randomBytes);
 
+            LOGGER.info("Generated random bytes: " + Arrays.toString(randomBytes));
+
             byte[] encryptedBytes = encrypt(randomBytes);
+            LOGGER.info("Encrypted bytes: " + Arrays.toString(encryptedBytes));
+
 
             // Encode bytes to base64
             String base64Key = Base64.getEncoder().encodeToString(encryptedBytes);
+            LOGGER.info("Base64 encoded key: " + base64Key);
+
 
             // Truncate to fit into VARCHAR(72) column
-            return base64Key.substring(0, Math.min(base64Key.length(), 72));
+            String truncatedKey = base64Key.substring(0, Math.min(base64Key.length(), 72));
+            LOGGER.info("Truncated key: " + truncatedKey);
+
+            // Log key length
+            LOGGER.info("Key length: " + truncatedKey.length());
+
+            return truncatedKey;
         } catch (Exception e) {
+            LOGGER.severe("Error generating random key: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
     }
 
     private byte[] encrypt(byte[] input) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-        SecretKey tmp = factory.generateSecret(spec);
-        SecretKey secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+        try {
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
+            SecretKey tmp = factory.generateSecret(spec);
+            SecretKey secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
 
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-        return cipher.doFinal(input);
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            byte[] encryptedBytes = cipher.doFinal(input);
+
+            // Log the length of the encrypted bytes
+            LOGGER.info("Length of encrypted bytes: " + encryptedBytes.length);
+
+            return encryptedBytes;
+        } catch (Exception e) {
+            LOGGER.severe("Error encrypting bytes: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 }

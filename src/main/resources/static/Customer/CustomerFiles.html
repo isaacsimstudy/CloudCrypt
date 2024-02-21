@@ -215,7 +215,7 @@
                         console.error("An error occurred:", error);
                     });
             }
-            else
+            else if (localStorage.getItem('selectedFolder') === '' || localStorage.getItem('selectedFolder') === null)
             {
                 const data = {
                     "path": "",

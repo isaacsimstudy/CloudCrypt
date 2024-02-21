@@ -161,6 +161,9 @@
             height: 100%;
             background-color: #4CAF50;
         }
+        #uponSelectFile {
+            padding-left: 50px;
+        }
     </style>
 </head>
 <body>
@@ -243,12 +246,19 @@
     </tbody>
 </table>
 
-<div class="progressBarContainer">
-    <div id="progressBar"></div>
+<div id ="uponSelectFile" style="display: none;">
+    <div id="selectedFileContainer" class="hidden">
+        <h2>Selected File:</h2>
+        <p id="selectedFileName"></p>
+        <button id="chooseKeyButton" class="defaultButton" onclick="ChooseKey()">Choose Key</button>
+        <button id="backButton" class="defaultButton" onclick="GoBack()">Delete</button>
+    </div>
+    <p></p>
+    <div class="progressBarContainer">
+        <div id="progressBar"></div>
+    </div>
+    <button id="uploadButton" onclick="StartUpload()">Upload</button>
 </div>
-
-<button onclick="StartUpload()">Upload</button>
-
 
 <script>
     function Home() {
@@ -306,7 +316,23 @@
 
         fileInput.addEventListener("change", function(event) {
             let selectedFiles = event.target.files;
-            // process selected files
+            const uponSelectFileContainer = document.getElementById("uponSelectFile");
+            const selectedFileContainer = document.getElementById("selectedFileContainer");
+            const selectedFileNameElement = document.getElementById("selectedFileName");
+
+            if (selectedFiles.length > 0) {
+                const file = selectedFiles[0];
+                const filePath = file;
+
+                // Update the selected file name
+                selectedFileNameElement.textContent = file.name;
+
+                // Show the container containing the selected file information
+                uponSelectFileContainer.style.display = "block";
+                selectedFileContainer.classList.remove("hidden");
+
+                // You can perform additional actions related to the selected file here
+            }
 
 
             console.log(selectedFiles);
@@ -335,7 +361,14 @@
                 //     });
             }
         });
-        });
+    }
+    function GoBack() {
+        document.getElementById("selectedFileContainer").classList.add("hidden");
+        selectedFile = null;
+        document.getElementById("uponSelectFile").style.display = "none"; // Hide the container when going back
+    }
+    function ChooseKey() {
+        alert("You clicked Choose Key. Add your logic to choose a key here.");
     }
     function SearchFiles() {
         const searchInput = document.getElementById('searchInput');

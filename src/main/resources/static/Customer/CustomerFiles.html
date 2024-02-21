@@ -164,6 +164,20 @@
         #uponSelectFile {
             padding-left: 50px;
         }
+        #chooseKeyPopup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f1f1f1;
+            padding: 20px;
+            border: 1px solid #ccc;
+            z-index: 9999;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -260,6 +274,25 @@
     <button id="uploadButton" onclick="StartUpload()">Upload</button>
 </div>
 
+<div id="chooseKeyPopup" class="hidden">
+    <div class="popup-content">
+        <button id="closeChooseKeyPopup" onclick="CloseChooseKeyPopup()">X</button> <!-- Close button -->
+        <h2>Select Key</h2>
+        <table id="keyTable" class="CustomerFileTable">
+            <thead>
+            <tr>
+                <th>Key Name</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Insert key data dynamically using JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
 <script>
     function Home() {
         window.location.href = 'CustomerHomePage.html';
@@ -279,7 +312,51 @@
     function Integration() {
         window.location.href = 'CustomerIntegration.html';
     }
+    function ChooseKey() {
+        // Show the pop-up table
+        document.getElementById('chooseKeyPopup').classList.remove('hidden');
+    }
 
+    // Function to hide the pop-up table
+    function CloseChooseKeyPopup() {
+        document.getElementById('chooseKeyPopup').classList.add('hidden');
+    }
+
+    // Example function to populate the key table with dynamic data (replace with your actual data)
+    function PopulateKeyTable() {
+        const keyTableBody = document.querySelector('#keyTable tbody');
+        // Example data (replace with actual data)
+        const keys = [
+            { name: 'Key 1' },
+            { name: 'Key 2' },
+            { name: 'Key 3' }
+        ];
+
+        // Clear existing rows
+        keyTableBody.innerHTML = '';
+
+        // Populate table with keys
+        keys.forEach((key, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>${key.name}</td>
+            <td><button onclick="SelectKey(${index})">Select</button></td>
+        `;
+            keyTableBody.appendChild(row);
+        });
+    }
+
+    // Function to handle key selection (replace with your logic)
+    function SelectKey(index) {
+        const selectedKey = keys[index]; // Get selected key
+        console.log('Selected Key:', selectedKey);
+        // Add your logic to handle the selected key
+        // Close the pop-up table
+        CloseChooseKeyPopup();
+    }
+
+    // Call PopulateKeyTable() to populate the key table with data when the page loads
+    document.addEventListener('DOMContentLoaded', PopulateKeyTable);
     function LogOut() {
         // Display a confirmation dialog
         var confirmed = window.confirm("Are you sure you want to log out?");
@@ -366,9 +443,6 @@
         document.getElementById("selectedFileContainer").classList.add("hidden");
         selectedFile = null;
         document.getElementById("uponSelectFile").style.display = "none"; // Hide the container when going back
-    }
-    function ChooseKey() {
-        alert("You clicked Choose Key. Add your logic to choose a key here.");
     }
     function SearchFiles() {
         const searchInput = document.getElementById('searchInput');

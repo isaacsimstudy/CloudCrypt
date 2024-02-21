@@ -10,10 +10,10 @@ import csit321.cloudcrypt.Repository.EmailQueueRepository;
 import csit321.cloudcrypt.Repository.UserAccountRepository;
 import csit321.cloudcrypt.Service.EmailQueueService;
 
-import org.apache.catalina.User;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +25,8 @@ import java.util.UUID;
 public class EmailQueueServiceImpl implements EmailQueueService {
 
     public final UserAccountRepository userAccountRepository;
+
+    public TaskScheduler taskScheduler;
 
     public final EmailQueueRepository emailQueueRepository;
 
@@ -114,19 +116,12 @@ public class EmailQueueServiceImpl implements EmailQueueService {
         return "EmailQueue deleted";
     }
 
-    @Override
-    public String scheduleEmailQueue() {
-        // Schedule the email queue
-        List<EmailQueue> emailQueueList = emailQueueRepository.findEmailQueueByStatus("PENDING");
-        for (EmailQueue emailQueue : emailQueueList) {
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo(emailQueue.getUserAccount().getEmail());
-            mailMessage.setSubject(emailQueue.getEmailSubject());
-            mailMessage.setText(emailQueue.getEmailBody());
-            javaMailSender.send(mailMessage);
-            emailQueue.setStatus("SENT");
-            emailQueueRepository.save(emailQueue);
-        }
-        return "Success";
+    public void scheduleEmailQueue(){
+        /*
+        TODO:
+        Schedule and call create email queue based on the user's notification settings
+        Accepts a condition from the notification settings when being called.
+         */
     }
+
 }

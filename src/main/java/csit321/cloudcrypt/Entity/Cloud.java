@@ -22,8 +22,8 @@ public class Cloud {
     @Column(name = "file_name", nullable = false)
     private String fileName;
 
-    @Column(name = "encrypted_file", nullable = false)
-    private byte[] encryptedFile;
+    @Column(name = "file_path", nullable = false)
+    private String filePath;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "key_id", nullable = false)

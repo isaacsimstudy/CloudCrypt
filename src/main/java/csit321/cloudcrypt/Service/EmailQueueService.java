@@ -20,6 +20,4 @@ public interface EmailQueueService {
     public String deleteEmailQueue(Map<String, String> param);
 
     // Schedule Methods for EmailQueue
-
-    public String scheduleEmailQueue();
 }

@@ -203,11 +203,86 @@
                 }})
                 .then(response => {
                     console.log('Access Token:', response.data);
+                    appendToFileTable(response.data.entries);
                 })
                 .catch(function (error) {
                     console.error("An error occurred:", error);
                 });
         }
+    }
+    function appendToFileTable(fileList) {
+        const tableBody = document.getElementById('CustomerFileTableBody');
+
+        // Clear existing rows in the table body
+        tableBody.innerHTML = '';
+
+        // Iterate through the list of users and append each to the table
+        fileList.forEach((fileList, index) => {
+            // Create a new row
+            const newRow = tableBody.insertRow();
+
+            // Populate cells with user data
+            const serialNumberCell = newRow.insertCell(0);
+            const nameCell = newRow.insertCell(1);
+            const typeCell = newRow.insertCell(2);
+            const sizeCell = newRow.insertCell(3);
+            const actionCell = newRow.insertCell(4);
+
+
+            // Check if the current item is a file
+            if (fileList[".tag"] === "file") {
+                const fileName = fileList.name;
+
+                // serial number is incremental for table
+                serialNumberCell.textContent = (index + 1).toString();
+                nameCell.textContent = fileName;
+                // Extract file type from the file name
+                const fileExtension = fileName.split('.').pop();
+                typeCell.textContent = fileExtension.toLowerCase();
+                sizeCell.textContent = formatFileSize(fileList.size);
+            }
+            else {
+                // If the current item is not a file, display a message in the first cell
+                serialNumberCell.textContent = (index + 1).toString();
+                nameCell.textContent = fileList.name;
+                typeCell.textContent = 'Folder';
+                sizeCell.textContent = ' ';
+                actionCell.textContent = ' ';
+            }
+            const selectButton = document.createElement('button');
+            selectButton.textContent = 'Select';
+            selectButton.className = 'defaultButton';
+            selectButton.addEventListener('click', function () {
+                // Store the entire array associated with the selected row in localStorage
+                localStorage.setItem('selectedItem', JSON.stringify(fileList));
+                console.log(JSON.parse(localStorage.getItem('selectedItem')));
+                // Toggle the classes when the button is clicked
+                $(this).toggleClass('defaultButton alternateButton');
+
+                // Change the text content based on the current class
+                var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
+                $(this).text(newText);
+
+                // Enable or disable the "Suspend" and "Update" button based on the class of the "Select" button
+                var isDefaultButton = $(this).hasClass('defaultButton');
+                $('#DownloadButton').prop('disabled', isDefaultButton);
+
+            });
+            actionCell.appendChild(selectButton);
+        });
+    }
+    function formatFileSize(sizeInBytes) {
+        const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+        let size = sizeInBytes;
+        let unitIndex = 0;
+
+        while (size >= 1024 && unitIndex < units.length - 1) {
+            size /= 1024;
+            unitIndex++;
+        }
+
+        return `${size.toFixed(2)} ${units[unitIndex]}`;
     }
 </script>
 <nav>
@@ -387,74 +462,57 @@
         }
     }
 
+    const fileInput = document.getElementById("fileInput");
+    fileInput.addEventListener("change", handleFileChange);
+
     function CustomerCreateFile() {
-        const fileInput = document.getElementById("fileInput");
         fileInput.click()
+    }
+    function handleFileChange(event) {
+        const accessToken = localStorage.getItem('access_token');
+        let selectedFiles = event.target.files;
+        if (selectedFiles.length > 0) {
+            const file = selectedFiles[0];
+            const fileName = file.name;
+            const fileType = file.type;
+            console.log("File Name:", fileName);
+            console.log("File Type:", fileType);
 
-        fileInput.addEventListener("change", function(event) {
-            let selectedFiles = event.target.files;
-            const uponSelectFileContainer = document.getElementById("uponSelectFile");
-            const selectedFileContainer = document.getElementById("selectedFileContainer");
-            const selectedFileNameElement = document.getElementById("selectedFileName");
+            // Create a file reader to read the file content
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const fileContent = event.target.result;
+                // Log the metadata and content of the file
+                console.log("File Content:", fileContent);
 
-            if (selectedFiles.length > 0) {
-                const file = selectedFiles[0];
-                const filePath = file;
-
-                // Update the selected file name
-                selectedFileNameElement.textContent = file.name;
-
-                // Show the container containing the selected file information
-                uponSelectFileContainer.style.display = "block";
-                selectedFileContainer.classList.remove("hidden");
-
-                // You can perform additional actions related to the selected file here
-            }
-
-            // this statement is to UPLOAD file to dropbox (without encryption)
-            if (selectedFiles.length > 0) {
-                const file = selectedFiles[0];
-                const fileName = file.name;
-                const fileType = file.type;
-                console.log("File Name:", fileName);
-                console.log("File Type:", fileType);
-
-                // Create a file reader to read the file content
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const fileContent = event.target.result;
-                    // Log the metadata and content of the file
-                    console.log("File Content:", fileContent);
-
-                    // Header arguments for upload
-                    const dropboxApiArg = {
-                        autorename: false,
-                        mode: 'add',
-                        mute: false,
-                        path: '/' + fileName, // Ensure the path starts with a forward slash (/)
-                        strict_conflict: false
-                    };
-
-                    // Perform Axios POST request here
-                    axios.post('https://content.dropboxapi.com/2/files/upload', fileContent, {
-                        headers: {
-                            'Authorization': 'Bearer ' + accessToken,
-                            'Content-Type': 'application/octet-stream',
-                            'Dropbox-API-Arg': JSON.stringify(dropboxApiArg)
-                        }
-                    })
-                        .then(response => {
-                            console.log('Upload Successful', response.data);
-                        })
-                        .catch(error => {
-                            // Handle errors
-                            console.error('Error uploading file:', error.response.data);
-                        });
+                // Header arguments for upload
+                const dropboxApiArg = {
+                    autorename: false,
+                    mode: 'add',
+                    mute: false,
+                    path: '/' + fileName, // Ensure the path starts with a forward slash (/)
+                    strict_conflict: false
                 };
-                reader.readAsArrayBuffer(file);
-            }
 
-        });
+                // Perform Axios POST request here
+                axios.post('https://content.dropboxapi.com/2/files/upload', fileContent, {
+                    headers: {
+                        'Authorization': 'Bearer ' + accessToken,
+                        'Content-Type': 'application/octet-stream',
+                        'Dropbox-API-Arg': JSON.stringify(dropboxApiArg)
+                    }
+                })
+                    .then(response => {
+                        console.log('Upload Successful', response.data);
+                    })
+                    .catch(error => {
+                        // Handle errors
+                        console.error('Error uploading file:', error.response.data);
+
+                    });
+            };
+            reader.readAsArrayBuffer(file);
+        }
     }
     function GoBack() {
         document.getElementById("selectedFileContainer").classList.add("hidden");
@@ -542,7 +600,38 @@
 
         var confirmation = confirm("Are you sure you want to download this file?");
         if (confirmation) {
+            const selectedItem = JSON.parse(localStorage.getItem('selectedItem'));
             //Verify user has the necessary encryption key to decrypt the file for download or multi authenticate if setting is on
+
+            // download a file without (decryption)
+            const filePath = selectedItem.path_display;
+            const accessToken = localStorage.getItem('access_token');
+            axios.post('https://content.dropboxapi.com/2/files/download', null, {
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken,
+                    'Dropbox-API-Arg': JSON.stringify({ path: filePath }),
+                    'Content-Type': 'application/octet-stream'
+                },
+                responseType: 'blob'
+            })
+            .then(response => {
+                // Create a temporary anchor element to initiate the download
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', selectedItem.name); // Set the filename for download
+                document.body.appendChild(link);
+                link.click();
+
+                // Clean up resources
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                // Handle errors
+                console.error('Error downloading file:', error.response);
+            });
+
+            // alert if successful
             alert("Download started successfully");
             // Reset the state of the "Select" button
             selectButton.removeClass('alternateButton').addClass('defaultButton').text('Select');

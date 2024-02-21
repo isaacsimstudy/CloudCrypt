@@ -141,7 +141,7 @@
             }})
             .then(response => {
                 localStorage.setItem('access_token', response.data.access_token);
-                console.log('Access Token:', response.data.access_token);
+                console.log('Access Token:', response.data);
             })
             .catch(error => {
                 // Handle errors

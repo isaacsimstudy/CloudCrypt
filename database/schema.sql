@@ -106,7 +106,6 @@ CREATE TABLE file_info
     original_hash  varchar(255) NOT NULL,
     time_uploaded  Timestamptz NOT NULL,
     last_modified  Timestamptz NOT NULL DEFAULT NOW(),
-    file_owner     uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
     encryption_type varchar(255) NOT NULL CHECK ( encryption_type IN ('GCM', 'CCM')),
     tags            varchar(255) NOT NULL
 );

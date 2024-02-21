@@ -39,10 +39,6 @@ public class FileInfo {
     @Column(name = "last_modified", nullable = false)
     private OffsetDateTime lastModified;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "file_owner", nullable = false)
-    private UserAccount fileOwner;
-
     @Column(name = "encryption_type", nullable = false)
     private String encryptionType;
 

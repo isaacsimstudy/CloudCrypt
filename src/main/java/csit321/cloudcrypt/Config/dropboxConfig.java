@@ -3,13 +3,19 @@ package csit321.cloudcrypt.Config;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.File;
+import java.io.PrintWriter;
+
 
 @Configuration
 public class dropboxConfig {
@@ -21,8 +27,7 @@ public class dropboxConfig {
     @Value("<Access_Token>")
     private static String ACCESS_TOKEN;
      */
-    private static final String ACCESS_TOKEN = "sl.BvmrgbNClX5utoEsY0RlmBDG7zsY6NiAaS4-0LulvxQJuBWpdmM46EAdgctnYoaVx02zeI7dm17hkuZQrZoU_j1sp65aPKQKjQko9MSz_bUqX7G3lmyDoREmEJdnfqLxgOIwGrQEuP1i";
-
+    private static final String ACCESS_TOKEN = "sl.Bv-E64yPCogdAxJAWnTLC4crPWue_pqdcUIj6wVtVwomX95kSsXU_qH0J4FGlrS-uKE69nLKxh1ES2ONZeKEl9ErX794psWSoJhcwBxdKrrefWvTh85UBno0HyN81a10i9i6ig23_nte";
     @Value("${dropbox.app.key}")
     private String appKey;
 
@@ -56,15 +61,31 @@ public class dropboxConfig {
             result = client.files().listFolderContinue(result.getCursor());
         }
 
-        // attempt to upload file "test.txt" to Dropbox. This will fail if the file is not found or does not exist.
         /*
-        try (InputStream in = new FileInputStream(("test.txt"))) {
-            FileMetadata metadata = client.files().uploadBuilder("/test.txt").uploadAndFinish(in);
-        }
-        */
+        // create file "DropboxTestFile.txt" in current directory
+        File file = new File("DropboxTestFile.txt");
+        try {
+            if(file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
 
+            PrintWriter writer = new PrintWriter(file);
+            writer.println("This is a test file to be uploaded into Dropbox.");
+            writer.close();
+
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }*/
+
+
+        // attempt to upload file "DropboxTestFile.txt" to Dropbox. This will fail if the file is not found or does not exist.
+        try (InputStream in = new FileInputStream("DropboxTestFile.txt")) {
+            FileMetadata metadata = client.files().uploadBuilder("/DropboxTestFile.txt").uploadAndFinish(in);
+        }
 
     }
-
 
 }

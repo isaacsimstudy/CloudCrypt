@@ -77,23 +77,14 @@
     <button class="logout-btn" onclick="LogOut()">Logout</button>
 </nav>
 
-<h1>Integration</h1>
-
-<h2><u>Link Your Dropbox Account</u></h2>
-
-<form action="" method="post">
-    <h3>Email:</h3>
-    <label>
-        <input type="text" name="email"/>
-    </label>
-    <br/>
-    <h3>Password:</h3>
-    <label>
-        <input type="password" name="password"/>
-    </label>
-    <br/><br/>
-    <input type="submit" value="Submit"/>
-</form>
+    <h1>Please follow these steps for the integration of your dropbox account</h1>
+    <ol>
+        <li>Step 1. Please ensure your dropbox account is logged in in the same browser you use CloudCrypt in.</li>
+        <li>Step 2. Click on this button to redirect to a page to allow access:</li></br>
+        <button id="dropboxFetchCode" onclick="accessLink()">Access link</button>
+        <li>After signing in, you will be redirected back to this page</li>
+        <li>Pleas </li>
+    </ol>
 
 <br/><br/>
 <button id="fetchAuthorizationCode">Dropbox Test</button>
@@ -101,19 +92,70 @@
 <button id="RequestToken">Dropbox 2</button>
 
 <script>
-    (function() {
-        // Immediately executed function to check for 'code' parameter
-        const queryParams = new URLSearchParams(window.location.search);
-        const code = queryParams.get('code');
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
 
-        if (code) {
-            console.log('Authorization Code:', code);
-            // You can now use this code value as needed,
-            // e.g., sending it to a server for further processing
+        // Get the value of the "code" parameter from the URL
+        var codeValue = getParameterByName('code');
+
+        // Do something with the code value (e.g., display it)
+        if (codeValue) {
+            console.log('Code value:', codeValue);
+            localStorage.setItem('accessCode', codeValue);
+
+
+            getAccessToken(codeValue);
+
         } else {
-            console.log('No authorization code in URL.');
+            console.log('Code parameter not found in the URL.');
         }
-    })();
+
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+        }
+    };
+    // Function to get the value of a URL parameter by name
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    function getAccessToken(code) {
+        const data = new URLSearchParams();
+        data.append('grant_type', 'authorization_code');
+        data.append('code', code);
+        data.append('redirect_uri', 'http://localhost:8080/Customer/CustomerIntegration.html');
+        data.append('client_id', 'r99ex7knyno5jhh');
+        data.append('client_secret', '179u86yc880a12n');
+
+        console.log('Request Payload:', data);
+        // Send POST request using Axios
+        axios.post('https://api.dropbox.com/oauth2/token', data, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }})
+            .then(response => {
+                localStorage.setItem('access_token', response.data.access_token);
+                console.log('Access Token:', response.data.access_token);
+            })
+            .catch(error => {
+                // Handle errors
+                console.error('Error exchanging authorization code:', error.response.data);
+            });
+    }
+    function accessLink() {
+        window.location.href = "https://www.dropbox.com/oauth2/authorize?client_id=r99ex7knyno5jhh&response_type=code&redirect_uri=http://localhost:8080/Customer/CustomerIntegration.html";
+    }
     function Home() {
         window.location.href = 'CustomerHomePage.html';
     }
@@ -163,62 +205,62 @@
         }
     }
 
-    document.getElementById("RequestToken").addEventListener("click", function() {
-        getAccessToken();
-    });
-
-    function getAccessToken(authorizationCode ) {
-        const code = authorizationCode;
-
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://api.dropbox.com/oauth2/token");
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-        const dataTemplate = `code=<AUTHORIZATION_CODE>&grant_type=authorization_code&redirect_uri=http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html&client_id=vint2uip4sqtcso&client_secret=nbfvz8fxt1xemrx`;
-        //const dataTemplate = `code=<AUTHORIZATION_CODE>&grant_type=authorization_code&redirect_uri=http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html&client_id=vint2uip4sqtcso&client_secret=nbfvz8fxt1xemrx`;
-
-        const data = dataTemplate.replace("<AUTHORIZATION_CODE>", code);
-        xhr.onload = function() {
-            console.log(xhr.responseText);
-        }
-        xhr.send(data);
-
-    }
-
-    document.getElementById("fetchAuthorizationCode").addEventListener("click", function() {
-        // redirect user window
-        window.location.href = "https://www.dropbox.com/oauth2/authorize?client_id=vint2uip4sqtcso&response_type=code&redirect_uri=http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html";
-
-        /*
-        axios.get('http://localhost:8080/Integration/Authorize')
-            .then(function(response) {
-                // Assuming the response contains the direct URL as a string
-                window.location.href = response.data; // Redirect the browser to the URL
-            })
-            .catch(function(error) {
-                console.error('Error fetching authorization URL:', error);
-                alert('Failed to get authorization URL');
-            });
-
-         */
-    });
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const authorizationCode = urlParams.get('code');
-
-        if (authorizationCode) {
-            console.log('Authorization Code:', authorizationCode);
-            // Proceed to exchange the code for an access token in your backend
-            //getAccessToken(authorizationCode)
-            //window.location.href = "http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html";
-
-        } else {
-            console.error('Authorization code not found');
-        }
-        //window.location.href = "http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html";
-
-    });
+    // document.getElementById("RequestToken").addEventListener("click", function() {
+    //     getAccessToken();
+    // });
+    //
+    // function getAccessToken(authorizationCode ) {
+    //     const code = authorizationCode;
+    //
+    //     const xhr = new XMLHttpRequest();
+    //     xhr.open("POST", "https://api.dropbox.com/oauth2/token");
+    //     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    //
+    //     const dataTemplate = `code=<AUTHORIZATION_CODE>&grant_type=authorization_code&redirect_uri=http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html&client_id=vint2uip4sqtcso&client_secret=nbfvz8fxt1xemrx`;
+    //     //const dataTemplate = `code=<AUTHORIZATION_CODE>&grant_type=authorization_code&redirect_uri=http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html&client_id=vint2uip4sqtcso&client_secret=nbfvz8fxt1xemrx`;
+    //
+    //     const data = dataTemplate.replace("<AUTHORIZATION_CODE>", code);
+    //     xhr.onload = function() {
+    //         console.log(xhr.responseText);
+    //     }
+    //     xhr.send(data);
+    //
+    // }
+    //
+    // document.getElementById("fetchAuthorizationCode").addEventListener("click", function() {
+    //     // redirect user window
+    //     window.location.href = "https://www.dropbox.com/oauth2/authorize?client_id=vint2uip4sqtcso&response_type=code&redirect_uri=http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html";
+    //
+    //     /*
+    //     axios.get('http://localhost:8080/Integration/Authorize')
+    //         .then(function(response) {
+    //             // Assuming the response contains the direct URL as a string
+    //             window.location.href = response.data; // Redirect the browser to the URL
+    //         })
+    //         .catch(function(error) {
+    //             console.error('Error fetching authorization URL:', error);
+    //             alert('Failed to get authorization URL');
+    //         });
+    //
+    //      */
+    // });
+    //
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     const urlParams = new URLSearchParams(window.location.search);
+    //     const authorizationCode = urlParams.get('code');
+    //
+    //     if (authorizationCode) {
+    //         console.log('Authorization Code:', authorizationCode);
+    //         // Proceed to exchange the code for an access token in your backend
+    //         //getAccessToken(authorizationCode)
+    //         //window.location.href = "http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html";
+    //
+    //     } else {
+    //         console.error('Authorization code not found');
+    //     }
+    //     //window.location.href = "http://localhost:63342/CloudCrypt/src/main/resources/static/Customer/CustomerIntegration.html";
+    //
+    // });
 
 
 

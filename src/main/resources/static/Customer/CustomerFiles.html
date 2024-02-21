@@ -164,7 +164,35 @@
     </style>
 </head>
 <body>
+<script>
+    window.onload = function () {
+        if (localStorage.getItem('access_token') !== null) {
+            const accessToken = localStorage.getItem('access_token');
 
+            const data = {
+                "path": "",
+                "recursive": false,
+                "include_media_info": false,
+                "include_deleted": false,
+                "include_has_explicit_shared_members": false,
+                "include_mounted_folders": true,
+                "include_non_downloadable_files": true
+            }
+
+            axios.post('https://api.dropboxapi.com/2/files/list_folder', data, {
+                headers: {
+                    "Authorization": "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                }})
+                .then(response => {
+                    console.log('Access Token:', response.data);
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                });
+        }
+    }
+</script>
 <nav>
     <div class="nav-links">CloudCrypt</div>
     <div class="nav-links" onclick="Home()">Home</div>
@@ -280,7 +308,33 @@
             let selectedFiles = event.target.files;
             // process selected files
 
+
             console.log(selectedFiles);
+            if (selectedFiles.length > 0) {
+                const file = selectedFiles[0];
+                const filePath = file
+                // Create a FormData object and append the file to it
+                const formData = new FormData();
+                formData.append('file', file);
+
+
+                // Make the POST request with the custom headers
+                // axios.post('https://example.com/api/upload', formData, {
+                //     headers: {
+                //         'Content-Type': 'application/octet-stream',
+                //         // Add any other headers as needed
+                //     },
+                // })
+                //     .then(response => {
+                //         // Handle the response
+                //         console.log(response.data);
+                //     })
+                //     .catch(error => {
+                //         // Handle errors
+                //         console.error('Error:', error);
+                //     });
+            }
+        });
         });
     }
     function SearchFiles() {

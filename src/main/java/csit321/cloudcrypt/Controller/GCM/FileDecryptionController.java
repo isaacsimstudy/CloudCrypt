@@ -129,13 +129,6 @@ public class FileDecryptionController {
                 // Handle the error or throw an exception if the key length is incorrect
             }
 
-            byte[] computedHash = computeSHA256Hash(decryptedKeyBytes);
-
-            // Compare the computed hash with the extracted hash
-            if (!Arrays.equals(computedHash, extractedHash)) {
-                LOGGER.warning("Computed hash does not match extracted hash. Possible tampering detected.");
-                // Handle the error appropriately (e.g., reject the decryption)
-            }
 
             // Fixed IV
             byte[] fixedIV = "123456789!!!!!!!".getBytes();
@@ -224,9 +217,4 @@ public class FileDecryptionController {
         return new UUID(msb, lsb);
     }
 
-    // Compute SHA-256 hash of the input bytes
-    private static byte[] computeSHA256Hash(byte[] input) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        return digest.digest(input);
-    }
 }

@@ -150,7 +150,7 @@ public class FileEncryptionController {
 
     }
 
-    public static byte[] encryptFile(MultipartFile file,UUID uuid, byte[] secretKeyBytes, byte[] fixedIV) {
+    public static byte[] encryptFile(MultipartFile file, UUID uuid, byte[] secretKeyBytes, byte[] fixedIV) {
         LOGGER.info("Encrypting File: " + file.getOriginalFilename());
         LOGGER.info("Secret Key: " + Arrays.toString(secretKeyBytes));
         LOGGER.info("Fixed IV: " + Arrays.toString(fixedIV));
@@ -158,14 +158,11 @@ public class FileEncryptionController {
         try (InputStream fis = file.getInputStream()) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            byte[] keyHash = computeSHA256Hash(secretKeyBytes);
-
             // Convert UUID to byte array
             byte[] uuidBytes = uuidToBytes(uuid);
 
             // Prepend UUID bytes to the output
             baos.write(uuidBytes);
-            baos.write(keyHash);
 
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             SecretKeySpec secretKeySpec = new SecretKeySpec(secretKeyBytes, "AES");
@@ -180,6 +177,9 @@ public class FileEncryptionController {
             }
             byte[] encryptedFinalChunk = cipher.doFinal();
             baos.write(encryptedFinalChunk);
+
+            // Close the stream
+            baos.close();
 
             LOGGER.info("Encryption Completed Successfully");
             return baos.toByteArray();
@@ -196,9 +196,5 @@ public class FileEncryptionController {
         return bb.array();
     }
 
-    // Compute SHA-256 hash of the input bytes
-    private static byte[] computeSHA256Hash(byte[] input) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        return digest.digest(input);
-    }
+
 }

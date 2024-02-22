@@ -362,11 +362,10 @@
             </header>
         </td>
         <td>
-            <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="CustomerCreateFile()">Create</button>
+            <button id ="EncryptButton" class="defaultButton" class="nav-links" onclick="CustomerEncryptFile()">Encrypt</button>
             <input type="file" id="fileInput" style="display: none;" multiple>
             <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
             <button id ="DecryptButton" class="defaultButton" class="nav-links" onclick="CustomerDecryptFile()">Decrypt</button>
-            <button id ="EncryptButton" class="defaultButton" class="nav-links" onclick="CustomerEncryptFile()">Encrypt</button>
 
         </td>
     </tr>
@@ -381,7 +380,7 @@
     <div id="selectedFileContainer" class="hidden">
         <h2 id="EP" class="hidden">Encryption Process:</h2>
         <h2 id="UP" class="hidden">Upload Process:</h2 >
-        <p id="selectedFileName"></p>
+        <input type="file" id="fileInputEncryption" onchange="fileSelector(event)">
         <button id="chooseKeyButton" class="hidden" class="defaultButton" onclick="ChooseKey()">Choose Key</button>
         <button id="backButton" class="defaultButton" onclick="GoBack()">Delete</button>
     </div>
@@ -389,7 +388,7 @@
     <div class="progressBarContainer">
         <div id="progressBar"></div>
     </div>
-    <input type="file" id="fileInputEncryption" onchange="EncryptFile()">
+
     <button id="confirmEncrypt" onclick ="handleSecondEncryptButton()">Encrypt</button>
     <button id="uploadButton" onclick="StartUpload()">Upload</button>
 </div>
@@ -601,39 +600,46 @@
 
     function handleFirstEncryptButton(){
 
-        const storedFileData = localStorage.getItem('selectedItem');
-        const file = JSON.parse(storedFileData);
-
-        //Confirm File Selection and Confirm Key Container
+        // Show the container containing the selected file information
         const uponSelectFileContainer = document.getElementById("uponSelectFile");
         const selectedFileContainer = document.getElementById("selectedFileContainer");
-        const selectedFileNameElement = document.getElementById('selectedFileName');
 
-        if (file) {
-            // Update the selected file name
-            selectedFileNameElement.textContent = "Selected File: " + file.name;
+        uponSelectFileContainer.style.display = "block";
+        selectedFileContainer.classList.remove("hidden");
+        document.getElementById('chooseKeyButton').classList.remove('hidden');
 
-            // Show the container containing the selected file information
-            uponSelectFileContainer.style.display = "block";
-            selectedFileContainer.classList.remove("hidden");
+    }
 
-            //Handle select Key
-            document.getElementById('chooseKeyButton').classList.remove('hidden');
+    function fileSelector(event) {
+        const file = event.target.files[0]; // Access the selected file from the event object
 
-        }
+        // Store the selected file and its name in local storage
+        localStorage.setItem('selectedFile', file);
+        localStorage.setItem('originalFileName', file.name);
+
+        console.log('File stored in local storage:', file);
     }
 
     function handleSecondEncryptButton() {
         const keyId = localStorage.getItem('selectedKey');
-        const storedFileData = localStorage.getItem('selectedItem');
-        const originalFileName = localStorage.getItem('selectedFileName');
+        const file = localStorage.getItem('selectedFile');
 
-        if (keyId && storedFileData && originalFileName) {
+        // Retrieve the original file name from local storage
+        const originalFileName = localStorage.getItem('originalFileName');
+
+        // Log the original file content
+        console.log("Key ID:", keyId);
+        console.log("File:", file);
+        console.log("Original file name:", originalFileName);
+
+        if (keyId && file && originalFileName) {
             const formData = new FormData();
             formData.append('keyId', keyId);
 
             // Create a Blob from the stored file data string
-            const fileBlob = new Blob([storedFileData], { type: 'application/octet-stream' });
+            const fileBlob = new Blob([file], { type: file.type  });
+
+            console.log("File Blob:", fileBlob); // Log the file blob content
 
             // Append the Blob to the FormData object
             formData.append('file', fileBlob, originalFileName);
@@ -642,36 +648,78 @@
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
-                responseType: 'blob' // Specify the response type as blob
+                responseType: 'blob'
             })
                 .then(response => {
-                    // Create a URL for the blob data
-                    const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+                    console.log("Encrypted file:", response.data); // Log the encrypted file content
+                    alert("File Encrypted Successfully");
 
-                    // Create a link element to trigger the download
-                    const link = document.createElement('a');
-                    link.href = blobUrl;
-                    link.setAttribute('download', `${originalFileName}_encrypted`);
-                    document.body.appendChild(link);
+                    // Create a Blob from the encrypted file data
+                    const encryptedFileBlob = new Blob([response.data], { type: 'application/octet-stream' });
 
-                    // Trigger the click event to start the download
-                    link.click();
+                    // Create a download link for the encrypted file
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(encryptedFileBlob);
+                    downloadLink.download = originalFileName + '_encrypted'; // Set the download filename
 
-                    // Clean up by revoking the blob URL
-                    window.URL.revokeObjectURL(blobUrl);
+                    // Append the download link to the document body
+                    document.body.appendChild(downloadLink);
 
-                    //Test Decryption
-                    localStorage.setItem('toDecrypt', response.data);
+                    // Trigger a click event on the download link to initiate the download
+                    downloadLink.click();
+
+                    // Remove the download link from the document body
+                    document.body.removeChild(downloadLink);
+                    localStorage.setItem('fileReadyForUpload', response.data);
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    // Handle error
                 });
         } else {
             console.error("Key ID, file data, or original file name not found.");
         }
     }
+    function handleUploadFile() {
+        const accessToken = localStorage.getItem('access_token');
+        const fileData = localStorage.getItem('fileReadyForUpload');
+        const fileName = localStorage.getItem('originalFileName');
 
+        // Check if file data and file name are present
+        if (fileData && fileName) {
+            // Create a Blob from the file data
+            const fileBlob = new Blob([fileData], { type: 'application/octet-stream' });
+
+            // Dropbox API arguments
+            const dropboxApiArg = {
+                path: '/' + fileName,
+                mode: 'add',
+                autorename: true,
+                mute: false
+            };
+
+            // Perform Axios POST request to upload the file
+            axios.post('https://content.dropboxapi.com/2/files/upload', fileBlob, {
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken,
+                    'Content-Type': 'application/octet-stream',
+                    'Dropbox-API-Arg': JSON.stringify(dropboxApiArg)
+                }
+            })
+                .then(response => {
+                    console.log('Upload Successful', response.data);
+                    // Handle success
+                })
+                .catch(error => {
+                    console.error('Error uploading file:', error.response.data);
+                    // Handle error
+                });
+        } else {
+            // Handle case where file data or file name is missing
+            console.error('File data or file name is missing.');
+            // You can display an error message to the user if needed
+            alert('File data or file name is missing.');
+        }
+    }
 
     function CustomerDecryptFile(){
         const storedFileData = localStorage.getItem('selectedItem');
@@ -721,29 +769,10 @@
         }
     }
 
-
     function handleFileChange(event) {
         const accessToken = localStorage.getItem('access_token');
 
         let selectedFiles = event.target.files;
-
-        //Confirm File Selection and Confirm Key Container
-        const uponSelectFileContainer = document.getElementById("uponSelectFile");
-        const selectedFileContainer = document.getElementById("selectedFileContainer");
-        const selectedFileNameElement = document.getElementById('selectedFileName');
-
-        if (selectedFiles.length > 0) {
-            const file = selectedFiles[0];
-            const filePath = file;
-
-            // Update the selected file name
-            selectedFileNameElement.textContent = "Selected File: " + file.name;
-
-            // Show the container containing the selected file information
-            uponSelectFileContainer.style.display = "block";
-            selectedFileContainer.classList.remove("hidden");
-
-        }
 
         if (selectedFiles.length > 0) {
             const file = selectedFiles[0];
@@ -860,7 +889,7 @@
                 // upload completed
                 clearInterval(uploadInterval);
                 setTimeout(() => {
-                    alert('Upload Completed');
+                    handleUploadFile()
                     progressBar.style.width = '0'; // reset progress bar
                 }, 500);
             }
@@ -919,9 +948,6 @@
     $(function () {
         // Disable the "Suspend" button by default
         $('#DownloadButton').prop('disabled', true);
-
-        // Disable the "Suspend" button by default
-        $('#EncryptButton').prop('disabled', true);
 
         // Disable the "Suspend" button by default
 

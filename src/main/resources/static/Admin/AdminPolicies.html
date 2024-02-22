@@ -130,6 +130,37 @@
     </style>
 </head>
 <body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const username = localStorage.getItem('username');
+
+        // Check if the username string exists
+        if (!username) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData();
+        }
+    };
+    function retrieveData() {
+        const username = localStorage.getItem('username');
+        console.log(username);
+        axios.get('/SecurityPolicy/Read')
+            .then(function (response) {
+                console.log(response.data);
+                document.getElementById('MLA').value = response.data[0].parameters.maxLoginAttempts;
+                document.getElementById('policyId').value = response.data[0].id;
+                document.getElementById('policyName').value = response.data[0].policyName;
+                document.getElementById('policyDesc').value = response.data[0].description;
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+</script>
 <nav class="navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">CloudCrypt</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -157,7 +188,6 @@
         <button class="logout-btn btn-outline-light ml-auto" onclick="LogOut()">Logout</button>
     </div>
 </nav>
-<!-- Rest of your HTML content -->
 <table id="policyTable">
     <tr>
         <td>
@@ -167,26 +197,21 @@
     <tr>
         <td>
             <h2>Password Requirement</h2>
-            <form action="/submit" method="post" onsubmit="return validation()">
-                <label for="MTC">Minimum Total Characters:</label>
-                <input id="MTC" >
+            <form>
+                <input type="hidden" id="policyId">
+                <input type="hidden" id="policyName">
+                <input type="hidden" id="policyDesc">
 
-                <label for="CSS">Contain Special Character:</label>
-                <input  id="CSS" >
+                <label for="MLA">Maximum Login Attempts:</label>
+                <input id="MLA" type="text">
 
-                <label for="CUC">Contain UpperCase:</label>
-                <input  id="CUC" >
-                <button id ="UpdateButton" type="submit" class="defaultButton">Update</button>
+                <button id ="UpdateButton" type="button" class="defaultButton" onclick="validation()">Update</button>
             </form>
         </td>
 
     </tr>
     <tr>
         <td>
-            <h2 id="mfaStatusLabel">Multi-Factor Authentication:</h2>
-            <div id="mfaToggleBar">
-                <button id="enableMFABtn" class="enableMFA" onclick="toggleMFA()">Enable</button>
-            </div>
         </td>
     </tr>
 
@@ -207,15 +232,29 @@
         }
     }
     function validation() {
-        // Show the confirmation dialog
-        var confirmation = confirm("Are you sure you want to update policies?");
+        var confirm = window.confirm("Are you sure you want to update the policy?");
 
-        if (confirmation) {
-            // If "Yes" is clicked, redirect to admin account page and show success message
-            return false; // Prevent form submission
-        } else {
-            // If "No" is clicked, return to the current page
-            return false; // Prevent form submission
+        if (confirm) {
+
+
+            const userData = {
+                id: document.getElementById('policyId').value,
+                parameters : {
+                    "maxLoginAttempts": document.getElementById('MLA').value
+                },
+                policyName: document.getElementById('policyName').value,
+                description: document.getElementById('policyDesc').value
+            };
+            console.log(userData);
+            axios.post('/SecurityPolicy/Update', userData)
+                .then(function (response) {
+                    alert(response.data);
+                    //window.location.href = 'AdminPolicies.html';
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                    alert(error);
+                });
         }
     }
 

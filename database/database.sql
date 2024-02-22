@@ -41,7 +41,7 @@ VALUES
     ((SELECT uuid FROM user_profile WHERE title = 'admin'), 'adminHash2', 'adminTwo', 'adminTwo@email.com', 'AdminFirstName2', 'AdminLastName2', 'Admin Address 2, City, Country', '1987-02-02', '2024-02-08T09:15:00Z', '2024-02-08T10:15:00Z', '2233445566'),
     ((SELECT uuid FROM user_profile WHERE title = 'admin'), 'adminHash3', 'adminThree', 'adminThree@email.com', 'AdminFirstName3', 'AdminLastName3', 'Admin Address 3, City, Country', '1989-03-03', '2024-02-08T09:30:00Z', '2024-02-08T10:30:00Z', '3344556677'),
     ((SELECT uuid FROM user_profile WHERE title = 'admin'), 'adminHash4', 'adminFour', 'adminFour@email.com', 'AdminFirstName4', 'AdminLastName4', 'Admin Address 4, City, Country', '1991-04-04', '2024-02-08T09:45:00Z', '2024-02-08T10:45:00Z', '4455667788'),
-    ((SELECT uuid FROM user_profile WHERE title = 'owner'), 'ownerHash1', 'owner1', 'owner1@email.com', 'OwnerFirstName', 'OwnerLastName', 'Owner Address, City, Country', '1980-05-05', '2024-02-08T10:00:00Z', '2024-02-08T11:00:00Z', '5566778899');
+    ((SELECT uuid FROM user_profile WHERE title = 'owner'), 'ownerHash1', 'ownerOne', 'ownerOne@email.com', 'OwnerFirstName', 'OwnerLastName', 'Owner Address, City, Country', '1980-05-05', '2024-02-08T10:00:00Z', '2024-02-08T11:00:00Z', '5566778899');
 
 -- Insert customer_details for each customer (customer 1-3 are premium, customer 4-6 are free)
 INSERT INTO customer_details
@@ -116,7 +116,7 @@ VALUES
     --((SELECT uuid FROM user_account WHERE username = 'customerOne'), 1, 'active', '2024-01-017 10:37:12+08:00', 'active'),
     ((SELECT uuid FROM user_account WHERE username = 'customerTwo'), 1, 'active', '2024-01-019 16:58:42+08:00', 'active'),
     ((SELECT uuid FROM user_account WHERE username = 'customerThree'), 1, 'active', '2024-01-023 12:18:54+08:00', 'active'),
-    ((SELECT uuid FROM user_account WHERE username = 'owner1'), 1, 'active', '2024-01-023 12:18:54+08:00', 'inactive'),
+    ((SELECT uuid FROM user_account WHERE username = 'ownerOne'), 1, 'active', '2024-01-023 12:18:54+08:00', 'inactive'),
     ((SELECT uuid FROM user_account WHERE username = 'adminOne'), 1, 'active', '2024-01-023 12:18:54+08:00', 'inactive');
 
 

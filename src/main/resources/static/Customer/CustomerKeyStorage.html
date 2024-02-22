@@ -178,7 +178,36 @@
 
         // Clear existing rows in the table body
         tableBody.innerHTML = '';
+        // Keep track of the currently selected button globally
+        let currentSelectedButton = null;
 
+        // Function to handle button click
+        function handleButtonClick(button, keyList) {
+            // Check if a button is already selected
+            if (currentSelectedButton !== null && currentSelectedButton !== button) {
+                // If so, remove the 'Selected' class and add the 'Select' class
+                currentSelectedButton.textContent = 'Select';
+                currentSelectedButton.classList.remove('alternateButton');
+                currentSelectedButton.classList.add('defaultButton');
+            }
+            localStorage.setItem('selectedItem', keyList.key_id);
+            localStorage.setItem('selectedHash', keyList.password_hash);
+            console.log(localStorage.getItem('selectedItem'));
+            // Toggle the classes when the button is clicked
+            $(button).toggleClass('defaultButton alternateButton');
+
+            // Change the text content based on the current class
+            var newText = $(button).hasClass('defaultButton') ? 'Select' : 'Selected';
+            $(button).text(newText);
+
+            // Enable or disable the "Delete" and "Download" button based on the class of the "Select" button
+            var isDefaultButton = $(button).hasClass('defaultButton');
+            $('#DeleteButton').prop('disabled', isDefaultButton);
+            $('#DownloadButton').prop('disabled', isDefaultButton);
+
+            // Update the currently selected button
+            currentSelectedButton = button;
+        }
         // Iterate through the list of users and append each to the table
         keyList.forEach((keyList, index) => {
             // Create a new row
@@ -204,20 +233,7 @@
             selectButton.textContent = 'Select';
             selectButton.className = 'defaultButton';
             selectButton.addEventListener('click', function() {
-                localStorage.setItem('selectedItem', keyList.key_id);
-                localStorage.setItem('selectedHash', keyList.password_hash);
-                console.log(localStorage.getItem('selectedItem'));
-                // Toggle the classes when the button is clicked
-                $(this).toggleClass('defaultButton alternateButton');
-
-                // Change the text content based on the current class
-                var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
-                $(this).text(newText);
-
-                // Enable or disable the "Download" and "Delete" button based on the class of the "Select" button
-                var isDefaultButton = $(this).hasClass('defaultButton');
-                $('#DownloadButton').prop('disabled', isDefaultButton);
-                $('#DeleteButton').prop('disabled', isDefaultButton);
+                handleButtonClick(this, keyList);
             });
 
             actionCell.appendChild(selectButton);

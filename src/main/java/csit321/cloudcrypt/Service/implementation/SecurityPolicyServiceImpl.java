@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.UUID;
 
 
 @Service
@@ -31,15 +32,13 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
     }
 
     @Override
-    public String createSecurityPolicy(UserAccount userAccount,
-                                     String policyName,
+    public String createSecurityPolicy(String policyName,
                                      String description,
                                      String enforcementLevel,
                                      String policyType,
                                      Map<String, String> parameters,
                                      String status) {
         SecurityPolicy securityPolicy = new SecurityPolicy();
-        securityPolicy.setUserAccount(userAccount);
         securityPolicy.setId(UUID.randomUUID());
         securityPolicy.setPolicyName(policyName);
         securityPolicy.setDescription(description);
@@ -90,19 +89,19 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
     }
 
     @Override
-    public String deleteSecurityPolicy(UserAccount userAccount) {
+    public String deleteSecurityPolicy(UUID id) {
         // Delete all security policies related to a user account
-        List<SecurityPolicy> securityPolicies = securityPolicyRepository.findAllByUserAccount(userAccount);
-        securityPolicyRepository.deleteAll(securityPolicies);
+        SecurityPolicy securityPolicies = securityPolicyRepository.findSecurityPolicyById(id);
+        securityPolicyRepository.delete(securityPolicies);
         return "SecurityPolicy deleted";
     }
 
     @Transactional
     @Override
-    public String getSecurityPolicy(UserAccount userAccount) {
+    public String getSecurityPolicy() {
         // Get all security policies related to a user account
         ArrayNode policies = objectMapper.createArrayNode();
-        List<SecurityPolicy> securityPolicies = securityPolicyRepository.findAllByUserAccount(userAccount);
+        List<SecurityPolicy> securityPolicies = securityPolicyRepository.findAll();
         for (SecurityPolicy policy : securityPolicies) {
             ObjectNode policyNode = objectMapper.createObjectNode();
             policyNode.put("id", policy.getId().toString());

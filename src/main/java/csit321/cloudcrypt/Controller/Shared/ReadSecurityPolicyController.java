@@ -32,13 +32,9 @@ public class ReadSecurityPolicyController {
         }
 
         @GetMapping(path = "/Read")
-        public ResponseEntity<String> readSecurityPolicy(@RequestBody String json) {
+        public ResponseEntity<String> readSecurityPolicy() {
             try {
-                JsonNode jsonNode = objectMapper.readTree(json);
-                String username = jsonNode.get("username").asText();
-                UserAccount userAccount = userAccountRepository.findUserAccountByUsername(username).orElseThrow();
-
-                String result = securityPolicyServiceImpl.getSecurityPolicy(userAccount);
+                String result = securityPolicyServiceImpl.getSecurityPolicy();
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } catch (Exception e) {
                 return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.BAD_REQUEST);

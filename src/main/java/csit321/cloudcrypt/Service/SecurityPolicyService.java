@@ -1,8 +1,5 @@
 package csit321.cloudcrypt.Service;
 
-import csit321.cloudcrypt.Entity.SecurityPolicy;
-import csit321.cloudcrypt.Entity.UserAccount;
-import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,8 +10,7 @@ import java.util.UUID;
 @Service
 public interface SecurityPolicyService {
 
-    public String createSecurityPolicy(UserAccount userAccount,
-                                               String policyName,
+    public String createSecurityPolicy(String policyName,
                                                String description,
                                                String enforcementLevel,
                                                String policyType,
@@ -23,8 +19,8 @@ public interface SecurityPolicyService {
 
     public String updateSecurityPolicy(UUID id, Map<String, String> updates);
 
-    public String deleteSecurityPolicy(UserAccount userAccount);
+    public String deleteSecurityPolicy(UUID id);
 
     @Transactional
-    public String getSecurityPolicy(UserAccount userAccount);
+    public String getSecurityPolicy();
 }

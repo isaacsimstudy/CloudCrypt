@@ -250,11 +250,23 @@
                                                                         .then(function (response) {
                                                                             console.log("Email sent successfully", response.status, response.text);
 
-                                                                            alert("Login successful");
+                                                                            const logData = {
+                                                                                username: username,
+                                                                                action: "login",
+                                                                                status: "success",
+                                                                                fileName: null
+                                                                            };
+                                                                            axios.post('/Customer/CreateActivityLog', logData)
+                                                                                .then(function (response) {
+                                                                                    alert("Login successful");
 
-                                                                            localStorage.setItem('username', username);
-                                                                            localStorage.removeItem('loginAttempts');
-                                                                            window.location.href = "Customer/CustomerHomePage.html";
+                                                                                    localStorage.setItem('username', username);
+                                                                                    localStorage.removeItem('loginAttempts');
+                                                                                    window.location.href = "Customer/CustomerHomePage.html";
+                                                                                })
+                                                                                .catch(function (error) {
+                                                                                    console.error("An error occurred:", error);
+                                                                                });
                                                                         })
                                                                         .catch(function (error) {
                                                                             console.error("Error sending email:", error);
@@ -266,6 +278,25 @@
                                                         } else {
                                                             console.log("Notification email didn't trigger");
                                                             alert("Login successful");
+
+                                                            const logData = {
+                                                                username: username,
+                                                                action: "login",
+                                                                status: "success",
+                                                                fileName: null
+                                                            };
+                                                            axios.post('/Customer/CreateActivityLog', logData)
+                                                                .then(function (response) {
+                                                                    alert("Login successful");
+
+                                                                    localStorage.setItem('username', username);
+                                                                    localStorage.removeItem('loginAttempts');
+                                                                    window.location.href = "Customer/CustomerHomePage.html";
+                                                                })
+                                                                .catch(function (error) {
+                                                                    console.error("An error occurred:", error);
+                                                                });
+
 
                                                             localStorage.setItem('username', username);
                                                             localStorage.removeItem('loginAttempts');

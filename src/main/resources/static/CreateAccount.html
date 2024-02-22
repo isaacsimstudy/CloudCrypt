@@ -156,6 +156,7 @@
                             .then(function (response) {
                                 console.log(response.data);
                                 alert("Notification Setting Creation Success");
+                                localStorage.setItem('loginAttempts', "0");
                                 localStorage.setItem('username', document.getElementById('username').value);
                                 localStorage.setItem('title', document.getElementById('title').value);
                                 localStorage.setItem('email', document.getElementById('email').value);
@@ -164,7 +165,7 @@
                             .catch(function (error) {
                                 console.error("An error occurred:", error);
                             });
-
+                    localStorage.setItem('loginAttempts', "0");
                     localStorage.setItem('username', document.getElementById('username').value);
                     localStorage.setItem('title', document.getElementById('title').value);
                     localStorage.setItem('email', document.getElementById('email').value);

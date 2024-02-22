@@ -23,8 +23,8 @@ public class NotificationSettingTests {
     @Test
     public void testGetNotificationSetting() {
         // Test the getNotificationSetting method using test for username and param
-        String notificationSetting = notificationSettingServiceImpl.getNotificationSetting(userAccountRepository.findUserAccountByUsername("customer1").orElseThrow(), "download");
-        String notificationSetting2 = notificationSettingServiceImpl.getNotificationSetting(userAccountRepository.findUserAccountByUsername("admin1").orElseThrow(), "upload");
+        String notificationSetting = notificationSettingServiceImpl.getNotificationSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElseThrow(), "download");
+        String notificationSetting2 = notificationSettingServiceImpl.getNotificationSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElseThrow(), "upload");
         if (notificationSetting == null) {
             System.out.println("Notification setting not found");
             throw new IllegalArgumentException("Notification setting not found");
@@ -45,8 +45,8 @@ public class NotificationSettingTests {
     @Test
     public void testUpdateNotificationSetting() {
         // Test the updateNotificationSetting method using test for userAccount, notificationType, notificationMethod, status, and notificationFrequency
-        String notificationSetting = notificationSettingServiceImpl.updateNotificationSetting(userAccountRepository.findUserAccountByUsername("customer1").orElseThrow(), "download" , "upload", "email", "active", "weekly");
-        String notificationSetting2 = notificationSettingServiceImpl.updateNotificationSetting(userAccountRepository.findUserAccountByUsername("admin1").orElseThrow(), "upload" , "download", "email", "active", "weekly");
+        String notificationSetting = notificationSettingServiceImpl.updateNotificationSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElseThrow(), "download" , "upload", "email", "active", "weekly");
+        String notificationSetting2 = notificationSettingServiceImpl.updateNotificationSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElseThrow(), "upload" , "download", "email", "active", "weekly");
         if (notificationSetting == null) {
             System.out.println("Notification setting not updated");
             throw new IllegalArgumentException("Notification setting not updated");
@@ -67,8 +67,8 @@ public class NotificationSettingTests {
     @Test
     public void testCreateNotificationSetting() {
         // Test the createNotificationSetting method using test for userAccount, notificationType, notificationMethod, status, and notificationFrequency
-        String notificationSetting = notificationSettingServiceImpl.createNotificationSetting(userAccountRepository.findUserAccountByUsername("customer1").orElseThrow(), "download", "email", "active", "daily");
-        String notificationSetting2 = notificationSettingServiceImpl.createNotificationSetting(userAccountRepository.findUserAccountByUsername("admin1").orElseThrow(), "upload", "email", "active", "daily");
+        String notificationSetting = notificationSettingServiceImpl.createNotificationSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElseThrow(), "download", "email", "active", "daily");
+        String notificationSetting2 = notificationSettingServiceImpl.createNotificationSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElseThrow(), "upload", "email", "active", "daily");
         if (notificationSetting == null) {
             System.out.println("Notification setting not created");
             throw new IllegalArgumentException("Notification setting not created");
@@ -89,8 +89,8 @@ public class NotificationSettingTests {
     @Test
     public void testDeleteNotificationSetting() {
         // Test the deleteNotificationSetting method using test for userAccount and param
-        String notificationSetting = notificationSettingServiceImpl.deleteNotificationSetting(userAccountRepository.findUserAccountByUsername("customer1").orElseThrow(), "upload");
-        String notificationSetting2 = notificationSettingServiceImpl.deleteNotificationSetting(userAccountRepository.findUserAccountByUsername("admin1").orElseThrow(), "download");
+        String notificationSetting = notificationSettingServiceImpl.deleteNotificationSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElseThrow(), "upload");
+        String notificationSetting2 = notificationSettingServiceImpl.deleteNotificationSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElseThrow(), "download");
         if (notificationSetting == null) {
             System.out.println("Notification setting not deleted");
             throw new IllegalArgumentException("Notification setting not deleted");

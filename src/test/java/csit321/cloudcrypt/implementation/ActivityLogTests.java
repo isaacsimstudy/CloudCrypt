@@ -24,8 +24,8 @@ public class ActivityLogTests {
     @Test
     public void testCreateLog() {
         // Test the createLog method using test for userAccount, activityType, status, and cloudFileID
-        String activityLog = activityLogServiceImpl.createLog("customer1", "download", "success", "null");
-        String activityLog2 = activityLogServiceImpl.createLog("admin1", "upload", "success", "null");
+        String activityLog = activityLogServiceImpl.createLog("customerOne", "download", "success", "null");
+        String activityLog2 = activityLogServiceImpl.createLog("adminOne", "upload", "success", "null");
         if (activityLog == null) {
             System.out.println("Activity log not created");
             throw new IllegalArgumentException("Activity log not created");
@@ -46,8 +46,8 @@ public class ActivityLogTests {
     @Test
     public void testReadLog() {
         // Test the readLog method using test for param, userName, and fileName
-        String activityLog = activityLogServiceImpl.readLog("download", "customer1", "null");
-        String activityLog2 = activityLogServiceImpl.readLog("upload", "admin1", "null");
+        String activityLog = activityLogServiceImpl.readLog("download", "customerOne", "null");
+        String activityLog2 = activityLogServiceImpl.readLog("upload", "adminOne", "null");
         if (activityLog == null) {
             System.out.println("Activity log not found");
             throw new IllegalArgumentException("Activity log not found");
@@ -68,7 +68,7 @@ public class ActivityLogTests {
     @Test
     public void testDeleteLog() {
         // Test the deleteLog method using test for activityID
-        List<ActivityLog> activityLogList = activityLogRepository.findActivityLogByUserAccount(userAccountRepository.findUserAccountByUsername("customer1").orElseThrow());
+        List<ActivityLog> activityLogList = activityLogRepository.findActivityLogByUserAccount(userAccountRepository.findUserAccountByUsername("customerOne").orElseThrow());
         if (activityLogList == null) {
             System.out.println("Activity log not found");
             throw new IllegalArgumentException("Activity log not found");

@@ -22,7 +22,7 @@ public class SecurityPolicyTests {
     @Test
     public void testCreateSecurityPolicy() {
         // Set necessary fields on userAccount
-        UserAccount userAccount = userAccountRepository.findUserAccountByUsername("customer1").orElseThrow();
+        UserAccount userAccount = userAccountRepository.findUserAccountByUsername("customerOne").orElseThrow();
 
         String policyName = "Test Policy";
         String description = "Test Description";

@@ -21,7 +21,7 @@ public class UserProfileTests {
             UserProfile userProfile = userProfileServiceImpl.createUserProfile("admin", "admin");
             UserProfile userProfile2 = userProfileServiceImpl.createUserProfile("customer", "customer");
             UserProfile userProfile3 = userProfileServiceImpl.createUserProfile("owner", "owner");
-            UserProfile userProfile4 = userProfileServiceImpl.createUserProfile("admin", "admin2");
+            UserProfile userProfile4 = userProfileServiceImpl.createUserProfile("admin", "adminTwo");
             System.out.println(userProfile);
             System.out.println(userProfile2);
             System.out.println(userProfile3);

@@ -20,7 +20,7 @@ public class CustomerDetailTests {
     public void testCreateCustomerDetail() {
         // Test the createCustomerDetail method using test for userAccount and subTier
         String customerDetail = customerDetailServiceImpl.createDetail(userAccountRepository.findUserAccountByUsername("customer9").orElseThrow(), "premium");
-        String customerDetail2 = customerDetailServiceImpl.createDetail(userAccountRepository.findUserAccountByUsername("customer10").orElseThrow(), "free");
+        String customerDetail2 = customerDetailServiceImpl.createDetail(userAccountRepository.findUserAccountByUsername("customerOne0").orElseThrow(), "free");
         if (customerDetail == null) {
             System.out.println("Customer detail not created test");
             throw new IllegalArgumentException("Customer detail not created test");
@@ -40,7 +40,7 @@ public class CustomerDetailTests {
     public void testReadCustomerDetail() {
         // Test the readCustomerDetail method using test for userAccount
         String customerDetail = customerDetailServiceImpl.readDetail(userAccountRepository.findUserAccountByUsername("customer9").orElseThrow());
-        String customerDetail2 = customerDetailServiceImpl.readDetail(userAccountRepository.findUserAccountByUsername("customer10").orElseThrow());
+        String customerDetail2 = customerDetailServiceImpl.readDetail(userAccountRepository.findUserAccountByUsername("customerOne0").orElseThrow());
         if (customerDetail == null) {
             System.out.println("Customer detail not found");
             throw new IllegalArgumentException("Customer detail not found");
@@ -60,7 +60,7 @@ public class CustomerDetailTests {
     public void testUpdateCustomerDetail() {
         // Test the updateCustomerDetail method using test for userAccount and newSubTier
         String customerDetail = customerDetailServiceImpl.updateDetail(userAccountRepository.findUserAccountByUsername("customer9").orElseThrow(), "free");
-        String customerDetail2 = customerDetailServiceImpl.updateDetail(userAccountRepository.findUserAccountByUsername("customer10").orElseThrow(), "premium");
+        String customerDetail2 = customerDetailServiceImpl.updateDetail(userAccountRepository.findUserAccountByUsername("customerOne0").orElseThrow(), "premium");
         if (customerDetail == null) {
             System.out.println("Customer detail not updated");
             throw new IllegalArgumentException("Customer detail not updated");
@@ -80,7 +80,7 @@ public class CustomerDetailTests {
     public void testDeleteCustomerDetail() {
         // Test the deleteCustomerDetail method using test for userAccount
         String customerDetail = customerDetailServiceImpl.deleteDetail(userAccountRepository.findUserAccountByUsername("customer9").orElseThrow());
-        String customerDetail2 = customerDetailServiceImpl.deleteDetail(userAccountRepository.findUserAccountByUsername("customer10").orElseThrow());
+        String customerDetail2 = customerDetailServiceImpl.deleteDetail(userAccountRepository.findUserAccountByUsername("customerOne0").orElseThrow());
         if (customerDetail == null) {
             System.out.println("Customer detail not deleted");
             throw new IllegalArgumentException("Customer detail not deleted");

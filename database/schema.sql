@@ -121,7 +121,6 @@ CREATE TABLE email_queue
 );
 
 CREATE TABLE security_policies (
-    user_account        uuid        NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
     policy_id           uuid          NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     policy_name         VARCHAR(255)    NOT NULL,
     description         TEXT            NOT NULL,

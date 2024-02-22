@@ -31,8 +31,7 @@ public class SecurityPolicyTests {
         Map<String, String> parameters = Map.of("key", "value"); // Example parameters
         String status = "active";
 
-        String result = securityPolicyServiceImplementation.createSecurityPolicy(
-                userAccount, policyName, description, enforcementLevel, policyType, parameters, status);
+        String result = securityPolicyServiceImplementation.createSecurityPolicy(policyName, description, enforcementLevel, policyType, parameters, status);
 
         String results = result.toString();
         System.out.println(results);
@@ -65,8 +64,8 @@ public class SecurityPolicyTests {
     @Test
     public void testDeleteSecurityPolicy() {
         // Test the deleteSecurityPolicy method using test for userAccount
-        String securityPolicy = securityPolicyServiceImplementation.deleteSecurityPolicy(userAccountRepository.findUserAccountByUsername("customer1").orElseThrow());
-        String securityPolicy2 = securityPolicyServiceImplementation.deleteSecurityPolicy(userAccountRepository.findUserAccountByUsername("admin1").orElseThrow());
+        String securityPolicy = securityPolicyServiceImplementation.deleteSecurityPolicy(java.util.UUID.fromString("6693b134-9145-45aa-a810-1de8f30ea0be"));
+        String securityPolicy2 = securityPolicyServiceImplementation.deleteSecurityPolicy(java.util.UUID.fromString("bc76b628-b785-46df-b69b-f747e4d0abe9"));
         if (securityPolicy == null) {
             System.out.println("Security policy not deleted");
             throw new IllegalArgumentException("Security policy not deleted");
@@ -86,8 +85,8 @@ public class SecurityPolicyTests {
     @Test
     public void testGetSecurityPolicy() {
         // Test the getSecurityPolicy method using test for userAccount
-        String securityPolicy = securityPolicyServiceImplementation.getSecurityPolicy(userAccountRepository.findUserAccountByUsername("customer1").orElseThrow());
-        String securityPolicy2 = securityPolicyServiceImplementation.getSecurityPolicy(userAccountRepository.findUserAccountByUsername("admin1").orElseThrow());
+        String securityPolicy = securityPolicyServiceImplementation.getSecurityPolicy();
+        String securityPolicy2 = securityPolicyServiceImplementation.getSecurityPolicy();
         if (securityPolicy == null) {
             System.out.println("Security policy not found");
             throw new IllegalArgumentException("Security policy not found");

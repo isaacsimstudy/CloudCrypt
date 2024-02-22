@@ -36,9 +36,8 @@ public class DeleteSecurityPolicyController {
     public ResponseEntity<String> deleteSecurityPolicy(@RequestBody String json) {
         try {
             JsonNode jsonNode = objectMapper.readTree(json);
-            String username = jsonNode.get("username").asText();
-            UserAccount userAccount = userAccountRepository.findUserAccountByUsername(username).orElseThrow();
-            String result = securityPolicyServiceImpl.deleteSecurityPolicy(userAccount);
+            String securityPolicyId = jsonNode.get("Id").asText();
+            String result = securityPolicyServiceImpl.deleteSecurityPolicy(java.util.UUID.fromString(securityPolicyId));
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.BAD_REQUEST);

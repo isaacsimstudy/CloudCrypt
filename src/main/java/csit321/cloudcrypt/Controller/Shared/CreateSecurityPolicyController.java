@@ -49,7 +49,7 @@ public class CreateSecurityPolicyController {
             String parameter = jsonNode.get("parameters").asText();
             Map<String, String> parameters = convertStringToMap(parameter);
 
-            String result = securityPolicyServiceImpl.createSecurityPolicy(userAccount, policyName, description, enforcementLevel, policyType, parameters, status);
+            String result = securityPolicyServiceImpl.createSecurityPolicy(policyName, description, enforcementLevel, policyType, parameters, status);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.BAD_REQUEST);

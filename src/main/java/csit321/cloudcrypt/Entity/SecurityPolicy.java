@@ -1,6 +1,9 @@
 package csit321.cloudcrypt.Entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -18,10 +21,6 @@ public class SecurityPolicy {
     @Column(name = "policy_id", nullable = false)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_account", nullable = false)
-    private UserAccount userAccount;
-
     @Column(name = "policy_name", nullable = false)
     private String policyName;
 
@@ -34,7 +33,7 @@ public class SecurityPolicy {
     @Column(name = "policy_type", nullable = false, length = 50)
     private String policyType;
 
-    @Column(name = "parameters")
+    @Column(name = "parameters", nullable = false)
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, String> parameters;
 

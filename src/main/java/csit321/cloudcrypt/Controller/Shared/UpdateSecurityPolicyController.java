@@ -12,10 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -49,14 +46,29 @@ public class UpdateSecurityPolicyController {
             }
         }
 
-        public Map<String, String> convertStringToMap(String str) {
-            // Convert a string to a map
-            Map<String, String> map = new HashMap<>();
-            StringTokenizer st = new StringTokenizer(str, ",");
-            while (st.hasMoreTokens()) {
-                String[] keyValue = st.nextToken().split(":");
-                map.put(keyValue[0], keyValue[1]);
+    public static Map<String, String> convertStringToMap(String jsonStr) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(jsonStr);
+        Map<String, String> map = new HashMap<>();
+
+        // Iterating through the root fields of the JSON object
+        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
+        while (fieldsIterator.hasNext()) {
+            Map.Entry<String, JsonNode> field = fieldsIterator.next();
+            String key = field.getKey();
+            JsonNode value = field.getValue();
+
+            // Handling the 'parameters' field specifically
+            if ("parameters".equals(key) && value.isObject()) {
+                StringJoiner sj = new StringJoiner(",");
+                value.fields().forEachRemaining(e -> sj.add(e.getKey() + ":" + e.getValue().asText()));
+                map.put(key, sj.toString());
+            } else {
+                // For other fields, directly put their string value
+                map.put(key, value.asText());
             }
-            return map;
         }
+
+        return map;
+    }
 }

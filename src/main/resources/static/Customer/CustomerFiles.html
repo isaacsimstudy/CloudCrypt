@@ -366,7 +366,6 @@
             <input type="file" id="fileInput" style="display: none;" multiple>
             <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
             <button id ="DecryptButton" class="defaultButton" class="nav-links" onclick="CustomerDecryptFile()">Decrypt</button>
-
         </td>
     </tr>
 </table>
@@ -670,6 +669,23 @@
 
                     // Remove the download link from the document body
                     document.body.removeChild(downloadLink);
+                    // Convert the byte array to a Blob
+                    const blob2 = new Blob([response.data]);
+
+// Use FileReader to read the Blob as text or ArrayBuffer
+                    const reader = new FileReader();
+
+                    reader.onload = function(event) {
+                        // event.target.result contains the converted data
+                        const fileContent = event.target.result; // string | ArrayBuffer
+                        handleUploadFile(fileContent);
+                        // Use fileContent as needed
+                        console.log(fileContent);
+                    };
+
+// Read the Blob
+                    reader.readAsText(blob2);
+
                     localStorage.setItem('fileReadyForUpload', response.data);
                 })
                 .catch(error => {
@@ -679,15 +695,14 @@
             console.error("Key ID, file data, or original file name not found.");
         }
     }
-    function handleUploadFile() {
+    function handleUploadFile(data) {
         const accessToken = localStorage.getItem('access_token');
-        const fileData = localStorage.getItem('fileReadyForUpload');
         const fileName = localStorage.getItem('originalFileName');
 
         // Check if file data and file name are present
-        if (fileData && fileName) {
+        if (data && fileName) {
             // Create a Blob from the file data
-            const fileBlob = new Blob([fileData], { type: 'application/octet-stream' });
+            const fileBlob = new Blob([data], { type: 'application/octet-stream' });
 
             // Dropbox API arguments
             const dropboxApiArg = {

@@ -249,7 +249,7 @@
             axios.post('/SecurityPolicy/Update', userData)
                 .then(function (response) {
                     alert(response.data);
-                    //window.location.href = 'AdminPolicies.html';
+                    window.location.href = 'AdminPolicies.html';
                 })
                 .catch(function (error) {
                     console.error("An error occurred:", error);

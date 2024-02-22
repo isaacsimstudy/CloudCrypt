@@ -335,7 +335,26 @@
                 const loginAttempts = parseInt(localStorage.getItem('loginAttempts')) + 1;
                 localStorage.setItem('loginAttempts', loginAttempts.toString());
                 console.log('loginAttempts: ', localStorage.getItem('loginAttempts'));
-                console.error("An error occurred:", error);
+
+                axios.get('/SecurityPolicy/Read')
+                    .then(function (response) {
+                        const policyData = response.data[0].parameters.maxLoginAttempts;
+                        if (loginAttempts > policyData) {
+                            axios.post('/Account/Suspend', {username: username})
+                                .then(function (response) {
+                                    console.log(response.data);
+                                    localStorage.removeItem('loginAttempts');
+                                    alert("Account suspended. Please contact the admin.");
+                                })
+                                .catch(function (error) {
+                                    console.error("An error occurred:", error);
+                                });
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error("An error occurred:", error);
+                    });
+
                 if (error.response && error.response.data) {
                     // Check for specific error messages
                     if (error.response.data === "Account suspended.") {

@@ -41,8 +41,7 @@ public class UpdateSecurityPolicyController {
             try {
                 JsonNode jsonNode = objectMapper.readTree(json);
                 UUID id = UUID.fromString(jsonNode.get("id").asText());
-                Map<String, String> updates = new HashMap<>();
-                updates = convertStringToMap(json);
+                Map<String, String> updates = convertStringToMap(json);
                 String result = securityPolicyServiceImpl.updateSecurityPolicy( id ,updates);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } catch (Exception e) {
@@ -55,7 +54,7 @@ public class UpdateSecurityPolicyController {
             Map<String, String> map = new HashMap<>();
             StringTokenizer st = new StringTokenizer(str, ",");
             while (st.hasMoreTokens()) {
-                String[] keyValue = st.nextToken().split("=");
+                String[] keyValue = st.nextToken().split(":");
                 map.put(keyValue[0], keyValue[1]);
             }
             return map;

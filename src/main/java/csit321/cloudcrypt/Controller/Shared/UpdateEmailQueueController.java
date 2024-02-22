@@ -54,7 +54,7 @@ public class UpdateEmailQueueController {
         Map<String, String> map = new HashMap<>();
         StringTokenizer st = new StringTokenizer(str, ",");
         while (st.hasMoreTokens()) {
-            String[] keyValue = st.nextToken().split("=");
+            String[] keyValue = st.nextToken().split(":");
             map.put(keyValue[0], keyValue[1]);
         }
         return map;

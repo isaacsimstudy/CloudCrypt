@@ -35,7 +35,8 @@ public class ReadActivityLogController {
             JsonNode jsonNode = objectMapper.readTree(json);
             String username = jsonNode.get("username").asText();
             userAccountRepository.findUserAccountByUsername(username).orElseThrow();
-            String activityLog = activityLogService.readLog(jsonNode.get("param").asText(), username, jsonNode.get("fileName").asText());
+            String fileName = jsonNode.has("fileName") ? jsonNode.get("fileName").asText() : null;
+            String activityLog = activityLogService.readLog(jsonNode.get("param").asText(), username, fileName);
             return new ResponseEntity<>(activityLog, HttpStatus.OK);
         }
         catch (Exception e) {

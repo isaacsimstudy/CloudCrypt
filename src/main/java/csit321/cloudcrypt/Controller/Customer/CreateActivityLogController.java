@@ -33,10 +33,11 @@ public class CreateActivityLogController {
             JsonNode jsonNode = objectMapper.readTree(json);
             String username = jsonNode.get("username").asText();
             userAccountRepository.findUserAccountByUsername(username).orElseThrow();
+            String fileName = jsonNode.has("fileName") ? jsonNode.get("fileName").asText() : null;
             String activityLog = activityLogService.createLog(username,
                                                         jsonNode.get("action").asText(),
                                                         jsonNode.get("status").asText(),
-                                                        jsonNode.get("fileName").asText());
+                                                        fileName);
             return new ResponseEntity<>(activityLog, HttpStatus.OK);
         }
         catch (Exception e) {

@@ -192,9 +192,21 @@
                 .then(function (response) {
                     console.log(response.data);
 
-                    localStorage.removeItem('username');
-                    alert("Successfully Logged Out");
-                    window.location.href = '../index.html';
+                    const logData = {
+                        username: username,
+                        action: "logout",
+                        status: "success",
+                        fileName: null
+                    };
+                    axios.post('/Customer/CreateActivityLog', logData)
+                        .then(function (response) {
+                            localStorage.removeItem('username');
+                            alert("Successfully Logged Out");
+                            window.location.href = '../index.html';
+                        })
+                        .catch(function (error) {
+                            console.error("An error occurred:", error);
+                        });
                 })
                 .catch(function (error) {
                     console.error("An error occurred:", error);

@@ -80,6 +80,75 @@
     </style>
 </head>
 <body>
+<script>
+    window.onload = function () {
+        // Retrieve the shared variable from localStorage
+        const curUser = localStorage.getItem('username');
+
+        // Check if the username string exists
+        if (!curUser) {
+            alert("Error. Please try again");
+            window.location.href = '../index.html';
+        }
+        else {
+            retrieveData();
+        }
+    };
+    function retrieveData() {
+        const username = localStorage.getItem('selectedUser');
+        console.log(username);
+        axios.get('/Account/Read/' + username)
+            .then(function (response) {
+                console.log(response.data);
+                if (Array.isArray(response.data) && response.data.length > 0) {
+                    const userData = response.data[0];
+
+
+                    document.getElementById('name').innerText = userData.username;
+                    document.getElementById('email').innerText = userData.email;
+
+                    axios.post('/Customer/ReadActivityLog', {username: username, param: "login", fileName: null})
+                        .then(function (response) {
+                            console.log(response.data);
+                            document.getElementById('numLogins').innerText = response.data.length;
+                        })
+                        .catch(function (error) {
+                            console.error("An error occurred:", error);
+                            document.getElementById('numLogins').innerText = "0";
+                        });
+
+                    axios.post('/Customer/ReadActivityLog', {username: username, param: "upload", fileName: null})
+                        .then(function (response) {
+                            console.log(response.data);
+                            document.getElementById('filesAccessed').innerText = response.data.length;
+                        })
+                        .catch(function (error) {
+                            console.error("An error occurred:", error);
+                            document.getElementById('filesAccessed').innerText = "0";
+                        });
+
+                    axios.post('/Customer/ReadActivityLog', {username: username, param: "download", fileName: null})
+                        .then(function (response) {
+                            console.log(response.data);
+                            document.getElementById('filesDecrypted').innerText = response.data.length;
+                        })
+                        .catch(function (error) {
+                            console.error("An error occurred:", error);
+                            document.getElementById('filesDecrypted').innerText = "0";
+                        });
+                } else {
+                    console.error("No user data found for the provided username");
+                    alert("No user data found for the provided username");
+                }
+            })
+            .catch(function (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            });
+    }
+
+
+</script>
 <nav class="navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">CloudCrypt</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,28 +176,27 @@
         <button class="logout-btn btn-outline-light ml-auto" onclick="LogOut()">Logout</button>
     </div>
 </nav>
-<!-- Rest of your HTML content -->
 
-<form action="/submit" method="post">
+<form>
     <header>
         <h1>Customer Account Logs</h1>
     </header>
     <label for="name">Name:</label>
-    <span id="name" > </span>
+    <span id="name" > </span><br/>
 
     <label for="email">Email:</label>
-    <span  id="email" > </span>
+    <span  id="email" > </span><br/>
 
     <label for="numLogins">Num of Logins:</label>
-    <span  id="numLogins" > </span>
+    <span  id="numLogins" > </span><br/>
 
     <label for="filesAccessed">Files Accessed:</label>
-    <span  id="filesAccessed" > </span>
+    <span  id="filesAccessed" > </span><br/>
 
     <label for="filesDecrypted">Files Decrypted:</label>
-    <span  id="filesDecrypted" > </span>
+    <span  id="filesDecrypted" > </span><br/>
 
-    <button id="SelectButton" class="defaultButton">Export</button>
+    <button id="SelectButton" class="defaultButton" type="button" onclick="exportLog()">Export</button>
 </form>
 
 

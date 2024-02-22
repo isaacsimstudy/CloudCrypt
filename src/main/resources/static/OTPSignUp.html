@@ -111,7 +111,7 @@
         if(otp === localStorage.getItem('otp'))
         {
             var userData = {
-                username: localStorage.getItem('username'),
+                username: username,
                 otp: true
             };
             axios.post('/Account/Verify', userData)
@@ -119,7 +119,7 @@
                     console.log(response.data);
                     localStorage.removeItem('otp');
                         const loginData = {
-                            username: localStorage.getItem('username'),
+                            username: username,
                             loginAttempts: localStorage.getItem('loginAttempts'),
                             loginTime: new Date().toISOString(),
                             loginStatus: "active",
@@ -157,9 +157,21 @@
 
                                                                         alert("Login successful");
 
-                                                                        localStorage.setItem('username', username);
-                                                                        localStorage.removeItem('loginAttempts');
-                                                                        window.location.href = "Customer/CustomerHomePage.html";
+                                                                        const logData = {
+                                                                            username: username,
+                                                                            action: "login",
+                                                                            status: "success",
+                                                                            fileName: null
+                                                                        };
+                                                                        axios.post('/Customer/CreateActivityLog', logData)
+                                                                            .then(function (response) {
+                                                                                localStorage.setItem('username', username);
+                                                                                localStorage.removeItem('loginAttempts');
+                                                                                window.location.href = "Customer/CustomerHomePage.html";
+                                                                            })
+                                                                            .catch(function (error) {
+                                                                                console.error("An error occurred:", error);
+                                                                            });
                                                                     })
                                                                     .catch(function (error) {
                                                                         console.error("Error sending email:", error);
@@ -171,10 +183,22 @@
                                                     } else {
                                                         console.log("Notification email didn't trigger");
                                                         alert("Login successful");
+                                                        const logData = {
+                                                            username: username,
+                                                            action: "login",
+                                                            status: "success",
+                                                            fileName: null
+                                                        };
+                                                        axios.post('/Customer/CreateActivityLog', logData)
+                                                            .then(function (response) {
+                                                                localStorage.setItem('username', username);
+                                                                localStorage.removeItem('loginAttempts');
+                                                                window.location.href = "Customer/CustomerHomePage.html";
+                                                            })
+                                                            .catch(function (error) {
+                                                                console.error("An error occurred:", error);
+                                                            });
 
-                                                        localStorage.setItem('username', username);
-                                                        localStorage.removeItem('loginAttempts');
-                                                        window.location.href = "Customer/CustomerHomePage.html";
                                                     }
                                                 })
                                                 .catch(function (error) {

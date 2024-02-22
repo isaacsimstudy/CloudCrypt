@@ -78,39 +78,5 @@ public class DownloadKeyController {
         return content.toString();
     }
 
-    public String decodeFromBase64(String password_hash){
-        try {
-            LOGGER.info("Decoding Base64: " + password_hash);
-            // Decode the Base64 encoded string
-            byte[] decodedEncryptedBytes = Base64.getDecoder().decode(password_hash);
-
-            // Decrypt the encrypted bytes
-            byte[] decryptedBytes = decrypt(decodedEncryptedBytes);
-
-            // Convert the decrypted bytes to a string
-            String decryptedString = new String(decryptedBytes);
-            LOGGER.info("Decryption successful: " + decryptedString);
-            return decryptedString;
-
-        } catch (IllegalArgumentException e) {
-            // If decoding fails, return the original password hash
-            LOGGER.warning("Error decoding Base64: " + e.getMessage());
-            return password_hash;
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error decoding Base64", e);
-            throw new RuntimeException(e);
-        }
-    }
-    private byte[] decrypt(byte[] input) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        LOGGER.info("Decrypting bytes method");
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-        SecretKey tmp = factory.generateSecret(spec);
-        SecretKey secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        return cipher.doFinal(input);
-    }
 
 }

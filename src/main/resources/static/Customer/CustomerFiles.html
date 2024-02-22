@@ -119,6 +119,11 @@
             cursor: not-allowed; /* Change cursor to indicate non-clickable */
             /* Add any additional styles for the disabled state */
         }
+        #DecryptButton:disabled {
+            background-color: #999; /* Change to the desired color for disabled state */
+            cursor: not-allowed; /* Change cursor to indicate non-clickable */
+            /* Add any additional styles for the disabled state */
+        }
         .hidden {
             display: none;
         }
@@ -299,7 +304,9 @@
                 // Store the entire array associated with the selected row in localStorage
                 localStorage.setItem('selectedItem', JSON.stringify(fileList));
                 const selectedItem = JSON.parse(localStorage.getItem('selectedItem'));
+                localStorage.setItem('selectedFileName', selectedItem.name);
                 console.log(selectedItem);
+                console.log(selectedItem.name);
                 if (fileList[".tag"] === "folder")
                 {
                     localStorage.setItem('selectedFolder', fileList["path_display"]);
@@ -316,6 +323,7 @@
                 var isDefaultButton = $(this).hasClass('defaultButton');
                 $('#DownloadButton').prop('disabled', isDefaultButton);
                 $('#EncryptButton').prop('disabled', isDefaultButton);
+                $('#DeleteButton').prop('disabled', isDefaultButton);
 
             });
             actionCell.appendChild(selectButton);
@@ -357,7 +365,9 @@
             <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="CustomerCreateFile()">Create</button>
             <input type="file" id="fileInput" style="display: none;" multiple>
             <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
+            <button id ="DecryptButton" class="defaultButton" class="nav-links" onclick="CustomerDecryptFile()">Decrypt</button>
             <button id ="EncryptButton" class="defaultButton" class="nav-links" onclick="CustomerEncryptFile()">Encrypt</button>
+
         </td>
     </tr>
 </table>
@@ -616,8 +626,9 @@
     function handleSecondEncryptButton() {
         const keyId = localStorage.getItem('selectedKey');
         const storedFileData = localStorage.getItem('selectedItem');
+        const originalFileName = localStorage.getItem('selectedFileName');
 
-        if (keyId && storedFileData) {
+        if (keyId && storedFileData && originalFileName) {
             const formData = new FormData();
             formData.append('keyId', keyId);
 
@@ -625,86 +636,91 @@
             const fileBlob = new Blob([storedFileData], { type: 'application/octet-stream' });
 
             // Append the Blob to the FormData object
-            formData.append('file', fileBlob, 'filename.txt');
+            formData.append('file', fileBlob, originalFileName);
 
             axios.post('/Customer/EncryptFiles', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
-                }
+                },
+                responseType: 'blob' // Specify the response type as blob
             })
                 .then(response => {
-                    console.log("Encrypted file:", response.data);
-                    // Handle response
-                    handleEncryptionFileUpload(response.data)
+                    // Create a URL for the blob data
+                    const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+
+                    // Create a link element to trigger the download
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.setAttribute('download', `${originalFileName}_encrypted`);
+                    document.body.appendChild(link);
+
+                    // Trigger the click event to start the download
+                    link.click();
+
+                    // Clean up by revoking the blob URL
+                    window.URL.revokeObjectURL(blobUrl);
+
+                    //Test Decryption
+                    localStorage.setItem('toDecrypt', response.data);
                 })
                 .catch(error => {
                     console.error("Error:", error);
                     // Handle error
                 });
         } else {
-            console.error("Key ID or file not found.");
+            console.error("Key ID, file data, or original file name not found.");
         }
     }
 
 
-    function handleEncryptionFileUpload(encryptedFile){
-        const accessToken = localStorage.getItem('access_token');
+    function CustomerDecryptFile(){
+        const storedFileData = localStorage.getItem('selectedItem');
+        const originalFileName = localStorage.getItem('selectedFileName');
 
-        //Confirm File Selection and Confirm Key Container
-        const uponSelectFileContainer = document.getElementById("uponSelectFile");
-        const selectedFileContainer = document.getElementById("selectedFileContainer");
-        const selectedFileNameElement = document.getElementById('selectedFileName');
+        if (storedFileData) {
+            const formData = new FormData();
 
+            // Create a Blob from the stored file data string
+            const fileBlob = new Blob([storedFileData], { type: 'application/octet-stream' });
 
-        if (encryptedFile) {
-            // Update the selected file name
-            selectedFileNameElement.textContent = "Encrypted File: " + encryptedFile.name;
+            // Append the Blob to the FormData object
+            formData.append('file', fileBlob, originalFileName);
 
-            // Show the container containing the selected file information
-            uponSelectFileContainer.style.display = "block";
-            selectedFileContainer.classList.remove("hidden");
+            axios.post('/Customer/DecryptFiles', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                responseType: 'blob' // Specify the response type as blob
+            })
+                .then(response => {
+                    // Create a URL for the blob data
+                    const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
 
-            const fileName = encryptedFile.name;
-            const fileType = encryptedFile.type;
-            console.log("File Name:", fileName);
-            console.log("File Type:", fileType);
+                    // Create a link element to trigger the download
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    const originalFileNameWithoutExtension = originalFileName.split('_encrypted')[0];
+                    link.setAttribute('download', originalFileNameWithoutExtension);
+                    document.body.appendChild(link);
 
-            // Create a file reader to read the file content
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                const fileContent = event.target.result;
-                // Log the metadata and content of the file
-                console.log("File Content:", fileContent);
+                    // Trigger the click event to start the download
+                    link.click();
 
-                // Header arguments for upload
-                const dropboxApiArg = {
-                    autorename: false,
-                    mode: 'add',
-                    mute: false,
-                    path: '/' + fileName, // Ensure the path starts with a forward slash (/)
-                    strict_conflict: false
-                };
+                    // Clean up by revoking the blob URL
+                    window.URL.revokeObjectURL(blobUrl);
 
-                // Perform Axios POST request here
-                axios.post('https://content.dropboxapi.com/2/files/upload', fileContent, {
-                    headers: {
-                        'Authorization': 'Bearer ' + accessToken,
-                        'Content-Type': 'application/octet-stream',
-                        'Dropbox-API-Arg': JSON.stringify(dropboxApiArg)
-                    }
+                    //Test Decryption
+                    localStorage.setItem('toDecrypt', response.data);
                 })
-                    .then(response => {
-                        console.log('Upload Successful', response.data);
-                        // window.location.href = 'CustomerFiles.html';
-                    })
-                    .catch(error => {
-                        // Handle errors
-                        console.error('Error uploading file:', error.response.data);
-                    });
-            };
-            reader.readAsArrayBuffer(encryptedFile);
+                .catch(error => {
+                    console.error("Error:", error);
+                    // Handle error
+                });
+        } else {
+            console.error("No encrypted file selected.");
         }
     }
+
 
     function handleFileChange(event) {
         const accessToken = localStorage.getItem('access_token');
@@ -907,6 +923,9 @@
         // Disable the "Suspend" button by default
         $('#EncryptButton').prop('disabled', true);
 
+        // Disable the "Suspend" button by default
+
+
         // Attach a click event handler to the "Select" button
         $('#SelectButton').on('click', function () {
             // Toggle the classes when the button is clicked
@@ -920,6 +939,7 @@
             var isDefaultButton = $(this).hasClass('defaultButton');
             $('#DownloadButton').prop('disabled', isDefaultButton);
             $('#EncryptButton').prop('disabled', isDefaultButton);
+            $('#DecryptButton').prop('disabled', isDefaultButton);
         });
     });
 </script>

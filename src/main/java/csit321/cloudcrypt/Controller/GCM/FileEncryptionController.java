@@ -32,6 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import java.security.spec.InvalidKeySpecException;
@@ -41,6 +42,7 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.logging.*;
 import java.util.UUID;
+import java.nio.ByteBuffer;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -115,7 +117,7 @@ public class FileEncryptionController {
             byte[] fixedIV = "123456789!!!!!!!".getBytes();
             LOGGER.info("Fixed IV: " + Arrays.toString(fixedIV));
 
-            byte[] encryptedFile = encryptFile(file, decryptedKeyBytes, fixedIV);
+            byte[] encryptedFile = encryptFile(file, keyId,  decryptedKeyBytes, fixedIV);
             LOGGER.info("Encryption Success");
 
             // Return the encrypted file as a byte array in the response body
@@ -148,13 +150,23 @@ public class FileEncryptionController {
 
     }
 
-    public static byte[] encryptFile(MultipartFile file, byte[] secretKeyBytes, byte[] fixedIV) {
+    public static byte[] encryptFile(MultipartFile file,UUID uuid, byte[] secretKeyBytes, byte[] fixedIV) {
         LOGGER.info("Encrypting File: " + file.getOriginalFilename());
         LOGGER.info("Secret Key: " + Arrays.toString(secretKeyBytes));
         LOGGER.info("Fixed IV: " + Arrays.toString(fixedIV));
 
         try (InputStream fis = file.getInputStream()) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            byte[] keyHash = computeSHA256Hash(secretKeyBytes);
+
+            // Convert UUID to byte array
+            byte[] uuidBytes = uuidToBytes(uuid);
+
+            // Prepend UUID bytes to the output
+            baos.write(uuidBytes);
+            baos.write(keyHash);
+
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             SecretKeySpec secretKeySpec = new SecretKeySpec(secretKeyBytes, "AES");
             GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, fixedIV);
@@ -175,5 +187,18 @@ public class FileEncryptionController {
             LOGGER.log(Level.SEVERE, "Error encrypting file: " + file.getOriginalFilename(), e);
             return null;
         }
+    }
+
+    private static byte[] uuidToBytes(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        return bb.array();
+    }
+
+    // Compute SHA-256 hash of the input bytes
+    private static byte[] computeSHA256Hash(byte[] input) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        return digest.digest(input);
     }
 }

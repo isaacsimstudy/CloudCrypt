@@ -116,7 +116,9 @@ VALUES
     --((SELECT uuid FROM user_account WHERE username = 'customer1'), 1, 'active', '2024-01-017 10:37:12+08:00', 'active'),
     ((SELECT uuid FROM user_account WHERE username = 'customer2'), 1, 'active', '2024-01-019 16:58:42+08:00', 'active'),
     ((SELECT uuid FROM user_account WHERE username = 'customer3'), 1, 'active', '2024-01-023 12:18:54+08:00', 'active'),
-((SELECT uuid FROM user_account WHERE username = 'owner1'), 1, 'active', '2024-01-023 12:18:54+08:00', 'inactive');
+    ((SELECT uuid FROM user_account WHERE username = 'owner1'), 1, 'active', '2024-01-023 12:18:54+08:00', 'inactive'),
+    ((SELECT uuid FROM user_account WHERE username = 'admin1'), 1, 'active', '2024-01-023 12:18:54+08:00', 'inactive');
+
 
 -- Insert share (customer-3 share file with customer-1
 --INSERT INTO share

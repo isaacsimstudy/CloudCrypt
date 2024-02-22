@@ -145,6 +145,40 @@
     // Clear existing rows in the table body
     tableBody.innerHTML = '';
 
+    // Keep track of the currently selected button globally
+    let currentSelectedButton = null;
+
+    function handleButtonClick(button, userData) {
+      // Check if a button is already selected
+      if (currentSelectedButton !== null && currentSelectedButton !== button) {
+        // If so, remove the 'Selected' class and add the 'Select' class
+        currentSelectedButton.textContent = 'Select';
+        currentSelectedButton.classList.remove('alternateButton');
+        currentSelectedButton.classList.add('defaultButton');
+      }
+
+      localStorage.setItem('selectedUser', userData.username);
+      console.log(localStorage.getItem('selectedUser'));
+      // Toggle the classes when the button is clicked
+      $(button).toggleClass('defaultButton alternateButton');
+
+      // Change the text content based on the current class
+      var newText = $(button).hasClass('defaultButton') ? 'Select' : 'Selected';
+      $(button).text(newText);
+
+      // Enable or disable the "Suspend" and "Update" button based on the class of the "Select" button
+      var isDefaultButton = $(button).hasClass('defaultButton');
+      $('#SuspendButton').prop('disabled', isDefaultButton);
+      $('#updateButton').prop('disabled', isDefaultButton);
+
+      // Update localStorage with selected user data
+      localStorage.setItem('selectedUser', userData.username);
+      console.log(localStorage.getItem('selectedUser'));
+
+      // Update the currently selected button
+      currentSelectedButton = button;
+    }
+
     // Iterate through the list of users and append each to the table
     userList.forEach((userData, index) => {
       // Create a new row
@@ -171,19 +205,7 @@
       selectButton.textContent = 'Select';
       selectButton.className = 'defaultButton';
       selectButton.addEventListener('click', function() {
-        localStorage.setItem('selectedUser', userData.username);
-        console.log(localStorage.getItem('selectedUser'));
-        // Toggle the classes when the button is clicked
-        $(this).toggleClass('defaultButton alternateButton');
-
-        // Change the text content based on the current class
-        var newText = $(this).hasClass('defaultButton') ? 'Select' : 'Selected';
-        $(this).text(newText);
-
-        // Enable or disable the "Suspend" and "Update" button based on the class of the "Select" button
-        var isDefaultButton = $(this).hasClass('defaultButton');
-        $('#SuspendButton').prop('disabled', isDefaultButton);
-        $('#updateButton').prop('disabled', isDefaultButton);
+        handleButtonClick(this, userData);
       });
 
       actionCell.appendChild(selectButton);

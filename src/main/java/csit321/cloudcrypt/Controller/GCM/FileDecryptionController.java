@@ -82,13 +82,14 @@ public class FileDecryptionController {
             //get file bytes
             byte[] fileBytes = getFileBytes(file);
 
-            //read first 16 byte(the uuid)
-            byte[] uuidBytes = Arrays.copyOfRange(fileBytes, 0, 16);
-            UUID uuid = bytesToUUID(uuidBytes);
-            LOGGER.info("UUID extracted from file: " + uuid);
+            byte[] uuidBytes = extractUUIDBytes(file);
 
-            // Extract the hash from the next 32 bytes (SHA-256 hash length is 32 bytes)
-            byte[] extractedHash = Arrays.copyOfRange(fileBytes, 16, 48);
+            //read first 16 byte(the uuid)
+
+            UUID uuid = bytesToUUID2(uuidBytes);
+            //byte[] uuidBytes = Arrays.copyOfRange(fileBytes, 0, 16);
+            //UUID uuid = UUID.nameUUIDFromBytes(bytesToUUID(uuidBytes));
+            LOGGER.info("UUID extracted from file: " + uuid);
 
             //get Encryption Key
             Key key = keyRepository.findKeyById(uuid);
@@ -103,6 +104,7 @@ public class FileDecryptionController {
             //3401232f-4fce-4134-9f76-013198107d92
 
             // Remove the UUID bytes from the encrypted data
+
             byte[] encryptedFileData = Arrays.copyOfRange(fileBytes, 16, fileBytes.length);
             LOGGER.info("File Bytes: " + Arrays.toString(encryptedFileData));
 
@@ -120,77 +122,69 @@ public class FileDecryptionController {
             }
 
             // Decrypt AES key
-            byte[] decryptedKeyBytes = decrypt(decodedKeyBytes);
-            LOGGER.info("Decrypted key length: " + decryptedKeyBytes.length);
+            //byte[] decryptedKeyBytes = decrypt(decodedKeyBytes);
+            //LOGGER.info("Decrypted key length: " + decryptedKeyBytes.length);
 
             // Ensure that the decrypted key has the expected length for AES encryption
-            if (decryptedKeyBytes.length != 16 && decryptedKeyBytes.length != 24 && decryptedKeyBytes.length != 32) {
-                LOGGER.warning("Decrypted key length does not match expected AES key lengths (16, 24, or 32 bytes).");
+            //if (decryptedKeyBytes.length != 16 && decryptedKeyBytes.length != 24 && decryptedKeyBytes.length != 32) {
+                //LOGGER.warning("Decrypted key length does not match expected AES key lengths (16, 24, or 32 bytes).");
                 // Handle the error or throw an exception if the key length is incorrect
-            }
+            //}
 
 
             // Fixed IV
             byte[] fixedIV = "123456789!!!!!!!".getBytes();
             LOGGER.info("Fixed IV: " + Arrays.toString(fixedIV));
 
-            byte[] decryptedFile = decryptFile(file,  decryptedKeyBytes, fixedIV);
+            byte[] decryptedFile = decryptFile(file,  decodedKeyBytes, fixedIV);
             LOGGER.info("Decryption Success");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getOriginalFilename() + "_encrypted\"")
                     .body(decryptedFile);
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error encrypting files", e);
+            LOGGER.log(Level.SEVERE, "Error decrypting files", e);
             // Convert error message to byte array
             byte[] errorMessageBytes = e.getMessage().getBytes();
             return new ResponseEntity<>(errorMessageBytes, HttpStatus.BAD_REQUEST);
         }
     }
 
-    private byte[] decrypt(byte[] input) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        LOGGER.info("Decrypting bytes method");
-        LOGGER.info("Input bytes: " + Arrays.toString(input));
 
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-        SecretKey tmp = factory.generateSecret(spec);
-        SecretKey secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-
-        LOGGER.info("Decrypted bytes: " + Arrays.toString(input));
-        return cipher.doFinal(input);
-
-    }
-
-    public static byte[] decryptFile(MultipartFile file, byte[] secretKeyBytes, byte[] fixedIV) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+    public static byte[] decryptFile(MultipartFile file, byte[] secretKeyBytes, byte[] fixedIV) {
         LOGGER.info("Decrypting File: " + file.getOriginalFilename());
         LOGGER.info("Secret Key: " + Arrays.toString(secretKeyBytes));
         LOGGER.info("Fixed IV: " + Arrays.toString(fixedIV));
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try (InputStream fis = file.getInputStream()) {
-
             // Initialize cipher for decryption
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             SecretKeySpec secretKeySpec = new SecretKeySpec(secretKeyBytes, "AES");
             GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, fixedIV);
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, gcmParameterSpec);
 
-            // Decrypt the rest of the file
             byte[] buffer = new byte[8192]; // 8KB buffer
             int bytesRead;
             while ((bytesRead = fis.read(buffer)) != -1) {
                 byte[] decryptedChunk = cipher.update(buffer, 0, bytesRead);
                 baos.write(decryptedChunk);
             }
+
             // Write the final decrypted chunk
             byte[] decryptedFinalChunk = cipher.doFinal();
             baos.write(decryptedFinalChunk);
+
+            LOGGER.info("Authentication Tag: " + Arrays.toString(cipher.getParameters().getParameterSpec(GCMParameterSpec.class).getIV()));
+
+            LOGGER.info("Decryption Success");
+        } catch (AEADBadTagException e) {
+            LOGGER.log(Level.SEVERE, "Decryption failed due to AEADBadTagException", e);
+            throw new RuntimeException("Decryption failed: Invalid authentication tag. The encrypted data may have been tampered with.");
         } catch (Exception e) {
-            e.printStackTrace(); // Handle exception appropriately
+            LOGGER.log(Level.SEVERE, "Error decrypting file", e);
+            throw new RuntimeException("Decryption failed: " + e.getMessage());
         }
 
         return baos.toByteArray();
@@ -210,11 +204,75 @@ public class FileDecryptionController {
     }
 
     //convert byte to uuid
-    public static UUID bytesToUUID(byte[] bytes) {
-        ByteBuffer bb = ByteBuffer.wrap(bytes);
-        long msb = bb.getLong();
-        long lsb = bb.getLong();
-        return new UUID(msb, lsb);
+    // Method to retrieve bytes from a byte array and log in hexadecimal format
+    private static byte[] bytesToUUID(byte[] fileBytes) {
+        byte[] uuidBytes = Arrays.copyOfRange(fileBytes, 0, 16);
+
+        // Log the bytes in hexadecimal format
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : uuidBytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        LOGGER.info("Retrieved Bytes (Hexadecimal): " + hexString.toString());
+
+        return uuidBytes;
+    }
+
+    public static byte[] extractUUIDBytes(MultipartFile file) {
+        try (InputStream fis = file.getInputStream()) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            // Read the first 16 bytes from the file
+            byte[] buffer = new byte[16];
+            int bytesRead = fis.read(buffer);
+
+            // If the file has less than 16 bytes, return null or handle accordingly
+            if (bytesRead < 16) {
+                return null; // Or handle accordingly
+            }
+
+            // Close the stream
+            fis.close();
+
+            // Return the first 16 bytes as UUID bytes
+            return buffer;
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Error extracting UUID bytes from file: " + file.getOriginalFilename(), e);
+            return null;
+        }
+    }
+
+    public static UUID bytesToUUID2(byte[] uuidBytes) {
+        // Wrap the byte array with ByteBuffer
+        ByteBuffer byteBuffer = ByteBuffer.wrap(uuidBytes);
+
+        // Retrieve the most significant bits and least significant bits
+        long mostSignificantBits = byteBuffer.getLong();
+        long leastSignificantBits = byteBuffer.getLong();
+
+        // Create and return the UUID
+        return new UUID(mostSignificantBits, leastSignificantBits);
+    }
+
+    private byte[] decrypt(byte[] input) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        LOGGER.info("Decrypting bytes method");
+        LOGGER.info("Input bytes: " + Arrays.toString(input));
+
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
+        SecretKey tmp = factory.generateSecret(spec);
+        SecretKey secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+        LOGGER.info("Decrypted bytes: " + Arrays.toString(input));
+        return cipher.doFinal(input);
+
     }
 
 }

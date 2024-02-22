@@ -366,6 +366,7 @@
             <input type="file" id="fileInput" style="display: none;" multiple>
             <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
             <button id ="DecryptButton" class="defaultButton" class="nav-links" onclick="CustomerDecryptFile()">Decrypt</button>
+            <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="CustomerCreateFile()">Upload</button>
         </td>
     </tr>
 </table>
@@ -613,15 +614,29 @@
         const file = event.target.files[0]; // Access the selected file from the event object
 
         // Store the selected file and its name in local storage
-        localStorage.setItem('selectedFile', file);
-        localStorage.setItem('originalFileName', file.name);
+        window.selectedFile = file;
 
+        localStorage.setItem('originalFileName', file.name);
         console.log('File stored in local storage:', file);
     }
 
-    function handleSecondEncryptButton() {
+    const processButton = document.getElementById('confirmEncrypt');
+
+    processButton.addEventListener('click', function() {
+        // Check if a file is selected
+        if (window.selectedFile) {
+            // Call the processFile function and pass the file object to it
+            handleSecondEncryptButton(window.selectedFile);
+        } else {
+            // Handle case where no file is selected
+            console.log('No file selected.');
+        }
+    });
+
+    function handleSecondEncryptButton(file) {
+
         const keyId = localStorage.getItem('selectedKey');
-        const file = localStorage.getItem('selectedFile');
+
 
         // Retrieve the original file name from local storage
         const originalFileName = localStorage.getItem('originalFileName');
@@ -669,10 +684,11 @@
 
                     // Remove the download link from the document body
                     document.body.removeChild(downloadLink);
+
                     // Convert the byte array to a Blob
                     const blob2 = new Blob([response.data]);
 
-// Use FileReader to read the Blob as text or ArrayBuffer
+                    // Use FileReader to read the Blob as text or ArrayBuffer
                     const reader = new FileReader();
 
                     reader.onload = function(event) {
@@ -684,7 +700,7 @@
                     };
 
 // Read the Blob
-                    reader.readAsText(blob2);
+                    reader.readAsArrayBuffer(blob2);
 
                     localStorage.setItem('fileReadyForUpload', response.data);
                 })
@@ -756,24 +772,22 @@
                 responseType: 'blob' // Specify the response type as blob
             })
                 .then(response => {
-                    // Create a URL for the blob data
-                    const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+                    // Create a Blob from the encrypted file data
+                    const encryptedFileBlob = new Blob([response.data], { type: 'application/octet-stream' });
 
-                    // Create a link element to trigger the download
-                    const link = document.createElement('a');
-                    link.href = blobUrl;
-                    const originalFileNameWithoutExtension = originalFileName.split('_encrypted')[0];
-                    link.setAttribute('download', originalFileNameWithoutExtension);
-                    document.body.appendChild(link);
+                    // Create a download link for the encrypted file
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(encryptedFileBlob);
+                    downloadLink.download = originalFileName; // Set the download filename
 
-                    // Trigger the click event to start the download
-                    link.click();
+                    // Append the download link to the document body
+                    document.body.appendChild(downloadLink);
 
-                    // Clean up by revoking the blob URL
-                    window.URL.revokeObjectURL(blobUrl);
+                    // Trigger a click event on the download link to initiate the download
+                    downloadLink.click();
 
-                    //Test Decryption
-                    localStorage.setItem('toDecrypt', response.data);
+                    // Remove the download link from the document body
+                    document.body.removeChild(downloadLink);
                 })
                 .catch(error => {
                     console.error("Error:", error);

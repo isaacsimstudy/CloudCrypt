@@ -101,23 +101,17 @@ public class GenerateKeyController {
 
             LOGGER.info("Generated random bytes: " + Arrays.toString(randomBytes));
 
-            byte[] encryptedBytes = encrypt(randomBytes);
-            LOGGER.info("Encrypted bytes: " + Arrays.toString(encryptedBytes));
-
+           // byte[] encryptedBytes = encrypt(randomBytes);
+            LOGGER.info("Encrypted bytes: " + Arrays.toString(randomBytes));
 
             // Encode bytes to base64
-            String base64Key = Base64.getEncoder().encodeToString(encryptedBytes);
+            String base64Key = Base64.getEncoder().encodeToString(randomBytes);
             LOGGER.info("Base64 encoded key: " + base64Key);
 
-
-            // Truncate to fit into VARCHAR(72) column
-            String truncatedKey = base64Key.substring(0, Math.min(base64Key.length(), 72));
-            LOGGER.info("Truncated key: " + truncatedKey);
-
             // Log key length
-            LOGGER.info("Key length: " + truncatedKey.length());
+            LOGGER.info("Key length: " + base64Key.length());
 
-            return truncatedKey;
+            return base64Key;
         } catch (Exception e) {
             LOGGER.severe("Error generating random key: " + e.getMessage());
             e.printStackTrace();

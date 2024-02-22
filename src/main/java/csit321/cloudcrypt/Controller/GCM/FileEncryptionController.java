@@ -102,22 +102,22 @@ public class FileEncryptionController {
             }
 
             // Decrypt AES key
-            byte[] decryptedKeyBytes = decrypt(decodedKeyBytes);
+            //byte[] decryptedKeyBytes = decrypt(decodedKeyBytes);
 
             // Log the length of the decrypted key
-            LOGGER.info("Decrypted key length: " + decryptedKeyBytes.length);
+            //LOGGER.info("Decrypted key length: " + decryptedKeyBytes.length);
 
             // Ensure that the decrypted key has the expected length for AES encryption
-            if (decryptedKeyBytes.length != 16 && decryptedKeyBytes.length != 24 && decryptedKeyBytes.length != 32) {
-                LOGGER.warning("Decrypted key length does not match expected AES key lengths (16, 24, or 32 bytes).");
+            //if (decryptedKeyBytes.length != 16 && decryptedKeyBytes.length != 24 && decryptedKeyBytes.length != 32) {
+                //LOGGER.warning("Decrypted key length does not match expected AES key lengths (16, 24, or 32 bytes).");
                 // Handle the error or throw an exception if the key length is incorrect
-            }
+            //}
 
             // Fixed IV
             byte[] fixedIV = "123456789!!!!!!!".getBytes();
             LOGGER.info("Fixed IV: " + Arrays.toString(fixedIV));
 
-            byte[] encryptedFile = encryptFile(file, keyId,  decryptedKeyBytes, fixedIV);
+            byte[] encryptedFile = encryptFile(file, keyId,  decodedKeyBytes, fixedIV);
             LOGGER.info("Encryption Success");
 
             // Return the encrypted file as a byte array in the response body
@@ -133,22 +133,7 @@ public class FileEncryptionController {
         }
     }
 
-    private byte[] decrypt(byte[] input) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        LOGGER.info("Decrypting bytes method");
-        LOGGER.info("Input bytes: " + Arrays.toString(input));
 
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-        SecretKey tmp = factory.generateSecret(spec);
-        SecretKey secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-
-        LOGGER.info("Decrypted bytes: " + Arrays.toString(input));
-        return cipher.doFinal(input);
-
-    }
 
     public static byte[] encryptFile(MultipartFile file, UUID uuid, byte[] secretKeyBytes, byte[] fixedIV) {
         LOGGER.info("Encrypting File: " + file.getOriginalFilename());
@@ -178,6 +163,10 @@ public class FileEncryptionController {
             byte[] encryptedFinalChunk = cipher.doFinal();
             baos.write(encryptedFinalChunk);
 
+            LOGGER.info("Authentication Tag: " + Arrays.toString(cipher.getParameters().getParameterSpec(GCMParameterSpec.class).getIV()));
+
+            Arrays.fill(uuidBytes, (byte) 0);
+
             // Close the stream
             baos.close();
 
@@ -189,12 +178,45 @@ public class FileEncryptionController {
         }
     }
 
+
+
+
+    // Method to convert UUID to bytes and log in hexadecimal format
     private static byte[] uuidToBytes(UUID uuid) {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
         bb.putLong(uuid.getMostSignificantBits());
         bb.putLong(uuid.getLeastSignificantBits());
-        return bb.array();
+
+        // Get the byte array
+        byte[] bytes = bb.array();
+
+        // Log the bytes in hexadecimal format
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : bytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        LOGGER.info("UUID Bytes (Hexadecimal): " + hexString.toString());
+
+        return bytes;
     }
+    private byte[] decrypt(byte[] input) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        LOGGER.info("Decrypting bytes method");
+        LOGGER.info("Input bytes: " + Arrays.toString(input));
 
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
+        SecretKey tmp = factory.generateSecret(spec);
+        SecretKey secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
 
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+        LOGGER.info("Decrypted bytes: " + Arrays.toString(input));
+        return cipher.doFinal(input);
+
+    }
 }

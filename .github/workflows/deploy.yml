@@ -50,7 +50,7 @@ jobs:
           chmod 644 ~/.ssh/known_hosts
           ls -la ./target
           ls -la ../CloudCrypt
-          scp    -i ~/.ssh/id_rsa target/CloudCrypt-1.0.0-SNAPSHOT.jar.original ubuntu@ec2-13-213-53-140.ap-southeast-1.compute.amazonaws.com:/home/ubuntu/CloudCrypt
+          scp    -i ~/.ssh/id_rsa target/CloudCrypt-1.0.0-SNAPSHOT.jar ubuntu@ec2-13-213-53-140.ap-southeast-1.compute.amazonaws.com:/home/ubuntu/CloudCrypt
           scp    -i ~/.ssh/id_rsa database/schema.sql ubuntu@ec2-13-213-53-140.ap-southeast-1.compute.amazonaws.com:/home/ubuntu/CloudCrypt
           scp    -i ~/.ssh/id_rsa database/database.sql ubuntu@ec2-13-213-53-140.ap-southeast-1.compute.amazonaws.com:/home/ubuntu/CloudCrypt
           scp    -i ~/.ssh/id_rsa .deploy/aws_push.sh ubuntu@ec2-13-213-53-140.ap-southeast-1.compute.amazonaws.com:/home/ubuntu/CloudCrypt

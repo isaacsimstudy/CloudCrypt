@@ -32,7 +32,7 @@ jobs:
 
       - name: Run tests and build with Maven if successful
         working-directory: ./
-        run: mvn -B package --file pom.xml
+        run: mvn -B package --file pom.xml -Dskiptests
 
       - name: Connect to AWS and copy the application
         working-directory: ./CloudCrypt

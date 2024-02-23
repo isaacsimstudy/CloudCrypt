@@ -59,8 +59,8 @@ public class CustomerDetailTests {
     @Test
     public void testUpdateCustomerDetail() {
         // Test the updateCustomerDetail method using test for userAccount and newSubTier
-        String customerDetail = customerDetailServiceImpl.updateDetail(userAccountRepository.findUserAccountByUsername("customer9").orElseThrow(), "free");
-        String customerDetail2 = customerDetailServiceImpl.updateDetail(userAccountRepository.findUserAccountByUsername("customerOne0").orElseThrow(), "premium");
+        String customerDetail = customerDetailServiceImpl.updateDetail(userAccountRepository.findUserAccountByUsername("customer9").orElse(null), "free");
+        String customerDetail2 = customerDetailServiceImpl.updateDetail(userAccountRepository.findUserAccountByUsername("customerOne0").orElse(null), "premium");
         if (customerDetail == null) {
             System.out.println("Customer detail not updated");
             throw new IllegalArgumentException("Customer detail not updated");

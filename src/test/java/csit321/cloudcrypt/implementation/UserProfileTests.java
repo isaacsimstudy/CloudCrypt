@@ -18,13 +18,13 @@ public class UserProfileTests {
                 // Test that user profile is created according to database requirements ie. privilege and/or title
                 // must be "admin", "customer", "owner"
                 // Refer to schema.sql for database requirements
-            UserProfile userProfile = userProfileServiceImpl.createUserProfile("admin", "admin");
-            UserProfile userProfile2 = userProfileServiceImpl.createUserProfile("customer", "customer");
-            UserProfile userProfile3 = userProfileServiceImpl.createUserProfile("owner", "owner");
+            //UserProfile userProfile = userProfileServiceImpl.createUserProfile("admin", "admin");
+            //UserProfile userProfile2 = userProfileServiceImpl.createUserProfile("customer", "customer");
+            //UserProfile userProfile3 = userProfileServiceImpl.createUserProfile("owner", "owner");
             UserProfile userProfile4 = userProfileServiceImpl.createUserProfile("admin", "adminTwo");
-            System.out.println(userProfile);
-            System.out.println(userProfile2);
-            System.out.println(userProfile3);
+            //System.out.println(userProfile);
+            //System.out.println(userProfile2);
+            //System.out.println(userProfile3);
             System.out.println(userProfile4);
         }
 

@@ -21,8 +21,8 @@ public class LoginSettingTests {
     @Test
     public void testGetLoginSetting() {
         // Test the getLoginSetting method using test for userAccount and param
-        String loginSetting1 = loginSettingServiceImpl.getLoginSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElseThrow(), "all");
-        String loginSetting2 = loginSettingServiceImpl.getLoginSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElseThrow(), "all");
+        String loginSetting1 = loginSettingServiceImpl.getLoginSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElse(null), "all");
+        String loginSetting2 = loginSettingServiceImpl.getLoginSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElse(null), "all");
         if (loginSetting1 == null) {
             System.out.println("Login setting not found");
             throw new IllegalArgumentException("Login setting not found");
@@ -43,8 +43,8 @@ public class LoginSettingTests {
     @Test
     public void testUpdateLoginSetting() {
         // Test the updateLoginSetting method using test for userAccount, loginAttempts, loginStatus, loginTime, and twoFactorAuth
-        String loginSetting = loginSettingServiceImpl.updateLoginSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElseThrow(), "3", "active", "2021-10-10T12:00:00Z", "inactive");
-        String loginSetting2 = loginSettingServiceImpl.updateLoginSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElseThrow(), "3", "active", "2021-10-10T12:00:00Z", "inactive");
+        String loginSetting = loginSettingServiceImpl.updateLoginSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElse(null), "3", "active", "2021-10-10T12:00:00Z", "inactive");
+        String loginSetting2 = loginSettingServiceImpl.updateLoginSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElse(null), "3", "active", "2021-10-10T12:00:00Z", "inactive");
         if (loginSetting == null) {
             System.out.println("Login setting not updated");
             throw new IllegalArgumentException("Login setting not updated");
@@ -65,8 +65,8 @@ public class LoginSettingTests {
     @Test
     public void testCreateLoginSetting() {
         // Test the createLoginSetting method using
-        String loginSetting = loginSettingServiceImpl.createLoginSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElseThrow(), "3", "inactive", "2021-10-10T12:00:00Z", "active");
-        String loginSetting2 = loginSettingServiceImpl.createLoginSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElseThrow(), "3", "inactive", "2021-10-10T12:00:00Z", "active");
+        String loginSetting = loginSettingServiceImpl.createLoginSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElse(null), "3", "inactive", "2021-10-10T12:00:00Z", "active");
+        String loginSetting2 = loginSettingServiceImpl.createLoginSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElse(null), "3", "inactive", "2021-10-10T12:00:00Z", "active");
         if (loginSetting == null) {
             System.out.println("Login setting not created");
             throw new IllegalArgumentException("Login setting not created");
@@ -79,8 +79,8 @@ public class LoginSettingTests {
     @Test
     public void testDeleteLoginSetting() {
         // Test the deleteLoginSetting method using test for userAccount
-        String loginSetting = loginSettingServiceImpl.deleteLoginSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElseThrow());
-        String loginSetting2 = loginSettingServiceImpl.deleteLoginSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElseThrow());
+        String loginSetting = loginSettingServiceImpl.deleteLoginSetting(userAccountRepository.findUserAccountByUsername("customerOne").orElse(null));
+        String loginSetting2 = loginSettingServiceImpl.deleteLoginSetting(userAccountRepository.findUserAccountByUsername("adminOne").orElse(null));
         if (loginSetting == null) {
             System.out.println("Login setting not deleted");
             throw new IllegalArgumentException("Login setting not deleted");

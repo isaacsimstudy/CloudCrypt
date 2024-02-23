@@ -22,7 +22,7 @@ jobs:
 
       - name: Install Postgres as dependency to run tests
         run: |
-          docker run --name="pg" -u=postgres -e POSTGRES_PASSWORD="pg" -d --net=host cgr.dev/chainguard/postgres:latest
+          docker run --name="pg" -e POSTGRES_PASSWORD="pg" -d --net=host cgr.dev/chainguard/postgres:latest
           sleep 60
           docker logs pg
           docker cp ./database/schema.sql pg:/home/postgres

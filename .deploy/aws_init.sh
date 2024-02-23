@@ -38,7 +38,7 @@ User=ubuntu
 WorkingDirectory=/home/ubuntu/CloudCrypt
 
 # Path to executable, points straight to the jar file:
-ExecStart=/usr/bin/java -jar CloudCrypt-1.0.0-SNAPSHOT.jar
+ExecStart=/usr/bin/java -jar CloudCrypt-1.0.0-SNAPSHOT.jar.original
 
 SuccessExitStatus=143
 TimeoutStopSec=10

@@ -9,10 +9,10 @@
 test -d ~/bin || mkdir ~/bin
 
 # Move backend application to bin folder.
-if test -f ~/bin/Cloud-1.0.0-SNAPSHOT.jar; then
-rm -f ~/bin/Cloud-1.0.0-SNAPSHOT.jar
-cp -f ~/CloudCrypt/CloudCrypt-1.0.0-SNAPSHOT.jar ~/bin
-rm -f ~/CloudCrypt/CloudCrypt-1.0.0-SNAPSHOT.jar
+if test -f ~/bin/CloudCrypt-1.0.0-SNAPSHOT.jar.original; then
+rm -f ~/bin/CloudCrypt-1.0.0-SNAPSHOT.jar.original
+cp -f ~/CloudCrypt/CloudCrypt-1.0.0-SNAPSHOT.jar.original ~/bin
+rm -f ~/CloudCrypt/CloudCrypt-1.0.0-SNAPSHOT.jar.original
 else
 printf "%s: %s\n" "No Cloud-1.0.0-SNAPSHOT.jar file found" "$(date)" >> ~/CloudCrypt/log.txt
 fi

@@ -208,6 +208,7 @@
       var isDefaultButton = $(button).hasClass('defaultButton');
       $('#SuspendButton').prop('disabled', isDefaultButton);
       $('#updateButton').prop('disabled', isDefaultButton);
+      $('#CustomerLogsButton').prop('disabled', isDefaultButton);
 
       // Update localStorage with selected user data
       localStorage.setItem('selectedUser', userData.username);

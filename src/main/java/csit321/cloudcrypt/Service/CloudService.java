@@ -12,7 +12,7 @@ public interface CloudService {
 
     // CRUD operations for Cloud
 
-    public String createCloud(UserAccount userAccount, String cloudName, String cloudFilePath, Key key, String cloudPath, String status);
+    public String createCloud(UserAccount userAccount, String cloudName, String cloudFilePath, Key key, String status);
 
     public String readCloud(Map<String, String> param);
 

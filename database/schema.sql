@@ -79,8 +79,8 @@ CREATE TABLE Cloud
 (
     file_id        uuid       NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     user_account   uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
-    file_name      varchar(255) NOT NULL UNIQUE,
-    file_path      varchar(255) NOT NULL,
+    file_name      varchar(255) NOT NULL,
+    file_path      varchar(255) NOT NULL UNIQUE,
     key_id         uuid       NOT NULL REFERENCES key(key_id) ON UPDATE CASCADE,
     status         varchar(255) NOT NULL CHECK ( status IN ('active', 'deleted')),
     checksum       varchar(255) NOT NULL UNIQUE
@@ -103,7 +103,7 @@ CREATE TABLE file_info
     user_account   uuid       NOT NULL REFERENCES user_account(uuid) ON UPDATE CASCADE,
     original_size  bigint     NOT NULL,
     file_type      varchar(255) NOT NULL,
-    original_hash  varchar(255) NOT NULL,
+    original_hash  varchar(255),
     time_uploaded  Timestamptz NOT NULL,
     last_modified  Timestamptz NOT NULL DEFAULT NOW(),
     encryption_type varchar(255) NOT NULL CHECK ( encryption_type IN ('GCM', 'CCM')),

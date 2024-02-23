@@ -37,7 +37,7 @@ public class CloudServiceImpl implements CloudService {
 
 
     @Override
-    public String createCloud(UserAccount userAccount, String cloudName, String cloudFilePath, Key key, String cloudPath, String status) {
+    public String createCloud(UserAccount userAccount, String cloudName, String cloudFilePath, Key key, String status) {
         Cloud cloud = new Cloud();
         cloud.setUserAccount(userAccount);
         cloud.setId(java.util.UUID.randomUUID());
@@ -45,7 +45,7 @@ public class CloudServiceImpl implements CloudService {
         cloud.setFilePath(cloudFilePath);
         cloud.setKey(key);
         cloud.setStatus(status);
-        cloud.setChecksum("0");
+        cloud.setChecksum(String.valueOf(Math.random()));
         cloudRepository.save(cloud);
         return "Success";
     }

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>My Files</title>
     <!-- Bootstrap CSS -->
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional: Bootstrap JavaScript (Popper.js and jQuery required) -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -360,7 +361,6 @@
         <td>
             <button id ="EncryptButton" class="defaultButton" class="nav-links" onclick="CustomerEncryptFile()">Encrypt</button>
             <input type="file" id="fileInput" style="display: none;" multiple>
-            <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
             <button id ="DecryptButton" class="defaultButton" class="nav-links" onclick="handleDecryptButton()">Decrypt</button>
         </td>
     </tr>
@@ -610,18 +610,33 @@
     const processButton = document.getElementById('confirmEncrypt');
 
     processButton.addEventListener('click', async function() {
+        // Add the beforeunload event listener dynamically when the button is clicked
+        function beforeUnloadHandler(e) {
+            var confirmationMessage = 'Upload in progress, are you sure you want to leave?';
+            e.returnValue = confirmationMessage;
+        }
+
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+
         // Check if a file is selected
         if (window.selectedFile) {
             try {
-                // Call the processFile function and pass the file object to it
+                // Call the handleSecondEncryptButton function and pass the file object to it
                 await handleSecondEncryptButton(window.selectedFile);
             } catch (error) {
                 console.error("An error occurred:", error);
                 alert(error);
+            } finally {
+                // Remove the beforeunload event listener after processing the button click
+                window.removeEventListener('beforeunload', beforeUnloadHandler);
+                alert("Upload Successful");
+                window.location.href = 'CustomerFiles.html';
             }
         } else {
-            // Handle case where no file is selected
+            // Handle the case where no file is selected
             console.log('No file selected.');
+            // Remove the beforeunload event listener in case of no file selected
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
         }
     });
 
@@ -749,15 +764,31 @@
             const accessToken = localStorage.getItem('access_token');
             console.log("File Name:", fileName);
 
+            let dropboxApiArg = {};
+            let path;
             // Check if file data and file name are present
             if (fileData && fileName) {
-                // Dropbox API arguments
-                const dropboxApiArg = {
-                    path: '/' + fileName,
-                    mode: 'add',
-                    autorename: true,
-                    mute: false
-                };
+                if (localStorage.getItem('selectedFolder') !== '' && localStorage.getItem('selectedFolder') !== null) {
+                    // Dropbox API arguments
+                    path = localStorage.getItem('selectedFolder') + '/' + fileName;
+                    dropboxApiArg = {
+                        path: path,
+                        mode: 'add',
+                        autorename: true,
+                        mute: false
+                    };
+                }
+                else
+                {
+                    path = '/' + fileName;
+                    // Dropbox API arguments
+                    dropboxApiArg = {
+                        path: path,
+                        mode: 'add',
+                        autorename: true,
+                        mute: false
+                    };
+                }
 
                 // Perform Axios POST request to upload the file
                 await axios.post('https://content.dropboxapi.com/2/files/upload', fileData, {
@@ -767,8 +798,71 @@
                         'Dropbox-API-Arg': JSON.stringify(dropboxApiArg)
                     }
                 });
-                console.log('Upload Successful');
-                alert("Upload Successful");
+
+                const keyName = localStorage.getItem('selectedKeyName');
+                const username = localStorage.getItem('username');
+
+                const userData = {
+                    username: username,
+                    keyName: keyName,
+                    cloudName: fileName,
+                    cloudFilePath: path,
+                    status: "active",
+                    originalSize: window.selectedFile.size,
+                    fileType: window.selectedFile.type,
+                    originalHash: " ",
+                    encryptionType: "GCM",
+                    tags: " "
+                };
+                axios.post('/Customer/CreateCloudEntry', userData)
+                    .then(function (response) {
+                    })
+                    .catch(function (error) {
+                        console.error("An error occurred:", error);
+                    });
+
+                const activityLog = {
+                    username: username,
+                    action: "upload",
+                    fileName: window.selectedFile.name,
+                    status: "success"
+                };
+                axios.post('/Customer/CreateActivityLog', activityLog)
+                    .then(function (response) {
+                    })
+                    .catch(function (error) {
+                        console.error("An error occurred:", error);
+                    });
+
+                axios.post('/Customer/ReadNotificationSetting', {
+                    username: username,
+                    notificationType: "upload"
+                })
+                    .then(function (response) {
+                        const notifData = response.data[0];
+                        console.log(notifData);
+
+                        if (notifData.notification_frequency === "immediate" && notifData.status === "active") {
+                            axios.get('/Account/Read/' + username)
+                                .then(function (response) {
+                                    const email = response.data[0].email;
+                                    //Initiate emailJS
+                                    emailjs.init("AYShqMg5Od2zO3yuv");
+                                    // Send the notification email for login to the user
+                                    emailjs.send("service_CloudCrypt2", "template_fjebtm1", {
+                                        to_email: email,
+                                        username: username,
+                                        action: "upload",
+                                        currentTime: new Date().toISOString()
+                                    })
+                                })
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error("An error occurred:", error);
+                    });
+
+
             } else {
                 throw new Error('File data or file name is missing.');
             }
@@ -902,6 +996,51 @@
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
             link.download = fileName;
+
+            const username = localStorage.getItem('username');
+
+            const activityLog = {
+                username: username,
+                action: "download",
+                fileName: fileName,
+                status: "success"
+            };
+            axios.post('/Customer/CreateActivityLog', activityLog)
+                .then(function (response) {
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                    alert(error);
+                });
+
+            axios.post('/Customer/ReadNotificationSetting', {
+                username: username,
+                notificationType: "download"
+            })
+                .then(function (response) {
+                    const notifData = response.data[0];
+                    console.log(notifData);
+
+                    if (notifData.notification_frequency === "immediate" && notifData.status === "active") {
+                        axios.get('/Account/Read/' + username)
+                            .then(function (response) {
+                                console.log(response.data);
+                                const email = response.data[0].email;
+                                //Initiate emailJS
+                                emailjs.init("AYShqMg5Od2zO3yuv");
+                                // Send the notification email for login to the user
+                                emailjs.send("service_CloudCrypt2", "template_fjebtm1", {
+                                    to_email: email,
+                                    username: username,
+                                    action: "download",
+                                    currentTime: new Date().toISOString()
+                                })
+                            })
+                    }
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                });
 
             // Simulate click on the link to trigger download
             link.click();

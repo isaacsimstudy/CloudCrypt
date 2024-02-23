@@ -117,7 +117,7 @@
                             document.getElementById('numLogins').innerText = "0";
                         });
 
-                    axios.post('/Customer/ReadActivityLog', {username: username, param: "upload", fileName: null})
+                    axios.post('/Customer/ReadActivityLog', {username: username, param: "download", fileName: null})
                         .then(function (response) {
                             console.log(response.data);
                             document.getElementById('filesAccessed').innerText = response.data.length;
@@ -195,8 +195,6 @@
 
     <label for="filesDecrypted">Files Decrypted:</label>
     <span  id="filesDecrypted" > </span><br/>
-
-    <button id="SelectButton" class="defaultButton" type="button" onclick="exportLog()">Export</button>
 </form>
 
 

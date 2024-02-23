@@ -129,7 +129,7 @@
         const data = new URLSearchParams();
         data.append('grant_type', 'authorization_code');
         data.append('code', code);
-        data.append('redirect_uri', 'http://localhost:8080/Customer/CustomerIntegration.html');
+        data.append('redirect_uri', '13.213.53.140:8080/Customer/CustomerIntegration.html');
         data.append('client_id', 'r99ex7knyno5jhh');
         data.append('client_secret', '179u86yc880a12n');
 
@@ -149,7 +149,7 @@
             });
     }
     function accessLink() {
-        window.location.href = "https://www.dropbox.com/oauth2/authorize?client_id=r99ex7knyno5jhh&response_type=code&redirect_uri=http://localhost:8080/Customer/CustomerIntegration.html";
+        window.location.href = "https://www.dropbox.com/oauth2/authorize?client_id=r99ex7knyno5jhh&response_type=code&redirect_uri=13.213.53.140:8080/Customer/CustomerIntegration.htmll";
     }
     function Home() {
         window.location.href = 'CustomerHomePage.html';

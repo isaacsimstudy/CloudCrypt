@@ -35,7 +35,7 @@ jobs:
         run: mvn -B package --file pom.xml -DskipTests
 
       - name: Connect to AWS and copy the application
-        working-directory: ./CloudCrypt
+        working-directory: ./
         shell: bash
         env:
           SSH_PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}

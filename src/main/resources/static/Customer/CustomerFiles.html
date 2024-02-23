@@ -385,7 +385,6 @@
     </div>
 
     <button id="confirmEncrypt">Encrypt</button>
-    <button id="uploadButton" onclick="StartUpload()">Upload</button>
 </div>
 
 <div id="chooseKeyPopup" class="hidden">
@@ -710,7 +709,7 @@
     const fixedIV = new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
     async function frontEndEncryption(file, key) {
         return new Promise((resolve, reject) => {
-            const chunkSize = 1024 * 1024; // 1MB chunk size (adjust as needed)
+            const chunkSize = 150 * 1024 * 1024; // 1MB chunk size (adjust as needed)
             const reader = new FileReader();
             const encryptedChunks = [];
 
@@ -971,28 +970,7 @@
         });
     }
 
-    function StartUpload() {
-        const totalProgress = 100;
-        let currentProgress = 0;
 
-        const progressBar = document.getElementById('progressBar')
-
-        // start upload process
-        const uploadInterval = setInterval(() => {
-            currentProgress += 10 // increase progress by 10
-
-            progressBar.style.width = `${(currentProgress / totalProgress) * 100}%`;
-
-            if (currentProgress >= totalProgress) {
-                // upload completed
-                clearInterval(uploadInterval);
-                setTimeout(() => {
-                    handleUploadFile()
-                    progressBar.style.width = '0'; // reset progress bar
-                }, 500);
-            }
-        }, 500); // adjust interval as needed
-    }
 
 </script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

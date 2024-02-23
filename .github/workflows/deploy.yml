@@ -48,7 +48,8 @@ jobs:
           printf %s\\n "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
           chmod 644 ~/.ssh/known_hosts
-          scp    -i ~/.ssh/id_rsa target/Cloud-1.0.0-SNAPSHOT.jar ubuntu@ec2-13-213-53-140.ap-southeast-1.compute.amazonaws.com:/home/ubuntu/CloudCrypt
+          ls -la ./target
+          scp    -i ~/.ssh/id_rsa target/CloudCrypt-1.0.0-SNAPSHOT.jar.original ubuntu@ec2-13-213-53-140.ap-southeast-1.compute.amazonaws.com:/home/ubuntu/CloudCrypt
           scp    -i ~/.ssh/id_rsa ../database/schema.sql ubuntu@ec2-13-213-53-140.ap-southeast-1.compute.amazonaws.com:/home/ubuntu/CloudCrypt
           scp    -i ~/.ssh/id_rsa ../database/database.sql ubuntu@ec2-13-213-53-140.ap-southeast-1.compute.amazonaws.com:/home/ubuntu/CloudCrypt
           scp    -i ~/.ssh/id_rsa ../.deploy/aws_push.sh ubuntu@ec2-13-213-53-140.ap-southeast-1.compute.amazonaws.com:/home/ubuntu/CloudCrypt

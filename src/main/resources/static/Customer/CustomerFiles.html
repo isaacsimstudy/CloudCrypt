@@ -10,6 +10,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         /* Basic styles for the navigation */
         body {
@@ -47,9 +48,6 @@
             padding: 10px 20px;
             margin-left: auto; /* Pushes the logout button to the right */
         }
-
-
-
         .logout-btn:hover {
             background-color: #777;
         }
@@ -256,8 +254,6 @@
         retrieveKeyData();
     }
 
-
-
     function appendToFileTable(fileList) {
         const tableBody = document.getElementById('CustomerFileTableBody');
 
@@ -365,8 +361,7 @@
             <button id ="EncryptButton" class="defaultButton" class="nav-links" onclick="CustomerEncryptFile()">Encrypt</button>
             <input type="file" id="fileInput" style="display: none;" multiple>
             <button id ="DownloadButton" class="defaultButton" onclick="DownloadFile()">Download</button>
-            <button id ="DecryptButton" class="defaultButton" class="nav-links" onclick="CustomerDecryptFile()">Decrypt</button>
-            <button id ="CreateButton" class="defaultButton" class="nav-links" onclick="CustomerCreateFile()">Upload</button>
+            <button id ="DecryptButton" class="defaultButton" class="nav-links" onclick="handleDecryptButton()">Decrypt</button>
         </td>
     </tr>
 </table>
@@ -389,7 +384,7 @@
         <div id="progressBar"></div>
     </div>
 
-    <button id="confirmEncrypt" onclick ="handleSecondEncryptButton()">Encrypt</button>
+    <button id="confirmEncrypt">Encrypt</button>
     <button id="uploadButton" onclick="StartUpload()">Upload</button>
 </div>
 
@@ -581,15 +576,6 @@
         }
     }
 
-    const fileInput = document.getElementById("fileInput");
-    fileInput.addEventListener("change", handleFileChange);
-
-
-    function CustomerCreateFile() {
-        fileInput.click()
-        document.getElementById('UP').classList.remove('hidden');
-    }
-
     const clickEncrypt = document.getElementById("EncryptButton");
     clickEncrypt.addEventListener("click", handleFirstEncryptButton);
 
@@ -609,7 +595,9 @@
         document.getElementById('chooseKeyButton').classList.remove('hidden');
 
     }
-
+    // Add an event listener to the file input element
+    const fileInput = document.getElementById('fileInputEncryption');
+    fileInput.addEventListener('change', fileSelector);
     function fileSelector(event) {
         const file = event.target.files[0]; // Access the selected file from the event object
 
@@ -622,242 +610,321 @@
 
     const processButton = document.getElementById('confirmEncrypt');
 
-    processButton.addEventListener('click', function() {
+    processButton.addEventListener('click', async function() {
         // Check if a file is selected
         if (window.selectedFile) {
-            // Call the processFile function and pass the file object to it
-            handleSecondEncryptButton(window.selectedFile);
+            try {
+                // Call the processFile function and pass the file object to it
+                await handleSecondEncryptButton(window.selectedFile);
+            } catch (error) {
+                console.error("An error occurred:", error);
+                alert(error);
+            }
         } else {
             // Handle case where no file is selected
             console.log('No file selected.');
         }
     });
 
-    function handleSecondEncryptButton(file) {
+    async function handleSecondEncryptButton(file) {
+        try {
+            const keyId = localStorage.getItem('selectedKey');
+            const originalFileName = file.name;
 
-        const keyId = localStorage.getItem('selectedKey');
+            // Fetch key data asynchronously
+            const response = await axios.post('/Customer/GetKeyPasswordHash', keyId, { responseType: 'json' });
+            const cryptoKey = await DecodeKeyFromBase64(response.data);
 
+            // Encrypt the file
+            const encryptedFileData = await frontEndEncryption(file, cryptoKey);
 
-        // Retrieve the original file name from local storage
-        const originalFileName = localStorage.getItem('originalFileName');
+            // Attach keyId to encrypted file
+            const fileWithKeyId = attachKeyIdToEncryptedFile(encryptedFileData, keyId);
+            console.log("Encrypted file:", fileWithKeyId); // Log the encrypted file content
+            alert("File Encrypted Successfully");
 
-        // Log the original file content
-        console.log("Key ID:", keyId);
-        console.log("File:", file);
-        console.log("Original file name:", originalFileName);
-
-        if (keyId && file && originalFileName) {
-            const formData = new FormData();
-            formData.append('keyId', keyId);
-
-            // Create a Blob from the stored file data string
-            const fileBlob = new Blob([file], { type: file.type  });
-
-            console.log("File Blob:", fileBlob); // Log the file blob content
-
-            // Append the Blob to the FormData object
-            formData.append('file', fileBlob, originalFileName);
-
-            axios.post('/Customer/EncryptFiles', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                responseType: 'blob'
-            })
-                .then(response => {
-                    console.log("Encrypted file:", response.data); // Log the encrypted file content
-                    alert("File Encrypted Successfully");
-
-                    // Create a Blob from the encrypted file data
-                    const encryptedFileBlob = new Blob([response.data], { type: 'application/octet-stream' });
-
-                    // Create a download link for the encrypted file
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = URL.createObjectURL(encryptedFileBlob);
-                    downloadLink.download = originalFileName + '_encrypted'; // Set the download filename
-
-                    // Append the download link to the document body
-                    document.body.appendChild(downloadLink);
-
-                    // Trigger a click event on the download link to initiate the download
-                    downloadLink.click();
-
-                    // Remove the download link from the document body
-                    document.body.removeChild(downloadLink);
-
-                    // Convert the byte array to a Blob
-                    const blob2 = new Blob([response.data]);
-
-                    // Use FileReader to read the Blob as text or ArrayBuffer
-                    const reader = new FileReader();
-
-                    reader.onload = function(event) {
-                        // event.target.result contains the converted data
-                        const fileContent = event.target.result; // string | ArrayBuffer
-                        handleUploadFile(fileContent);
-                        // Use fileContent as needed
-                        console.log(fileContent);
-                    };
-
-// Read the Blob
-                    reader.readAsArrayBuffer(blob2);
-
-                    localStorage.setItem('fileReadyForUpload', response.data);
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                });
-        } else {
-            console.error("Key ID, file data, or original file name not found.");
+            // Upload the encrypted file
+            await handleUploadFile(fileWithKeyId, originalFileName);
+        } catch (error) {
+            console.error("An error occurred:", error);
+            alert(error);
         }
     }
-    function handleUploadFile(data) {
-        const accessToken = localStorage.getItem('access_token');
-        const fileName = localStorage.getItem('originalFileName');
+    async function DecodeKeyFromBase64(base64Key) {
+        try {
+            // Decode the Base64-encoded key string to binary data
+            const keyBinary = atob(base64Key);
 
-        // Check if file data and file name are present
-        if (data && fileName) {
-            // Create a Blob from the file data
-            const fileBlob = new Blob([data], { type: 'application/octet-stream' });
+            // Convert the binary data to an ArrayBuffer
+            const keyBuffer = new Uint8Array(keyBinary.length);
+            for (let i = 0; i < keyBinary.length; i++) {
+                keyBuffer[i] = keyBinary.charCodeAt(i);
+            }
 
-            // Dropbox API arguments
-            const dropboxApiArg = {
-                path: '/' + fileName,
-                mode: 'add',
-                autorename: true,
-                mute: false
+            // Import the key into a CryptoKey object
+            const key = await crypto.subtle.importKey(
+                'raw', // Key format
+                keyBuffer, // ArrayBuffer holding the key data
+                { name: 'AES-GCM' }, // Algorithm details
+                false, // Whether the key is extractable
+                ['encrypt', 'decrypt'] // Key usages
+            );
+
+            return key;
+        } catch (error) {
+            console.error('Error importing key:', error);
+            throw error; // Propagate the error
+        }
+    }
+
+    // Function to attach keyId to encrypted file
+    function attachKeyIdToEncryptedFile(encryptedFileData, keyId) {
+        try {
+            // Convert the keyId to a JSON string
+            const keyIdString = JSON.stringify({ keyId });
+
+            // Convert the keyId string to a Uint8Array
+            const keyIdBytes = new TextEncoder().encode(keyIdString);
+
+            // Log the length of the keyIdBytes array
+            console.log('Number of bytes attached as keyId:', keyIdBytes.length);
+
+            // Create a new Uint8Array from the ArrayBuffer
+            const encryptedArray = new Uint8Array(encryptedFileData);
+
+            // Create a new array to hold the combined data
+            const combinedArray = new Uint8Array(encryptedArray.length + keyIdBytes.length);
+
+            // Copy the encrypted data and keyId bytes into the combined array
+            combinedArray.set(encryptedArray);
+            combinedArray.set(keyIdBytes, encryptedArray.length);
+
+            // Return the combined ArrayBuffer
+            return combinedArray.buffer;
+        } catch (error) {
+            console.error('Error attaching keyId to encrypted file:', error);
+            throw error;
+        }
+    }
+
+    const fixedIV = new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+    async function frontEndEncryption(file, key) {
+        return new Promise((resolve, reject) => {
+            const chunkSize = 1024 * 1024; // 1MB chunk size (adjust as needed)
+            const reader = new FileReader();
+            const encryptedChunks = [];
+
+            reader.onload = async (event) => {
+                const arrayBuffer = event.target.result;
+                const encryptedChunk = await crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv: fixedIV }, // Fixed IV
+                    key,
+                    arrayBuffer
+                );
+                encryptedChunks.push(encryptedChunk);
+                if (reader.offset < file.size) {
+                    reader.readAsArrayBuffer(file.slice(reader.offset, reader.offset + chunkSize));
+                } else {
+                    const concatenatedArrayBuffer = encryptedChunks.reduce((acc, chunk) => {
+                        const chunkArray = new Uint8Array(chunk);
+                        const newArray = new Uint8Array(acc.byteLength + chunkArray.byteLength);
+                        newArray.set(new Uint8Array(acc), 0);
+                        newArray.set(chunkArray, acc.byteLength);
+                        return newArray;
+                    }, new ArrayBuffer(0));
+                    resolve(concatenatedArrayBuffer);
+                }
             };
 
-            // Perform Axios POST request to upload the file
-            axios.post('https://content.dropboxapi.com/2/files/upload', fileBlob, {
-                headers: {
-                    'Authorization': 'Bearer ' + accessToken,
-                    'Content-Type': 'application/octet-stream',
-                    'Dropbox-API-Arg': JSON.stringify(dropboxApiArg)
-                }
-            })
-                .then(response => {
-                    console.log('Upload Successful', response.data);
-                    // Handle success
-                })
-                .catch(error => {
-                    console.error('Error uploading file:', error.response.data);
-                    // Handle error
-                });
-        } else {
-            // Handle case where file data or file name is missing
-            console.error('File data or file name is missing.');
-            // You can display an error message to the user if needed
-            alert('File data or file name is missing.');
-        }
+            reader.onerror = (event) => {
+                reject(event.target.error);
+            };
+
+            reader.readAsArrayBuffer(file.slice(0, chunkSize));
+        });
     }
 
-    function CustomerDecryptFile(){
-        const storedFileData = localStorage.getItem('selectedItem');
-        const originalFileName = localStorage.getItem('selectedFileName');
-
-        if (storedFileData) {
-            const formData = new FormData();
-
-            // Create a Blob from the stored file data string
-            const fileBlob = new Blob([storedFileData], { type: 'application/octet-stream' });
-
-            // Append the Blob to the FormData object
-            formData.append('file', fileBlob, originalFileName);
-
-            axios.post('/Customer/DecryptFiles', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                responseType: 'blob' // Specify the response type as blob
-            })
-                .then(response => {
-                    // Create a Blob from the encrypted file data
-                    const encryptedFileBlob = new Blob([response.data], { type: 'application/octet-stream' });
-
-                    // Create a download link for the encrypted file
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = URL.createObjectURL(encryptedFileBlob);
-                    downloadLink.download = originalFileName; // Set the download filename
-
-                    // Append the download link to the document body
-                    document.body.appendChild(downloadLink);
-
-                    // Trigger a click event on the download link to initiate the download
-                    downloadLink.click();
-
-                    // Remove the download link from the document body
-                    document.body.removeChild(downloadLink);
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    // Handle error
-                });
-        } else {
-            console.error("No encrypted file selected.");
-        }
-    }
-
-    function handleFileChange(event) {
-        const accessToken = localStorage.getItem('access_token');
-
-        let selectedFiles = event.target.files;
-
-        if (selectedFiles.length > 0) {
-            const file = selectedFiles[0];
-            const fileName = file.name;
-            const fileType = file.type;
+    async function handleUploadFile(fileData, fileName) {
+        try {
+            console.log("Start upload process");
+            const accessToken = localStorage.getItem('access_token');
             console.log("File Name:", fileName);
-            console.log("File Type:", fileType);
 
-            // Create a file reader to read the file content
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                const fileContent = event.target.result;
-                // Log the metadata and content of the file
-                console.log("File Content:", fileContent);
-
-                // Header arguments for upload
+            // Check if file data and file name are present
+            if (fileData && fileName) {
+                // Dropbox API arguments
                 const dropboxApiArg = {
-                    autorename: false,
+                    path: '/' + fileName,
                     mode: 'add',
-                    mute: false,
-                    path: '/' + fileName, // Ensure the path starts with a forward slash (/)
-                    strict_conflict: false
+                    autorename: true,
+                    mute: false
                 };
 
-                // Perform Axios POST request here
-                axios.post('https://content.dropboxapi.com/2/files/upload', fileContent, {
+                // Perform Axios POST request to upload the file
+                await axios.post('https://content.dropboxapi.com/2/files/upload', fileData, {
                     headers: {
                         'Authorization': 'Bearer ' + accessToken,
                         'Content-Type': 'application/octet-stream',
                         'Dropbox-API-Arg': JSON.stringify(dropboxApiArg)
                     }
-                })
-                    .then(response => {
-                        console.log('Upload Successful', response.data);
-                        //window.location.href = 'CustomerFiles.html';
-                    })
-                    .catch(error => {
-                        // Handle errors
-                        console.error('Error uploading file:', error.response.data);
-
-                    });
-            };
-            reader.readAsArrayBuffer(file);
+                });
+                console.log('Upload Successful');
+                alert("Upload Successful");
+            } else {
+                throw new Error('File data or file name is missing.');
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error.response ? error.response.data : error.message);
+            throw error;
         }
     }
+
+    async function handleDecryptButton() {
+        var confirmation = confirm("Are you sure you want to download this file?");
+        const selectedItem = JSON.parse(localStorage.getItem('selectedItem'));
+        const fileName = selectedItem.name;
+        if (confirmation) {
+            try {
+                // Download the encrypted file
+                const encryptedFileData = await downloadEncryptedFile();
+
+                // Extract keyId from encrypted file
+                const keyId = await extractKeyIdFromEncryptedFile(encryptedFileData);
+
+                // Fetch key data asynchronously using the extracted keyId
+                const response = await axios.post('/Customer/GetKeyPasswordHash', keyId, { responseType: 'json' });
+                const cryptoKey = await DecodeKeyFromBase64(response.data);
+
+                // Decrypt the file
+                const decryptedFileData = await frontEndDecryption(encryptedFileData, cryptoKey);
+
+                // Save the decrypted file locally
+                saveDecryptedFile(decryptedFileData, fileName);
+            } catch (error) {
+                console.error("An error occurred during decryption process:", error);
+                alert("An error occurred during decryption process: " + error);
+            }
+
+        }
+
+    }
+
+    // Function to extract keyId from encrypted file
+    async function extractKeyIdFromEncryptedFile(encryptedFileData) {
+        try {
+            // Convert the encrypted file data to a Uint8Array
+            const encryptedUint8Array = new Uint8Array(encryptedFileData);
+
+            // Log the length of the encryptedUint8Array for reference
+            console.log('Length of encrypted data:', encryptedUint8Array.length);
+
+            // Define the number of bytes attached as keyId
+            const keyIdBytesLength = 48; // Update this with the logged value
+
+            // Extract the last bytes of the encrypted data as the keyId bytes
+            const keyIdBytes = encryptedUint8Array.slice(-keyIdBytesLength);
+
+            // Decode the keyId bytes to a string using TextDecoder
+            const keyIdString = new TextDecoder().decode(keyIdBytes);
+
+            // Parse the keyId string as JSON to access the keyId value
+            const keyIdObject = JSON.parse(keyIdString);
+
+            // Access the keyId value from the parsed object
+            const keyValue = keyIdObject.keyId;
+
+            // Log the extracted keyId value for reference
+            console.log('Extracted keyId value:', keyValue);
+
+            // Return the extracted keyId value
+            return keyValue;
+        } catch (error) {
+            console.error('Error extracting keyId from encrypted file:', error);
+            throw error;
+        }
+    }
+
+    async function downloadEncryptedFile() {
+        const accessToken = localStorage.getItem('access_token');
+        const selectedItem = JSON.parse(localStorage.getItem('selectedItem'));
+
+
+        // Download a file without decryption
+        const filePath = selectedItem.path_display;
+        try {
+            const response = await axios.post('https://content.dropboxapi.com/2/files/download', null, {
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken,
+                    'Dropbox-API-Arg': JSON.stringify({ path: filePath }),
+                    'Content-Type': 'application/octet-stream'
+                },
+                responseType: 'arraybuffer' // Specify arraybuffer responseType
+            });
+
+            // Check if response.data is undefined
+            if (!response.data) {
+                throw new Error('Empty response data received');
+            }
+
+            // Now you can return the ArrayBuffer directly
+            return response.data;
+        } catch (error) {
+            // Handle errors
+            console.error('Error downloading file:', error.response);
+            throw error;
+        }
+    }
+
+    async function frontEndDecryption(fileData, key) {
+        try {
+            // Extract encrypted data by removing the appended keyId
+            const encryptedDataOnly = fileData.slice(0, fileData.byteLength - 48);
+
+            const decryptedData = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: fixedIV }, // Fixed IV
+                key,
+                encryptedDataOnly
+            );
+            console.log('Decrypted Data:', decryptedData);
+            return decryptedData;
+        } catch (error) {
+            console.error('Error decrypting file:', error);
+            throw error;
+        }
+    }
+
+
+    function saveDecryptedFile(decryptedFileData, fileName) {
+        try {
+            console.log("Start save decrypted file process");
+            const blob = new Blob([decryptedFileData], { type: 'application/octet-stream' });
+
+            // Create a temporary link element
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = fileName;
+
+            // Simulate click on the link to trigger download
+            link.click();
+            console.log("File saved successfully");
+        } catch (error) {
+            console.error('Error saving decrypted file:', error);
+            alert("Error saving decrypted file: " + error);
+        }
+    }
+
     function GoBack() {
         document.getElementById("selectedFileContainer").classList.add("hidden");
         selectedFile = null;
         document.getElementById("uponSelectFile").style.display = "none"; // Hide the container when going back
     }
+
     function SearchFiles() {
         const searchInput = document.getElementById('searchInput');
         const dataTable = document.getElementById('CustomerFileTable');
         const rows = dataTable.getElementsByTagName('tr');
 
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
             const searchTerm = searchInput.value.toLowerCase();
 
             for (let i = 1; i < rows.length; i++) {
@@ -866,7 +933,7 @@
                 let matchFound = false;
 
 
-                Array.from(columns).forEach(function(column) {
+                Array.from(columns).forEach(function (column) {
                     const cellText = column.textContent.toLowerCase();
                     if (cellText.includes(searchTerm)) {
                         matchFound = true;
@@ -876,6 +943,7 @@
             }
         });
     }
+
     function SortTable(columnIndex) {
         const table = document.getElementById("CustomerFiles");
         const tbody = table.tBodies[0]; // exclude table header
@@ -899,9 +967,10 @@
         }
         // repopulate the table with sorted rows
         rows.forEach((row) => {
-           tbody.appendChild(row);
+            tbody.appendChild(row);
         });
     }
+
     function StartUpload() {
         const totalProgress = 100;
         let currentProgress = 0;
@@ -912,7 +981,7 @@
         const uploadInterval = setInterval(() => {
             currentProgress += 10 // increase progress by 10
 
-            progressBar.style.width = `${(currentProgress/totalProgress) * 100}%`;
+            progressBar.style.width = `${(currentProgress / totalProgress) * 100}%`;
 
             if (currentProgress >= totalProgress) {
                 // upload completed

@@ -55,6 +55,7 @@ public class DownloadKeyController {
 
     @PostMapping(path = "/DownloadKey")
     public ResponseEntity<String> downloadKey(@RequestBody String uuid){
+        LOGGER.info("Received request to download key with ID: " + uuid);
         try {
             Key key = keyRepository.findKeyById(java.util.UUID.fromString(uuid));
             if (key == null) {

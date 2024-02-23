@@ -119,25 +119,4 @@ public class GenerateKeyController {
         }
     }
 
-    private byte[] encrypt(byte[] input) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        try {
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKey secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            byte[] encryptedBytes = cipher.doFinal(input);
-
-            // Log the length of the encrypted bytes
-            LOGGER.info("Length of encrypted bytes: " + encryptedBytes.length);
-
-            return encryptedBytes;
-        } catch (Exception e) {
-            LOGGER.severe("Error encrypting bytes: " + e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
-    }
 }
